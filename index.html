@@ -26,7 +26,7 @@
   <!-- inject:css -->
   <link rel="stylesheet" href="css/style.css">
   <!-- endinject -->
-  <link rel="shortcut icon" href="images/favicon.ico" />
+  <link rel="shortcut icon" href="images/favicon.png" />
 </head>
 <body>
   <div class="container-scroller">
@@ -43,50 +43,7 @@
   
         <ul class="navbar-nav navbar-nav-right">
             
-          <li class="nav-item dropdown d-flex">
-            <a class="nav-link count-indicator dropdown-toggle d-flex justify-content-center align-items-center" id="messageDropdown" href="#" data-toggle="dropdown">
-              <i class="icon-air-play mx-0"></i>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="messageDropdown">
-              <p class="mb-0 font-weight-normal float-left dropdown-header">Messages</p>
-              <a class="dropdown-item preview-item">
-                <div class="preview-thumbnail">
-                    <img src="images/faces/face4.jpg" alt="image" class="profile-pic">
-                </div>
-                <div class="preview-item-content flex-grow">
-                  <h6 class="preview-subject ellipsis font-weight-normal">David Grey
-                  </h6>
-                  <p class="font-weight-light small-text text-muted mb-0">
-                    The meeting is cancelled
-                  </p>
-                </div>
-              </a>
-              <a class="dropdown-item preview-item">
-                <div class="preview-thumbnail">
-                    <img src="images/faces/face2.jpg" alt="image" class="profile-pic">
-                </div>
-                <div class="preview-item-content flex-grow">
-                  <h6 class="preview-subject ellipsis font-weight-normal">Tim Cook
-                  </h6>
-                  <p class="font-weight-light small-text text-muted mb-0">
-                    New product launch
-                  </p>
-                </div>
-              </a>
-              <a class="dropdown-item preview-item">
-                <div class="preview-thumbnail">
-                    <img src="images/faces/face3.jpg" alt="image" class="profile-pic">
-                </div>
-                <div class="preview-item-content flex-grow">
-                  <h6 class="preview-subject ellipsis font-weight-normal"> Johnson
-                  </h6>
-                  <p class="font-weight-light small-text text-muted mb-0">
-                    Upcoming board meeting
-                  </p>
-                </div>
-              </a>
-            </div>
-          </li>
+          
           <li class="nav-item dropdown d-flex mr-4 ">
             <a class="nav-link count-indicator dropdown-toggle d-flex align-items-center justify-content-center" id="notificationDropdown" href="#" data-toggle="dropdown">
               <i class="icon-cog"></i>
@@ -229,7 +186,7 @@
           <div class="row">
             <div class="col-sm-12 mb-4 mb-xl-0">
               <h4 class="font-weight-bold text-dark">Ola, Bem Vindo ao MYSTAS Agentes!</h4>
-              <p class="font-weight-normal mb-2 text-muted">JANEIRO 18, 2024</p>
+             <!-- <p class="font-weight-normal mb-2 text-muted">JANEIRO 18, 2024</p>-->
             </div>
           </div>
           <div class="row">
@@ -305,9 +262,10 @@
             <div class="col-md-4 grid-margin grid-margin-md-0 stretch-card">
               <div class="card">
                 <div class="card-body">
-                  <h4 class="card-title"></h4>
+                  <h4 class="card-title">DOCUMENTAÇÃO DA APÓLICE</h4>
                   <img src="images/IconesSTA/docs.png" alt=""style="width: 60px;text-align: center;">
-                  <a href="#popup4"><button type="button" class="btn btn-primary">DOCUMENTAÇÃO DA APÓLICE </button></a>
+                  
+                  <a href="#popup4"><button type="button" class="btn btn-primary">VISUALIZAR </button></a>
                 </div>
               </div>
             </div>
@@ -315,18 +273,18 @@
               <div class="card">
                 <div class="card-body">
                   
-                  <h4 class="card-title"></h4>
+                  <h4 class="card-title">DOCUMENTAÇÃO FINANCEIRA</h4>
                   <img src="images/IconesSTA/docs.png" alt=""style="width: 60px;text-align: center;">
-                  <a href="#popup5"><button type="button" class="btn btn-primary">DOCUMENTAÇÃO FINANCEIRA </button></a>
+                  <a href="#popup5"><button type="button" class="btn btn-primary">VISUALIZAR </button></a>
                 </div>
               </div>
             </div>
             <div class="col-md-4 grid-margin grid-margin-md-0 stretch-card">
               <div class="card">
                 <div class="card-body">
-                  <h4 class="card-title"></h4>
+                  <h4 class="card-title">DOCUMENTAÇÃO GENERICA</h4>
                   <img src="images/IconesSTA/docs.png" alt=""style="width: 60px;text-align: center;">
-                  <a href="#popup6"><button type="button" class="btn btn-primary">DOCUMENTAÇÃO GENERICA </button></a>
+                  <a href="#popup6"><button type="button" class="btn btn-primary"> VISUALIZAR</button></a>
 
                 </div>
               </div>
@@ -541,8 +499,8 @@
                 
         <!-- DOCUMENTAÇÁO FINACEIRA  -->
         <div id="popup7" class="overlay">
-          <div class="popup">
-            <h4>APÓLICE</h4>
+          <div class="popupdocgen">
+            <h4>Selecione o produto que pretende consultar</h4>
             <div class="content">
                 <span class="text-muted text-center" > </span>
             </div>
@@ -550,14 +508,31 @@
             <div class="content">
               <form class="pt-3">
                 <div class="form-group">
-                  <label for="">Nª da Apólice</label>
-                  <input type="text" class="form-control form-control-lg"  placeholder="">
+                  <a href="documentos.html">
+                    <button type="button" class="btn btn-primary btn-rounded btn-icon">
+                      <i class="fa fa-car menu-icon"placeholder="Automovél"></i>
+                    </button>
+                  </a>
+                  
+                  
+                  <button type="button" class="btn btn-primary btn-rounded btn-icon">
+                    <i class="fa fa-plane menu-icon"></i>
+                  </button>
+
+                  <a href="documentacaoGenericaMRH.html">
+                  <button type="button" class="btn btn-primary btn-rounded btn-icon">
+                    <i class="fa fa-home menu-icon"></i>
+                  </button>
+                  </a>
+                  
+                  <button type="button" class="btn btn-primary btn-rounded btn-icon">
+                    <i class="fa fa-home menu-icon"></i>
+                  </button>
+                 
                   
                 </div>
                 
-                <div class="mt-3">
-                  <a class="btn btn-primary" href="documentos.html">CONSULTAR</a>
-                </div>
+               
                 
               </form>
             </div>
@@ -630,27 +605,40 @@
         
         <div id="popup1" class="overlay">
           <div class="popup">
-            <h4>SEGUROS</h4>
+            <img src="images/faces/Arte7@2x.png" alt=""style="width:70px;margin: 10px;">
+            <h4 style="color:#e39b03;"class="text-center">PRODUTOS</h4>
             <div class="content">
-                <span class="text-muted text-center" >Escolha o seguro que pretende Simular </span>
+              <br>
+                <h4 class="text-muted text-center" >Escolha o produto que pretende Simular </h4>
             </div>
             <a class="close" href="#">&times;</a>
             <div class="content">
               <form class="pt-3">
                 <div class="form-group">
-                  <a href="#popup2">
-                    <button type="button" class="btn btn-primary btn-rounded btn-icon">
-                      <i class="fa fa-car menu-icon"placeholder="Automovél"></i>
+                  <div class="d-flex justify-content-center">
+                  <a href="#">
+                    <button type="button" class="btn btn-primary btn-rounded ">
+                      <i class="fa fa-car menu-icon"placeholder="Automovél"> Automovél</i>
                     </button>
                   </a>
-                  
-                  <button type="button" class="btn btn-primary btn-rounded btn-icon">
-                    <i class="fa fa-plane menu-icon"></i>
-                  </button>
-                  <button type="button" class="btn btn-primary btn-rounded btn-icon">
-                    <i class="fa fa-home menu-icon"></i>
-                  </button>
-                 
+                </div><br>
+
+                <div class="d-flex justify-content-center">
+                    <a href="formulario_Viaguem.html">
+                    <button type="button" class="btn btn-primary btn-rounded ">
+                      <i class="fa fa-plane menu-icon"> Viagem</i>
+                    </button>
+                  </a>
+              </div><br>
+
+                  <div class="d-flex justify-content-center">
+                        <a href="#popupRC">
+                            <button type="button" class="btn btn-primary btn-rounded ">
+                              <i class="fa fa-users menu-icon"> RC Profissional</i>
+                            </button>
+                        </a>
+
+                  </div>
                 </div>
                 
                 
@@ -661,6 +649,86 @@
 
           
         </div>
+
+           <!-- TIPOS DE RC FIM -->
+        <div id="popupRC" class="overlay">
+          <div class="popup">
+            <img src="images/faces/Arte7@2x.png" alt=""style="width:70px;margin: 10px;">
+            <h4 style="color:#e39b03;"class="text-center">QUAL TIPO DE RCP PRETENDE ?</h4>
+            <div class="content">
+              <br>
+                
+            </div>
+            <a class="close" href="#">&times;</a>
+            <div class="content">
+              <form class="pt-3">
+                <div class="form-group">
+
+                  <div class="d-flex justify-content-center">
+                  <a href="#">
+                    <button type="button" class="btn btn-primary btn-rounded ">
+                      <i class="fa fa-users menu-icon"placeholder="Automovél"> Administradores</i>
+                    </button>
+                  </a>
+                </div>
+                  <br>
+                  
+                  <div class="d-flex justify-content-center">
+                    <a href="formulario_RC_Advogado .html">
+                      <button type="button" class="btn btn-primary btn-rounded ">
+                        <i class="fa fa-users menu-icon"placeholder="Automovél"> Advogados</i>
+                      </button>
+                    </a>
+                  </div>
+                  <br>
+                  <div class="d-flex justify-content-center">
+                    <a href="#">
+                      <button type="button" class="btn btn-primary btn-rounded ">
+                        <i class="fa fa-users menu-icon"placeholder="Automovél"> Médicos</i>
+                      </button>
+                    </a>
+                  </div>
+                  <br>
+                  <div class="d-flex justify-content-center">
+                    <a href="#">
+                      <button type="button" class="btn btn-primary btn-rounded ">
+                        <i class="fa fa-users menu-icon"placeholder="Automovél">  Contabilistas/Auditores</i>
+                      </button>
+                    </a>
+                  </div>
+
+                  <br>
+                  <div class="d-flex justify-content-center">
+                    <a href="#">
+                      <button type="button" class="btn btn-primary btn-rounded ">
+                        <i class="fa fa-users menu-icon"placeholder="Automovél">  Mediadores/Corretores</i>
+                      </button>
+                    </a>
+                  </div>
+
+                  <br>
+                  <div class="d-flex justify-content-center">
+                    <a href="#">
+                      <button type="button" class="btn btn-primary btn-rounded ">
+                        <i class="fa fa-users menu-icon"placeholder="Automovél"> Outras Atividades </i>
+                      </button>
+                    </a>
+                  </div>
+
+
+
+                </div>
+                
+                
+                
+              </form>
+            </div>
+          </div>
+
+          
+        </div>
+
+   <!-- TIPOS DE RC FIM-->
 
  <!-- partial:partials/_footer.html -->
         <div id="popup2" class="overlay">
