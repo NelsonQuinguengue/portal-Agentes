@@ -195,14 +195,14 @@
 
           <img src="images/faces/Arte7@2x.png" alt=""style="width: 90px;">
         
-        <h1 class="text-center mb-4 "style="text-transform:uppercase"> Responsabilidade Cilvil Profissional Advogados</h1>
+        <h4 class="text-center mb-4 "style="text-transform:uppercase;color: #51358C;"> Responsabilidade Cilvil Profissional Advogados</h4>
         <hr>
           <form class="form-control ">
             <div class="form-row ">
 
               <div class="form-group col-lg-4">
                 <label for="tomadorseguro">Nome do tomador</label>
-                <input name="" id="tomadorseguro" class="form-control " Required>
+                <input name="" type="text" id="tomadorseguro" class="form-control " Required>
 
                                              
                   
@@ -237,10 +237,10 @@
                   	<!-- Dropdown options -->
                                    
                         <option value="Plano A">
-                           Plano A-5.000.000,00
+                           Plano A - 5 000 000,00
                         </option>
                         <option value="Plano B">
-                           Plano B-10.000.000,00
+                           Plano B - 10 000 000,00
                         </option>
                                        
                 </select>
@@ -249,7 +249,7 @@
 
               <div class="form-group col-lg-4">
                 <label for="estimativaSalarial">Estimativa de facturação anual</label>
-                <input type="number" class="form-control" id="estimativaSalarial" placeholder="0,00 Kz">
+                <input type="text" class="form-control" id="estimativaSalarial" placeholder="0,00 Kz">
 
               </div>
             </div> 
@@ -277,12 +277,17 @@
 
                  
                 <div  class="collapse" id="collapseExample" data-parent="#myGroup">
-                    <!-- content-wrapper ends 
-                    <h6 id="tomadorseguro"style="color:#e39b03;"> Tomador:</h6>   -->               
-                    <h6 id="premioSimples"style="color:#e39b03;"> </h6>
-                    <h6 id="encargosAd"style="color:#e39b03;">   </h6>                     
-                    <h6 id="iva"style="color:#e39b03;">  </h6>                
-                    <h6 id="premioTotal"style="color:#e39b03;"> </h6>
+                   
+                    <h6 id="tomadorseguro"style="color:#e39b03;"></h6>             
+                  <h6 style="color:#e39b03;font-weight: bold;">Premio Simples   <span id="premioSimples"> </span></h6>  
+                    
+                 <h6 style="color:#e39b03;font-weight: bold;">Encargos Administrativos <span id="encargosAd">   </span></h6> 
+                 
+                 <h6 style="color:#e39b03;font-weight: bold;">Iva <span id="iva"></span></h6>
+
+                 <h6 style="color:#e39b03;font-weight: bold;">Premio Total <span id="premioTotal"></span></h6>
+                                 
+                 
                   
                 </div>
 
@@ -619,6 +624,8 @@
                 <div class="content">
                   <form class="pt-3">
                     <div class="form-group">
+
+                       <!-- TIPOS DE RC FIM 
                       <div class="d-flex justify-content-center">
                       <a href="#">
                         <button type="button" class="btn btn-primary btn-rounded ">
@@ -633,7 +640,7 @@
                           <i class="fa fa-plane menu-icon"> Viagem</i>
                         </button>
                       </a>
-                  </div><br>
+                  </div><br>-->
     
                       <div class="d-flex justify-content-center">
                             <a href="#popupRC">
@@ -798,6 +805,7 @@
         let encargosAd = 0;
         let iva = 0;
         let premioTotal = 0;
+        
         ////////////////////////////////////////////////
        
 
@@ -811,16 +819,18 @@
                    premioTotal = premioSimples + encargosAd + iva;
 
                     var texto = premioTotal.toLocaleString("pt-BR", 
-                     { style: "currency" , currency:"AOA"});
+                    );
 
                      var texto1 = iva.toLocaleString("pt-BR", 
-                     { style: "currency" , currency:"AOA"});
+                     );
 
                      var texto2 = encargosAd.toLocaleString("pt-BR", 
-                     { style: "currency" , currency:"AOA"});
+                     );
 
                      var texto3 = premioSimples.toLocaleString("pt-BR", 
-                     { style: "currency" , currency:"AOA"});
+                     );
+
+                     let nome = tomadorseguro;
 
                     
               
@@ -845,6 +855,8 @@
                      var texto3 = premioSimples.toLocaleString("pt-BR", 
                      { style: "currency" , currency:"AOA"});
 
+                     var nome = tomadorseguro;
+
 
 
 
@@ -853,11 +865,13 @@
 
                // document.write(" Tomador do Seguro: "  +tomadorseguro + "  <br>" )
                // document.write("Premio Simples: " +premioSimples)
-                
-                document.getElementById("premioSimples").innerHTML = "Premio Simples  " +texto3
-                document.getElementById("encargosAd").innerHTML = "Encargos Administrativos " +texto2
-                document.getElementById("iva").innerHTML = "Iva  " +texto1
-                document.getElementById("premioTotal").innerHTML = "Premio Total  " +texto
+               document.getElementById("tomadorseguro").innerHTML =" Tomador do Seguro  " +nome  +" "  + " " + "Kz"
+                document.getElementById("premioSimples").innerHTML = " " +texto3  +"Kz"
+                document.getElementById("encargosAd").innerHTML = " " +texto2 +"Kz"
+                document.getElementById("iva").innerHTML = "  " +texto1 +"Kz"
+                document.getElementById("premioTotal").innerHTML = "" +texto +"Kz"
+                  
+              
                 
       
         
