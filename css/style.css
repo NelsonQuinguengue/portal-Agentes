@@ -60,6 +60,25 @@
 /* === Import template variables === */
 /*-------------------------------------------------------------------*/
 /* === SCSS Compass Functions === */
+
+#premioSimples{
+  color: #000;
+  font-weight: 100;
+}
+#encargosAd{
+  color: #000;
+  font-weight: 100;
+}
+#iva{
+  color: #000;
+  font-weight: 100;
+}
+#premioTotal{
+  color: #000;
+  font-weight: 100;
+}
+
+
 @-moz-keyframes flash {
   0% {
     opacity: 1;
@@ -22867,8 +22886,9 @@ dl li {
   background: #fff;
   border-radius: 5px;
   width: 20%;
-  position: relative;
+  position:relative;
   transition: all 5s ease-in-out;
+  
 }
 
 .popup h2 {
