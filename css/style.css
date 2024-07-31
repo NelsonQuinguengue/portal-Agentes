@@ -62,19 +62,19 @@
 /* === SCSS Compass Functions === */
 
 #premioSimples{
-  color: #000;
+  color: #51358C;
   font-weight: 100;
 }
 #encargosAd{
-  color: #000;
+  color: #51358C;
   font-weight: 100;
 }
 #iva{
-  color: #000;
+  color: #51358C;
   font-weight: 100;
 }
 #premioTotal{
-  color: #000;
+  color: #51358C;
   font-weight: 100;
 }
 
@@ -22878,6 +22878,9 @@ dl li {
 .overlay:target {
   visibility: visible;
   opacity: 1;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+ 
 }
 
 .popup {
@@ -22885,9 +22888,11 @@ dl li {
   padding: 20px;
   background: #fff;
   border-radius: 5px;
-  width: 20%;
+  width:27%;
   position:relative;
   transition: all 5s ease-in-out;
+  
+ 
   
 }
 
