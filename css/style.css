@@ -22891,6 +22891,8 @@ dl li {
   width:27%;
   position:relative;
   transition: all 5s ease-in-out;
+  text-align: left;
+  margin-left: 400px;
   
  
   
@@ -23005,6 +23007,7 @@ dl li {
   }
   .popup{
     width: 70%;
+    margin-left:50px;
   }
   .popupdocgen{
     width: 70%;
