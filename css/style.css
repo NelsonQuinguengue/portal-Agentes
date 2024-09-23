@@ -22880,6 +22880,9 @@ dl li {
   opacity: 1;
   overflow-y: scroll;
   scroll-behavior: smooth;
+
+
+
  
 }
 
@@ -22892,7 +22895,7 @@ dl li {
   position:relative;
   transition: all 5s ease-in-out;
   text-align: left;
-  margin-left: 400px;
+  margin-left:320px;
   
  
   
@@ -22911,7 +22914,7 @@ dl li {
   font-size: 30px;
   font-weight: bold;
   text-decoration: none;
-  color: #333;
+  color: #fff;
 }
 .popup .close:hover {
   color: #51358C;
@@ -22948,7 +22951,7 @@ dl li {
   font-size: 30px;
   font-weight: bold;
   text-decoration: none;
-  color: #333;
+  color: #fff;
 }
 .popupvs .close:hover {
   color: #51358C;
@@ -22991,10 +22994,10 @@ dl li {
   font-size: 30px;
   font-weight: bold;
   text-decoration: none;
-  color: #333;
+  color: #fff;
 }
 .popupdocgen .close:hover {
-  color: #51358C;
+  color: #51358C ;
 }
 .popupdocgen .content {
   max-height: 30%;
@@ -23042,7 +23045,7 @@ dl li {
   font-size: 30px;
   font-weight: bold;
   text-decoration: none;
-  color: #333;
+  color: #fff;
  
 }
 .popupAuto .close:hover {
@@ -23052,3 +23055,28 @@ dl li {
   max-height: 30%;
   overflow: auto;
 }
+
+
+
+  
+  table {  
+    font-family: arial, sans-serif;  
+    border-collapse: collapse;  
+    width: 50%;
+    margin: 0px auto;
+  }
+  #htmlContent{
+   
+  
+  }  
+  td, th, button {  
+    border: 1px solid #dddddd;  
+    text-align: left;  
+    padding: 8px;  
+  }  
+  button {  
+    border: 1px solid black;   
+  } 
+  tr:nth-child(even) {  
+    background-color: #dddddd;  
+  }  
