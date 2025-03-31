@@ -659,8 +659,8 @@
                                       <p><strong>Data de Adesão:</strong> ${dataAdesao}</p>
                                       <p><strong>Data de Expiração:</strong> ${dataExpiracao}</p>
                                       <p><strong>Tempo Restante:</strong> ${diasRestantes}</p>
-                                      <button onclick="baixarDocumentacao('${apolice.contractNumber}')"class="btn btn-primary">Baixar Documentação</button>
-                                      ${invoiceNumber ? `<button onclick="baixarRecibo('${invoiceNumber}')"class="btn btn-primary">Baixar Recibo</button>` : ""}
+                                      <button onclick="baixarDocumentacao('${apolice.contractNumber}')"class="btn btn-primary"style="margin:10px;">Baixar Documentação</button>
+                                      ${invoiceNumber ? `<button onclick="baixarRecibo('${invoiceNumber}')"class="btn btn-primary"style="margin:10px;">Baixar Recibo</button>` : ""}
                                   </div>
                               `;
                           });
