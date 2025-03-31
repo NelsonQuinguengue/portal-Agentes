@@ -19,17 +19,45 @@
   <!-- End plugin css for this page -->
 
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-<a href="https://wa.link/bslkgw" style="position:fixed;width:60px;height:60px;bottom:40px;right:40px;background-color:#25d366;color:#FFF;border-radius:50px;text-align:center;font-size:30px;box-shadow: 1px 1px 2px #888;
+<!-- <a href="https://wa.link/bslkgw" style="position:fixed;width:60px;height:60px;bottom:40px;right:40px;background-color:#25d366;color:#FFF;border-radius:50px;text-align:center;font-size:30px;box-shadow: 1px 1px 2px #888;
   z-index:1000;" target="_blank">
 <i style="margin-top:16px" class="fa fa-whatsapp"></i>
-</a>
+</a>-->
   <!-- inject:css -->
   <link rel="stylesheet" href="css/style.css">
   <!-- endinject -->
-  <link rel="shortcut icon" href="images/favicon.png" />
+  <link rel="shortcut icon" href="images/favicon.ico" />
+
+  <style>
+    .response-container {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+    }
+    .response-container p {
+        margin: 5px 0;
+        font-size: 16px;
+    }
+    .response-container strong {
+        color: #51358C;
+    }
+    .apolice-item {
+            background: #ffffff;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+        }
+        .veiculos-list {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+</style>
 </head>
 <body>
-  <div class="container-scroller">
+  <div class="container-scroller"> 
     <!-- partial:partials/_navbar.html -->
     <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
       <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
@@ -50,10 +78,10 @@
             </a>
             <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
               <p class="mb-0 font-weight-normal float-left dropdown-header">Difinições</p>
-              <a class="dropdown-item preview-item">               
+              <a class="dropdown-item preview-item" href="Perfil.html">               
                   <i class="icon-head"></i> Perfil
               </a>
-              <a class="dropdown-item preview-item">
+              <a class="dropdown-item preview-item" href="pages/samples/login.html">
                   <i class="icon-inbox"></i> Logout
               </a>
             </div>
@@ -67,6 +95,7 @@
     </nav>
     <!-- partial -->
     <div class="container-fluid page-body-wrapper">
+      
       <!-- partial:partials/_sidebar.html -->
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <div class="user-profile">
@@ -74,10 +103,10 @@
             <img src="images/faces/face28.png">
           </div>
           <div class="user-name">
-              Osvaldo Spencer
+            <a href="Perfil.html"style="color: white;">Osvaldo Spencer</a>  
           </div>
           <div class="user-designation">
-              Agente
+            <a href="index.html"><p style="color: white;">Bem Vindo</p></a>  
           </div>
         </div>
         <ul class="nav">
@@ -89,34 +118,35 @@
               <span class="menu-title">Inicio</span>
             </a>
           </li> 
-       
-          <li class="nav-item"style="pointer-events: none;">
+        <!-- partial:partials/_sidebar.html
+          <li class="nav-item"style="">
             <a class="nav-link" href="meus_seguros.html">
-              <i class="icon-pie-graph menu-icon"style="color:rgba(255,255,255,0.2)"></i>
-              <span class="menu-title"style="color:rgba(255,255,255,0.2)">A minha Carteira</span>
+              <i class="icon-pie-graph menu-icon"style=""></i>
+              <span class="menu-title"style="">A minha Carteira</span>
             </a>
-          </li>
+          </li> -->
 
-          <li class="nav-item"style="pointer-events: none;">
+          <li class="nav-item"style="">
             <a class="nav-link" href="#popup4">
-              <i class="icon-paper menu-icon"style="color:rgba(255,255,255,0.2)"></i>
-              <span class="menu-title"style="color:rgba(255,255,255,0.2)">Documentação da Apólice</span>
+              <i class="icon-paper menu-icon"style=""></i>
+              <span class="menu-title"style="">Documentação da Apólice</span>
             </a>
           </li>
 
-        
+          <!-- TIPOS DE RC FIM 
+         
 
-          <li class="nav-item"style="pointer-events: none;">
+          <li class="nav-item"style="">
             <a class="nav-link" href="#popup5">
-              <i class="icon-clipboard menu-icon"style="color:rgba(255,255,255,0.2)"></i>
-              <span class="menu-title"style="color:rgba(255,255,255,0.2)">Documentação Financeira</span>
+              <i class="icon-clipboard menu-icon"style=""></i>
+              <span class="menu-title"style="">Documentação Financeira</span>
             </a>
-          </li>
+          </li>-->
      
-          <li class="nav-item"style="pointer-events: none;">
+          <li class="nav-item"style="">
             <a class="nav-link" href="#popup7">
-              <i class="icon-paper menu-icon"style="color:rgba(255,255,255,0.2)"></i>
-              <span class="menu-title"style="color:rgba(255,255,255,0.2)">Documentação Generica</span>
+              <i class="icon-paper menu-icon"></i>
+              <span class="menu-title">Documentação Generica</span>
             </a>
           </li>
           
@@ -128,31 +158,31 @@
             </a>
           </li>
 
-          <li class="nav-item"style="pointer-events: none;">
+          <li class="nav-item"style="">
             <a class="nav-link" href="#popup1">
-              <i class="icon-box menu-icon"style="color:rgba(255,255,255,0.2)"></i>
-              <span class="menu-title"style="color:rgba(255,255,255,0.2)">Concursos</span>
+              <i class="icon-box menu-icon"style=""></i>
+              <span class="menu-title"style="">Concursos</span>
             </a>
           </li>
 
-          <li class="nav-item"style="pointer-events: none;">
+          <li class="nav-item"style="">
             <a class="nav-link" href="participaçáo.html">
-              <i class="fa fa-car menu-icon"style="color:rgba(255,255,255,0.2)"></i>
-              <span class="menu-title"style="color:rgba(255,255,255,0.2)">Participar Sinistro Auto</span>
+              <i class="fa fa-car menu-icon"style=""></i>
+              <span class="menu-title"style="">Participar Sinistro Auto</span>
             </a>
           </li>
 
-          <li class="nav-item"style="pointer-events: none;">
+          <li class="nav-item"style="">
             <a class="nav-link" href="participaçáo.html">
-              <i class="fa fa-male menu-icon"style="color:rgba(255,255,255,0.2)"></i>
-              <span class="menu-title"style="color:rgba(255,255,255,0.2)">Participar Sinistro .A.T</span>
+              <i class="fa fa-male menu-icon"style=""></i>
+              <span class="menu-title"style="">Participar Sinistro .A.T</span>
             </a>
           </li>
           
-          <li class="nav-item"style="pointer-events: none;">
+          <li class="nav-item"style="">
             <a class="nav-link" href="participaçáo.html">
-              <i class="fa fa-home menu-icon"style="color:rgba(255,255,255,0.2)"></i>
-              <span class="menu-title"style="color:rgba(255,255,255,0.2)">Participar Sinistro .M.R.H</span>
+              <i class="fa fa-home menu-icon"style=""></i>
+              <span class="menu-title"style="">Participar Sinistro .M.R.H</span>
             </a>
           </li>
 
@@ -163,10 +193,10 @@
             </a>
           </li>
 
-          <li class="nav-item"style="pointer-events: none;">
+          <li class="nav-item"style="">
             <a class="nav-link" href="pages/icons/feather-icons.html">
-              <i class="fa fa-envelope-o menu-icon"style="color:rgba(255,255,255,0.2)"></i>
-              <span class="menu-title"style="color:rgba(255,255,255,0.2)">Caixa de Mensaguens</span>
+              <i class="fa fa-envelope-o menu-icon"style=""></i>
+              <span class="menu-title"style="">Caixa de Mensaguens</span>
             </a>
           </li>
 
@@ -185,7 +215,7 @@
         <div class="content-wrapper">
           <div class="row">
             <div class="col-sm-12 mb-4 mb-xl-0">
-              <h4 class="font-weight-bold text-dark">Ola, Bem Vindo ao MYSTAS Agentes!</h4>
+              <h4 class="font-weight-bold text-dark">Ola, Bem Vindo ao MYSTAS</h4>
              <!-- <p class="font-weight-normal mb-2 text-muted">JANEIRO 18, 2024</p>-->
             </div>
           </div>
@@ -213,7 +243,7 @@
                     <img src="images/IconesSTA/carteira.png" alt=""style="width: 60px;text-align: center;">
                     <h4 class="card-title"style="padding:10px;"> MINHA CARTEIRA</h4>
                     <div class="media-body">
-                      <a href="meus_seguros.html"><button type="button" class="btn btn-primary"disabled>VISUALIZAR</button></a>
+                      <a href="meus_seguros.html"><button type="button" class="btn btn-primary">VISUALIZAR</button></a>
                     </div>
                     
                   </div>
@@ -265,7 +295,7 @@
                   <h4 class="card-title">DOCUMENTAÇÃO DA APÓLICE</h4>
                   <img src="images/IconesSTA/docs.png" alt=""style="width: 60px;text-align: center;">
                   
-                  <a href="#popup4"><button type="button" class="btn btn-primary"disabled>VISUALIZAR </button></a>
+                  <a href="#popup4"><button type="button" class="btn btn-primary">VISUALIZAR </button></a>
                 </div>
               </div>
             </div>
@@ -275,7 +305,7 @@
                   
                   <h4 class="card-title">DOCUMENTAÇÃO FINANCEIRA</h4>
                   <img src="images/IconesSTA/docs.png" alt=""style="width: 60px;text-align: center;">
-                  <a href="#popup5"><button type="button" class="btn btn-primary"disabled>VISUALIZAR </button></a>
+                  <a href="#popup5"><button type="button" class="btn btn-primary">VISUALIZAR </button></a>
                 </div>
               </div>
             </div>
@@ -284,7 +314,7 @@
                 <div class="card-body">
                   <h4 class="card-title">DOCUMENTAÇÃO GENERICA</h4>
                   <img src="images/IconesSTA/docs.png" alt=""style="width: 60px;text-align: center;">
-                  <a href="#popup6"><button type="button" class="btn btn-primary"disabled> VISUALIZAR</button></a>
+                  <a href="#popup6"><button type="button" class="btn btn-primary"> VISUALIZAR</button></a>
 
                 </div>
               </div>
@@ -378,7 +408,7 @@
                     <img src="images/IconesSTA/Auto.png" alt=""style="width: 60px;text-align: center;">
                     <h4 class="card-title"style="padding:10px;"> PARTICIPAÇÃO DE SINISTRO STAS AUTO</h4>
                     <div class="media-body">
-                      <a href="detalhes_Seguros.html"><button type="button" class="btn btn-primary"disabled>PARTICIPAR</button></a>
+                      <a href="detalhes_Seguros.html"><button type="button" class="btn btn-primary">PARTICIPAR</button></a>
                     </div>
                     
                   </div>
@@ -396,7 +426,7 @@
                     <img src="images/IconesSTA/AcidentedeTrabalho.png" alt=""style="width: 60px;text-align: center;">
                     <h4 class="card-title"style="padding:10px;"> PARTICIPAÇÃO DE SINISTRO STAS AT</h4>
                     <div class="media-body">
-                      <a href="detalhes_Seguros.html"><button type="button" class="btn btn-primary"disabled>PARTICIPAR</button></a>
+                      <a href="detalhes_Seguros.html"><button type="button" class="btn btn-primary">PARTICIPAR</button></a>
                     </div>
                     
                   </div>
@@ -413,7 +443,7 @@
                     <img src="images/IconesSTA/STACASA.png" alt=""style="width: 60px;text-align: center;">
                     <h4 class="card-title"style="padding:10px;"> PARTICIPAÇÃO DE SINISTRO STAS M.R.H</h4>
                     <div class="media-body">
-                      <a href="detalhes_Seguros.html"><button type="button" class="btn btn-primary"disabled>PARTICIPAR</button></a>
+                      <a href="detalhes_Seguros.html"><button type="button" class="btn btn-primary">PARTICIPAR</button></a>
                     </div>
                     
                   </div>
@@ -449,17 +479,202 @@
             </div>
             <a class="close" href="#">&times;</a>
             <div class="content">
-              <form class="pt-3">
+              <form class="pt-3" id="postForm">
                 <div class="form-group">
-                  <label for="">Nª da Apólice</label>
-                  <input type="text" class="form-control form-control-lg"  placeholder="">
+                  <label for="">Nª de Telefone</label>
+                  <input type="text" class="form-control form-control-lg"id="numero" name="numero" required>
                 </div>
                 
                 <div class="mt-3">
-                  <a class="btn btn-primary" href="documentos.html">CONSULTAR</a>
+                  <button type="submit"class="btn btn-primary" >Buscar Apólices</button>
                 </div>
                 
               </form>
+
+       <!-- CONSUMINDO API DE CONSULTA DE APOLICES  -->
+              
+              
+              <div id="responseData" class="response-container"></div>
+          
+              <script>
+                  
+                  const apiUrl = "https://prod-140.westeurope.logic.azure.com:443/workflows/74734cce81d84cd6ae60286398788687/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Vcpb71QWuF6Ln8R469v_KoX3U97UeqehBdqq-O6runY";
+                  const downloadApiUrl = "https://prod-202.westeurope.logic.azure.com/workflows/6f3a396d2faa48c5ae47c91176356950/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=_-14N-R4v9VJMRahRM4hW5KPCIhxEwXGuWjlEKZEER8";
+                  const reciboApiUrl = "https://prod-20.westeurope.logic.azure.com/workflows/6dfe7adab38c46a7bf5f843c8b0026a1/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=0ZcBlCoIow3P9-qxBAf8AJid5H07lXBjkuQIJrJvLm8";
+
+                  // Formata um número para o formato "200.000,00"
+                  function formatarValor(valor) {
+                      return parseFloat(valor).toLocaleString("pt-PT", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                  }
+
+                  // Função para traduzir o status do contrato
+                  function traduzirStatus(status) {
+                      switch (status) {
+                          case "C":
+                              return "Ativa";
+                          case "D":
+                              return "Anulada";
+                          case "T":
+                              return "Caducada";
+                          default:
+                              return "Não disponível";
+                      }
+                  }
+
+                  // Função para baixar a documentação da apólice
+                  async function baixarDocumentacao(contract) {
+                      try {
+                          const requestBody = JSON.stringify({ contract });
+                          const response = await fetch(downloadApiUrl, {
+                              method: "POST",
+                              headers: { 
+                                  "Content-Type": "application/json",
+                                  "Accept": "application/json"
+                              },
+                              body: requestBody
+                          });
+
+                          if (!response.ok) {
+                              throw new Error(`Erro ao baixar documentação: ${response.statusText}`);
+                          }
+
+                          // Criar um link para download do arquivo
+                          const blob = await response.blob();
+                          const url = window.URL.createObjectURL(blob);
+                          const a = document.createElement("a");
+                          a.href = url;
+                          a.download = `documentacao_${contract}.pdf`;
+                          document.body.appendChild(a);
+                          a.click();
+                          document.body.removeChild(a);
+                      } catch (error) {
+                          alert("Erro ao baixar a documentação: " + error.message);
+                      }
+                  }
+
+                  // Função para baixar o recibo da apólice
+                  async function baixarRecibo(invoice) {
+                      try {
+                          const requestBody = JSON.stringify({ invoice });
+                          const response = await fetch(reciboApiUrl, {
+                              method: "POST",
+                              headers: { 
+                                  "Content-Type": "application/json",
+                                  "Accept": "application/json"
+                              },
+                              body: requestBody
+                          });
+
+                          if (!response.ok) {
+                              throw new Error(`Erro ao baixar recibo: ${response.statusText}`);
+                          }
+
+                          // Criar um link para download do arquivo
+                          const blob = await response.blob();
+                          const url = window.URL.createObjectURL(blob);
+                          const a = document.createElement("a");
+                          a.href = url;
+                          a.download = `recibo_${invoice}.pdf`;
+                          document.body.appendChild(a);
+                          a.click();
+                          document.body.removeChild(a);
+                      } catch (error) {
+                          alert("Erro ao baixar o recibo: " + error.message);
+                      }
+                  }
+
+                  async function fetchData(numero) {
+                      try {
+                          const requestBody = JSON.stringify({ contact: numero });
+                          const response = await fetch(apiUrl, {
+                              method: "POST",
+                              headers: { 
+                                  "Content-Type": "application/json",
+                                  "Accept": "application/json"
+                              },
+                              body: requestBody
+                          });
+
+                          if (!response.ok) {
+                              const errorText = await response.text();
+                              throw new Error(`Erro HTTP: ${response.status} - ${errorText}`);
+                          }
+
+                          return await response.json();
+                      } catch (error) {
+                          console.error("Erro na requisição:", error);
+                          throw error;
+                      }
+                  }
+
+                  document.getElementById("postForm").addEventListener("submit", async function(event) {
+                      event.preventDefault();
+                      const numero = document.getElementById("numero").value;
+                      const responseContainer = document.getElementById("responseData");
+                      responseContainer.innerHTML = "<p>Buscando...</p>";
+
+                      try {
+                          const data = await fetchData(numero);
+
+                          if (!Array.isArray(data) || data.length === 0) {
+                              responseContainer.innerHTML = `<p style="color: red;">Nenhuma apólice encontrada</p>`;
+                              return;
+                          }
+
+                          let content = `<p><strong>Total de Apólices:</strong> ${data.length}</p>`;
+                          data.forEach(apolice => {
+                              const valor = apolice.invoices && apolice.invoices.length > 0 ? formatarValor(apolice.invoices[0].value) + " KZ" : "Não disponível";
+                              const invoiceNumber = apolice.invoices && apolice.invoices.length > 0 ? apolice.invoices[0].number : null;
+                              const dataAdesao = apolice.invoices && apolice.invoices.length > 0 ? apolice.invoices[0].from : "Não disponível";
+                              const dataExpiracao = apolice.invoices && apolice.invoices.length > 0 ? apolice.invoices[0].to : "Não disponível";
+
+                              // Calcula a diferença de dias até a expiração
+                              let diasRestantes = "Não disponível";
+                              if (dataExpiracao !== "Não disponível") {
+                                  const hoje = new Date();
+                                  const dataExpiracaoDate = new Date(dataExpiracao);
+                                  const diferencaMs = dataExpiracaoDate - hoje;
+                                  diasRestantes = Math.ceil(diferencaMs / (1000 * 60 * 60 * 24));
+
+                                  if (diasRestantes < 0) {
+                                      diasRestantes = "Apólice vencida";
+                                  } else {
+                                      diasRestantes += " dias restantes";
+                                  }
+                              }
+
+                              // Traduzir o status
+                              const statusTraduzido = traduzirStatus(apolice.contractStatus);
+
+                              content += `
+                                  <div style="border-bottom: 1px solid #ddd; padding: 10px 0;">
+                                      <p><strong>Produto:</strong> ${apolice.productName || "Não disponível"}</p>
+                                      <p><strong>Número do Contrato:</strong> ${apolice.contractNumber || "Não disponível"}</p>
+                                      <p><strong>Cliente:</strong> ${apolice.clientName || "Não disponível"}</p>
+                                      <p><strong>Contato:</strong> ${apolice.primaryMobileContact || "Não disponível"}</p>
+                                      <p><strong>Produtor:</strong> ${apolice.producerName || "Não disponível"}</p>
+                                      <p><strong>Registro:</strong> ${apolice.registration || "Não disponível"}</p>
+                                      <p><strong>Valor:</strong> ${valor}</p>
+                                      <p><strong>Status:</strong> ${statusTraduzido}</p>
+                                      <p><strong>Data de Adesão:</strong> ${dataAdesao}</p>
+                                      <p><strong>Data de Expiração:</strong> ${dataExpiracao}</p>
+                                      <p><strong>Tempo Restante:</strong> ${diasRestantes}</p>
+                                      <button onclick="baixarDocumentacao('${apolice.contractNumber}')"class="btn btn-primary">Baixar Documentação</button>
+                                      ${invoiceNumber ? `<button onclick="baixarRecibo('${invoiceNumber}')"class="btn btn-primary">Baixar Recibo</button>` : ""}
+                                  </div>
+                              `;
+                          });
+
+                          responseContainer.innerHTML = content;
+                      } catch (error) {
+                          responseContainer.innerHTML = `<p style="color: red;">Erro: ${error.message}</p>`;
+                      }
+                  });
+
+              </script>
+
+
+
             </div>
           </div>
         </div>
@@ -481,63 +696,65 @@
                   <label for="">Nª da Apólice</label>
                   <input type="text" class="form-control form-control-lg"  placeholder="">
                   <br>
-                  <label for="">Nª do Documento</label>
-                  <input type="text" class="form-control form-control-lg"  placeholder="">
+                  
                 </div>
                 
                 <div class="mt-3">
-                  <a class="btn btn-primary" href="recibos_Pagamentos.html">CONSULTAR</a>
+                  <a class="btn btn-primary">CONSULTAR</a>
                 </div>
                 
               </form>
+              
+            
             </div>
           </div>
         </div>
 
              <!-- FIM  DOCUMENTAÇÁO DE APÓLICE -->
+             <div id="popup7" class="overlay">
+              <div class="popup">
+                <img src="images/faces/Arte7@2x.png" alt=""style="width:70px;margin: 10px;">
+                <h4 style="color:#e39b03;"class="text-center">PRODUTOS</h4>
+                <div class="content">
+                  <br>
+                    <h4 class="text-center"style="color:#e39b03;" >Escolha o produto que pretende consultar </h4>
+                </div>
+                <a class="close" href="#">&times;</a>
+                <div class="content">
+                  <form class="pt-3">
+                    <div class="form-group">
+                      <a href="documentos.html">
+                        <button type="button" class="btn btn-primary btn-rounded btn-icon">
+                          <i class="fa fa-car menu-icon"placeholder="Automovél"></i>
+                        </button>
+                      </a>
+                      
+                      
+                      <button type="button" class="btn btn-primary btn-rounded btn-icon">
+                        <i class="fa fa-plane menu-icon"></i>
+                      </button>
+    
+                      <a href="documentacaoGenericaMRH.html">
+                      <button type="button" class="btn btn-primary btn-rounded btn-icon">
+                        <i class="fa fa-home menu-icon"></i>
+                      </button>
+                      </a>
+                                           
+                      
+                    </div>
+                    
+                   
+                    
+                  </form>
+                </div>
+              </div>
+    
+              
+            </div>
 
                 
         <!-- DOCUMENTAÇÁO FINACEIRA  -->
-        <div id="popup7" class="overlay">
-          <div class="popupdocgen">
-            <h4>Selecione o produto que pretende consultar</h4>
-            <div class="content">
-                <span class="text-muted text-center" > </span>
-            </div>
-            <a class="close" href="#">&times;</a>
-            <div class="content">
-              <form class="pt-3">
-                <div class="form-group">
-                  <a href="documentos.html">
-                    <button type="button" class="btn btn-primary btn-rounded btn-icon">
-                      <i class="fa fa-car menu-icon"placeholder="Automovél"></i>
-                    </button>
-                  </a>
-                  
-                  
-                  <button type="button" class="btn btn-primary btn-rounded btn-icon">
-                    <i class="fa fa-plane menu-icon"></i>
-                  </button>
-
-                  <a href="documentacaoGenericaMRH.html">
-                  <button type="button" class="btn btn-primary btn-rounded btn-icon">
-                    <i class="fa fa-home menu-icon"></i>
-                  </button>
-                  </a>
-                  
-                  <button type="button" class="btn btn-primary btn-rounded btn-icon">
-                    <i class="fa fa-home menu-icon"></i>
-                  </button>
-                 
-                  
-                </div>
-                
-               
-                
-              </form>
-            </div>
-          </div>
-        </div>
+      
 
            <!-- CONTACTOS TELEFONICOS  -->
            <div id="popup8" class="overlay">
@@ -603,61 +820,56 @@
              <!-- FIM  DOCUMENTAÇÁO DE APÓLICE -->
       
         
-        <div id="popup1" class="overlay">
-          <div class="popup">
-            <img src="images/faces/Arte7@2x.png" alt=""style="width:70px;margin: 10px;">
-            <h4 style="color:#e39b03;"class="text-center">PRODUTOS</h4>
-            <div class="content">
-              <br>
-                <h4 style="color:#e39b03;"class="text-center" >Escolha o produto que pretende Simular </h4>
-            </div>
-            <a class="close" href="#">&times;</a>
-            <div class="content">
-              <form class="pt-3">
-                <div class="form-group">
-                    <!-- TIPOS DE RC FIM 
-                  <div class="d-flex justify-content-sm-between">
-                  <a href="#">
-                    <button type="button" class="btn btn-primary btn-rounded ">
-                      <i class="fa fa-car menu-icon"placeholder="Automovél"> Automovél</i>
-                    </button>
-                  </a>
-                </div><br>
-
-                <div class="d-flex  justify-content-sm-between">
-                    <a href="formulario_Viaguem.html">
-                    <button type="button" class="btn btn-primary btn-rounded ">
-                      <i class="fa fa-plane menu-icon"> Viagem</i>
-                    </button>
-                  </a>
-              </div><br>
-                -->
-
-                <div class="d-flex  justify-content-sm-between">
-                  <a href="formulario_Viaguem.html">
-                  <button type="button" class="btn btn-primary btn-rounded ">
-                    <i class="fa fa-plane menu-icon"> Viagem</i>
-                  </button>
-                </a>
-            </div><br>
-                  <div class="d-flex  justify-content-sm-between">
-                        <a href="#popupRC">
-                            <button type="button" class="btn btn-primary btn-rounded ">
-                              <i class="fa fa-users menu-icon"> RC Profissional</i>
-                            </button>
-                        </a>
-
-                  </div>
-
-                  
+                       <!-- POPUP DE SIMULAÇÕES -->
+             <div id="popup1" class="overlay">
+              <div class="popup">
+                <img src="images/faces/Arte7@2x.png" alt=""style="width:70px;margin: 10px;">
+                <h4 style="color:#e39b03;"class="text-center">PRODUTOS</h4>
+                <div class="content">
+                  <br>
+                    <h4 class="text-center"style="color:#e39b03;" >Escolha o produto que pretende Simular </h4>
                 </div>
-                
-              </form>
-            </div>
-          </div>
+                <a class="close" href="#">&times;</a>
+                <div class="content">
+                  <form class="pt-3">
+                    <div class="form-group">
 
-          
-        </div>
+                     
+                      <div class="d-flex justify-content-center">
+                      <a href="#">
+                        <button type="button" class="btn btn-primary btn-rounded ">
+                          <i class="fa fa-car menu-icon"placeholder="Automovél"> Automovél</i>
+                        </button>
+                      </a>
+                    </div><br>
+    
+                    <div class="d-flex justify-content-center">
+                        <a href="formulario_Viaguem.html">
+                        <button type="button" class="btn btn-primary btn-rounded ">
+                          <i class="fa fa-plane menu-icon"> Viagem</i>
+                        </button>
+                      </a>
+                  </div><br>
+    
+                      <div class="d-flex justify-content-center">
+                            <a href="#popupRC">
+                                <button type="button" class="btn btn-primary btn-rounded ">
+                                  <i class="fa fa-users menu-icon"> RC Profissional</i>
+                                </button>
+                            </a>
+    
+                      </div>
+                    </div>
+                    
+                    
+                    
+                  </form>
+                </div>
+              </div>
+    
+              
+            </div>
+  <!-- POPUP DE SIMULAÇÕES FIM -->
 
            <!-- TIPOS DE RC FIM -->
         <div id="popupRC" class="overlay">
@@ -836,7 +1048,10 @@
     <!-- page-body-wrapper ends -->
   </div>
   <!-- container-scroller -->
+  <script>
+    (function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="am9B0VkeXuVOfrPm0FBVl";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
 
+    </script>
   <!-- base:js -->
   <script src="vendors/base/vendor.bundle.base.js"></script>
   <!-- endinject -->

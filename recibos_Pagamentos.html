@@ -17,207 +17,191 @@
   <link rel="stylesheet" href="vendors/jquery-bar-rating/fontawesome-stars-o.css">
   <link rel="stylesheet" href="vendors/jquery-bar-rating/fontawesome-stars.css">
   <!-- End plugin css for this page -->
-  <!-- inject:css -->
-  <link rel="stylesheet" href="css/style.css">
-  <!-- endinject -->
-  <link rel="shortcut icon" href="images/favicon.ico" />
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-  <a href="https://wa.link/bslkgw" style="position:fixed;width:60px;height:60px;bottom:40px;right:40px;background-color:#25d366;color:#FFF;border-radius:50px;text-align:center;font-size:30px;box-shadow: 1px 1px 2px #888;
-    z-index:1000;" target="_blank">
-  <i style="margin-top:16px" class="fa fa-whatsapp"></i>
-  </a>
-</head>
-<body>
-  <div class="container-scroller">
-    <!-- partial:partials/_navbar.html -->
-    <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
-      <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
-        
-        <a class="navbar-brand brand-logo-mini" href="index.html"><img src="images/favicon.ico" alt="logo"/></a>
-      </div>
-      <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
-        <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
-          <span class="icon-menu"></span>
-        </button>
-     
-        <ul class="navbar-nav navbar-nav-right">
-            
-          <li class="nav-item dropdown d-flex">
-            <a class="nav-link count-indicator dropdown-toggle d-flex justify-content-center align-items-center" id="messageDropdown" href="#" data-toggle="dropdown">
-              <i class="icon-air-play mx-0"></i>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="messageDropdown">
-              <p class="mb-0 font-weight-normal float-left dropdown-header">Messages</p>
-              <a class="dropdown-item preview-item">
-                <div class="preview-thumbnail">
-                    <img src="images/faces/face4.jpg" alt="image" class="profile-pic">
-                </div>
-                <div class="preview-item-content flex-grow">
-                  <h6 class="preview-subject ellipsis font-weight-normal">David Grey
-                  </h6>
-                  <p class="font-weight-light small-text text-muted mb-0">
-                    The meeting is cancelled
-                  </p>
-                </div>
-              </a>
-              <a class="dropdown-item preview-item">
-                <div class="preview-thumbnail">
-                    <img src="images/faces/face2.jpg" alt="image" class="profile-pic">
-                </div>
-                <div class="preview-item-content flex-grow">
-                  <h6 class="preview-subject ellipsis font-weight-normal">Tim Cook
-                  </h6>
-                  <p class="font-weight-light small-text text-muted mb-0">
-                    New product launch
-                  </p>
-                </div>
-              </a>
-              <a class="dropdown-item preview-item">
-                <div class="preview-thumbnail">
-                    <img src="images/faces/face3.jpg" alt="image" class="profile-pic">
-                </div>
-                <div class="preview-item-content flex-grow">
-                  <h6 class="preview-subject ellipsis font-weight-normal"> Johnson
-                  </h6>
-                  <p class="font-weight-light small-text text-muted mb-0">
-                    Upcoming board meeting
-                  </p>
-                </div>
-              </a>
-            </div>
-          </li>
-          <li class="nav-item dropdown d-flex mr-4 ">
-            <a class="nav-link count-indicator dropdown-toggle d-flex align-items-center justify-content-center" id="notificationDropdown" href="#" data-toggle="dropdown">
-              <i class="icon-cog"></i>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
-              <p class="mb-0 font-weight-normal float-left dropdown-header">Difinições</p>
-              <a class="dropdown-item preview-item">               
-                  <i class="icon-head"></i> Perfil
-              </a>
-              <a class="dropdown-item preview-item">
-                  <i class="icon-inbox"></i> Logout
-              </a>
-            </div>
-          </li>
-          
-        </ul>
-        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
-          <span class="icon-menu"></span>
-        </button>
-      </div>
-    </nav>
-    <!-- partial -->
-    <div class="container-fluid page-body-wrapper">
-      <!-- partial:partials/_sidebar.html -->
-      <nav class="sidebar sidebar-offcanvas" id="sidebar">
-        <div class="user-profile">
-          <div class="user-image">
-            <img src="images/faces/face28.png">
-          </div>
-          <div class="user-name">
-              Osvaldo Spencer
-          </div>
-          <div class="user-designation">
-              Agente
-          </div>
-        </div>
-        <ul class="nav">
-
-          
-          <li class="nav-item">
-            <a class="nav-link" href="index.html">
-              <i class="icon-box menu-icon"></i>
-              <span class="menu-title">Inicio</span>
-            </a>
-          </li>
+   <!-- inject:css -->
+   <link rel="stylesheet" href="css/style.css">
+   <!-- endinject -->
+   <link rel="shortcut icon" href="images/favicon.ico" />
+ 
+   <style>
+     .response-container {
+         background: white;
+         padding: 20px;
+         border-radius: 8px;
+         box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+         max-width: 600px;
+     }
+     .response-container p {
+         margin: 5px 0;
+         font-size: 16px;
+     }
+     .response-container strong {
+         color: #51358C;
+     }
+     .apolice-item {
+             background: #ffffff;
+             margin: 10px 0;
+             padding: 15px;
+             border-radius: 8px;
+             box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+         }
+         .veiculos-list {
+             margin-top: 10px;
+             padding-left: 20px;
+         }
+ </style>
+ </head>
+ <body>
+   <div class="container-scroller"> 
+     <!-- partial:partials/_navbar.html -->
+     <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+       <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+         
+         <a class="navbar-brand brand-logo-mini" href="index.html"><img src="images/favicon.ico" alt="logo"/></a>
+       </div>
+       <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
+         <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+           <span class="icon-menu"></span>
+         </button>
+   
+         <ul class="navbar-nav navbar-nav-right">
+             
+           
+           <li class="nav-item dropdown d-flex mr-4 ">
+             <a class="nav-link count-indicator dropdown-toggle d-flex align-items-center justify-content-center" id="notificationDropdown" href="#" data-toggle="dropdown">
+               <i class="icon-cog"></i>
+             </a>
+             <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
+               <p class="mb-0 font-weight-normal float-left dropdown-header">Difinições</p>
+               <a class="dropdown-item preview-item"href="Perfil.html">               
+                   <i class="icon-head"></i> Perfil
+               </a>
+               <a class="dropdown-item preview-item" href="pages/samples/login.html">
+                   <i class="icon-inbox"></i> Logout
+               </a>
+             </div>
+           </li>
+           
+         </ul>
+         <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
+           <span class="icon-menu"></span>
+         </button>
+       </div>
+     </nav>
+     <!-- partial -->
+     <div class="container-fluid page-body-wrapper">
        
-          <li class="nav-item">
-            <a class="nav-link" href="meus_seguros.html">
-              <i class="icon-pie-graph menu-icon"></i>
-              <span class="menu-title">A minha Carteira</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link" href="#popup4">
-              <i class="icon-paper menu-icon"></i>
-              <span class="menu-title">Documentação da Apólice</span>
-            </a>
-          </li>
-
-        
-
-          <li class="nav-item">
-            <a class="nav-link" href="#popup5">
-              <i class="icon-clipboard menu-icon"></i>
-              <span class="menu-title">Documentação Financeira</span>
-            </a>
-          </li>
-     
-          <li class="nav-item">
-            <a class="nav-link" href="#popup7">
-              <i class="icon-paper menu-icon"></i>
-              <span class="menu-title">Documentação Generica</span>
-            </a>
-          </li>
+       <!-- partial:partials/_sidebar.html -->
+       <nav class="sidebar sidebar-offcanvas" id="sidebar">
+         <div class="user-profile">
+           <div class="user-image">
+             <img src="images/faces/face28.png">
+           </div>
+           <div class="user-name">
+             <a href="Perfil.html"style="color: white;">Osvaldo Spencer</a>  
+           </div>
+           <div class="user-designation">
+             <a href="index.html"><p style="color: white;">Bem Vindo</p></a>  
+           </div>
+         </div>
+         <ul class="nav">
+ 
+           
+           <li class="nav-item">
+             <a class="nav-link" href="index.html">
+               <i class="icon-box menu-icon"></i>
+               <span class="menu-title">Inicio</span>
+             </a>
+           </li> 
+             <!--
+           <li class="nav-item"style="">
+             <a class="nav-link" href="meus_seguros.html">
+               <i class="icon-pie-graph menu-icon"style=""></i>
+               <span class="menu-title"style="">A minha Carteira</span>
+             </a>
+           </li>
+                  -->
+ 
+           <li class="nav-item"style="">
+             <a class="nav-link" href="#popup4">
+               <i class="icon-paper menu-icon"style=""></i>
+               <span class="menu-title"style="">Documentação da Apólice</span>
+             </a>
+           </li>
+ 
+           <!-- TIPOS DE RC FIM 
           
-
-          <li class="nav-item">
-            <a class="nav-link" href="#popup1">
-              <i class="icon-box menu-icon"></i>
-              <span class="menu-title">Simulações</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link" href="#popup1">
-              <i class="icon-box menu-icon"></i>
-              <span class="menu-title">Concursos</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link" href="participaçáo.html">
-              <i class="fa fa-car menu-icon"></i>
-              <span class="menu-title">Participar Sinistro Auto</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link" href="participaçáo.html">
-              <i class="fa fa-male menu-icon"></i>
-              <span class="menu-title">Participar Sinistro .A.T</span>
-            </a>
-          </li>
-          
-          <li class="nav-item">
-            <a class="nav-link" href="participaçáo.html">
-              <i class="fa fa-home menu-icon"></i>
-              <span class="menu-title">Participar Sinistro .M.R.H</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link" href="#popup8">
-              <i class="fa fa-phone menu-icon"></i>
-              <span class="menu-title">Contactos</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link" href="pages/icons/feather-icons.html">
-              <i class="fa fa-envelope-o menu-icon"></i>
-              <span class="menu-title">Caixa de Mensaguens</span>
-            </a>
-          </li>
-
-          
-
-       
+ 
+           <li class="nav-item"style="">
+             <a class="nav-link" href="#popup5">
+               <i class="icon-clipboard menu-icon"style=""></i>
+               <span class="menu-title"style="">Documentação Financeira</span>
+             </a>
+           </li>-->
       
-        </ul>
-      </nav>
+           <li class="nav-item"style="">
+             <a class="nav-link" href="#popup7">
+               <i class="icon-paper menu-icon"></i>
+               <span class="menu-title">Documentação Generica</span>
+             </a>
+           </li>
+           
+ 
+           <li class="nav-item">
+             <a class="nav-link" href="#popup1">
+               <i class="icon-box menu-icon"></i>
+               <span class="menu-title">Simulações</span>
+             </a>
+           </li>
+ 
+           <li class="nav-item"style="">
+             <a class="nav-link" href="#popup1">
+               <i class="icon-box menu-icon"style=""></i>
+               <span class="menu-title"style="">Concursos</span>
+             </a>
+           </li>
+ 
+           <li class="nav-item"style="">
+             <a class="nav-link" href="participaçáo.html">
+               <i class="fa fa-car menu-icon"style=""></i>
+               <span class="menu-title"style="">Participar Sinistro Auto</span>
+             </a>
+           </li>
+ 
+           <li class="nav-item"style="">
+             <a class="nav-link" href="participaçáo.html">
+               <i class="fa fa-male menu-icon"style=""></i>
+               <span class="menu-title"style="">Participar Sinistro .A.T</span>
+             </a>
+           </li>
+           
+           <li class="nav-item"style="">
+             <a class="nav-link" href="participaçáo.html">
+               <i class="fa fa-home menu-icon"style=""></i>
+               <span class="menu-title"style="">Participar Sinistro .M.R.H</span>
+             </a>
+           </li>
+ 
+           <li class="nav-item">
+             <a class="nav-link" href="#popup8">
+               <i class="fa fa-phone menu-icon"></i>
+               <span class="menu-title">Contactos</span>
+             </a>
+           </li>
+ 
+           <li class="nav-item"style="">
+             <a class="nav-link" href="pages/icons/feather-icons.html">
+               <i class="fa fa-envelope-o menu-icon"style=""></i>
+               <span class="menu-title"style="">Caixa de Mensaguens</span>
+             </a>
+           </li>
+ 
+           
+ 
+        
+       
+         </ul>
+       </nav>
+ 
       <!-- partial -->
       <div class="main-panel">
         <div class="content-wrapper">
