@@ -288,6 +288,7 @@
         
 
         <!-- DOCUMENTAÇÁO DE APÓLICE  -->
+         <!-- DOCUMENTAÇÁO DE APÓLICE  -->
         <div id="popup4" class="overlay">
           <div class="popup">
             <h4>APÓLICE</h4>
@@ -314,180 +315,160 @@
               <div id="responseData" class="response-container"></div>
           
               <script>
-                  
                   const apiUrl = "https://prod-140.westeurope.logic.azure.com:443/workflows/74734cce81d84cd6ae60286398788687/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Vcpb71QWuF6Ln8R469v_KoX3U97UeqehBdqq-O6runY";
                   const downloadApiUrl = "https://prod-202.westeurope.logic.azure.com/workflows/6f3a396d2faa48c5ae47c91176356950/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=_-14N-R4v9VJMRahRM4hW5KPCIhxEwXGuWjlEKZEER8";
                   const reciboApiUrl = "https://prod-20.westeurope.logic.azure.com/workflows/6dfe7adab38c46a7bf5f843c8b0026a1/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=0ZcBlCoIow3P9-qxBAf8AJid5H07lXBjkuQIJrJvLm8";
-
-                  // Formata um número para o formato "200.000,00"
-                  function formatarValor(valor) {
-                      return parseFloat(valor).toLocaleString("pt-PT", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+              
+              // Função para buscar os dados da API
+              async function fetchData(numero) {
+                  try {
+                      console.log("Enviando requisição com contact:", numero);
+                      const requestBody = JSON.stringify({ contact: numero });
+              
+                      const response = await fetch(apiUrl, {
+                          method: "POST",
+                          headers: {
+                              "Content-Type": "application/json",
+                              "Accept": "application/json"
+                          },
+                          body: requestBody
+                      });
+              
+                      if (!response.ok) {
+                          throw new Error(`Erro HTTP: ${response.status}`);
+                      }
+              
+                      return await response.json();
+                  } catch (error) {
+                      console.error("Erro na requisição:", error);
+                      throw error;
                   }
-
-                  // Função para traduzir o status do contrato
-                  function traduzirStatus(status) {
-                      switch (status) {
-                          case "C":
-                              return "Ativa";
-                          case "D":
-                              return "Anulada";
-                          case "T":
-                              return "Caducada";
-                          default:
-                              return "Não disponível";
+              }
+              
+              // Função para calcular datas e tempo restante
+              function calcularDatas(apolice) {
+                  if (!apolice.invoices || apolice.invoices.length === 0) {
+                      return { dataAdesao: "Não disponível", dataExpiracao: "Não disponível", diasRestantes: "Não disponível" };
+                  }
+              
+                  const hoje = new Date();
+                  let dataAdesao, dataExpiracao, diasRestantes;
+              
+                  const primeiroInvoice = apolice.invoices[0];
+                  const segundoInvoice = apolice.invoices.length > 1 ? apolice.invoices[1] : null;
+              
+                  if (primeiroInvoice.status === 5) {
+                      dataAdesao = primeiroInvoice.from;
+                      dataExpiracao = primeiroInvoice.to;
+                  } else if (segundoInvoice) {
+                      const dataExpiracaoSegundo = new Date(segundoInvoice.to);
+                      if (dataExpiracaoSegundo > hoje) {
+                          dataAdesao = segundoInvoice.from;
+                          dataExpiracao = segundoInvoice.to;
                       }
                   }
-
-                  // Função para baixar a documentação da apólice
-                  async function baixarDocumentacao(contract) {
-                      try {
-                          const requestBody = JSON.stringify({ contract });
-                          const response = await fetch(downloadApiUrl, {
-                              method: "POST",
-                              headers: { 
-                                  "Content-Type": "application/json",
-                                  "Accept": "application/json"
-                              },
-                              body: requestBody
-                          });
-
-                          if (!response.ok) {
-                              throw new Error(`Erro ao baixar documentação: ${response.statusText}`);
-                          }
-
-                          // Criar um link para download do arquivo
-                          const blob = await response.blob();
-                          const url = window.URL.createObjectURL(blob);
-                          const a = document.createElement("a");
-                          a.href = url;
-                          a.download = `documentacao_${contract}.pdf`;
-                          document.body.appendChild(a);
-                          a.click();
-                          document.body.removeChild(a);
-                      } catch (error) {
-                          alert("Erro ao baixar a documentação: " + error.message);
-                      }
+              
+                  if (!dataAdesao || !dataExpiracao) {
+                      return { dataAdesao: "Não disponível", dataExpiracao: "Apólice expirada", diasRestantes: "Apólice expirada" };
                   }
-
-                  // Função para baixar o recibo da apólice
-                  async function baixarRecibo(invoice) {
-                      try {
-                          const requestBody = JSON.stringify({ invoice });
-                          const response = await fetch(reciboApiUrl, {
-                              method: "POST",
-                              headers: { 
-                                  "Content-Type": "application/json",
-                                  "Accept": "application/json"
-                              },
-                              body: requestBody
-                          });
-
-                          if (!response.ok) {
-                              throw new Error(`Erro ao baixar recibo: ${response.statusText}`);
-                          }
-
-                          // Criar um link para download do arquivo
-                          const blob = await response.blob();
-                          const url = window.URL.createObjectURL(blob);
-                          const a = document.createElement("a");
-                          a.href = url;
-                          a.download = `recibo_${invoice}.pdf`;
-                          document.body.appendChild(a);
-                          a.click();
-                          document.body.removeChild(a);
-                      } catch (error) {
-                          alert("Erro ao baixar o recibo: " + error.message);
-                      }
+              
+                  const dataExpiracaoDate = new Date(dataExpiracao);
+                  const diferencaMs = dataExpiracaoDate - hoje;
+                  diasRestantes = Math.ceil(diferencaMs / (1000 * 60 * 60 * 24));
+              
+                  if (diasRestantes < 0) {
+                      diasRestantes = "Apólice expirada";
+                  } else {
+                      diasRestantes += " dias restantes";
                   }
-
-                  async function fetchData(numero) {
-                      try {
-                          const requestBody = JSON.stringify({ contact: numero });
-                          const response = await fetch(apiUrl, {
-                              method: "POST",
-                              headers: { 
-                                  "Content-Type": "application/json",
-                                  "Accept": "application/json"
-                              },
-                              body: requestBody
-                          });
-
-                          if (!response.ok) {
-                              const errorText = await response.text();
-                              throw new Error(`Erro HTTP: ${response.status} - ${errorText}`);
+              
+                  return { dataAdesao, dataExpiracao, diasRestantes };
+              }
+              
+              // Função para traduzir o status
+              function traduzirStatus(status) {
+                  const statusMap = { "C": "Ativa", "D": "Anulada", "T": "Caducada" };
+                  return statusMap[status] || "Desconhecido";
+              }
+              
+              // Função para formatar valores
+              function formatarValor(valor) {
+                  return parseFloat(valor).toLocaleString('pt-PT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+              }
+              
+              // Função para baixar documentação
+              async function baixarArquivo(url, body, filename) {
+                          try {
+                              const response = await fetch(url, {
+                                  method: "POST",
+                                  headers: { "Content-Type": "application/json", "Accept": "application/json" },
+                                  body: JSON.stringify(body)
+                              });
+                      
+                              if (!response.ok) throw new Error(`Erro ao baixar arquivo: ${response.statusText}`);
+                      
+                              const blob = await response.blob();
+                              const link = document.createElement("a");
+                              link.href = window.URL.createObjectURL(blob);
+                              link.download = filename;
+                              document.body.appendChild(link);
+                              link.click();
+                              document.body.removeChild(link);
+                          } catch (error) {
+                              alert("Erro ao baixar arquivo: " + error.message);
                           }
-
-                          return await response.json();
-                      } catch (error) {
-                          console.error("Erro na requisição:", error);
-                          throw error;
                       }
-                  }
-
-                  document.getElementById("postForm").addEventListener("submit", async function(event) {
-                      event.preventDefault();
-                      const numero = document.getElementById("numero").value;
-                      const responseContainer = document.getElementById("responseData");
-                      responseContainer.innerHTML = "<p>Buscando...</p>";
-
-                      try {
-                          const data = await fetchData(numero);
-
-                          if (!Array.isArray(data) || data.length === 0) {
-                              responseContainer.innerHTML = `<p style="color: red;">Nenhuma apólice encontrada</p>`;
-                              return;
-                          }
-
-                          let content = `<p><strong>Total de Apólices:</strong> ${data.length}</p>`;
-                          data.forEach(apolice => {
-                              const valor = apolice.invoices && apolice.invoices.length > 0 ? formatarValor(apolice.invoices[0].value) + " KZ" : "Não disponível";
-                              const invoiceNumber = apolice.invoices && apolice.invoices.length > 0 ? apolice.invoices[0].number : null;
-                              const dataAdesao = apolice.invoices && apolice.invoices.length > 0 ? apolice.invoices[0].from : "Não disponível";
-                              const dataExpiracao = apolice.invoices && apolice.invoices.length > 0 ? apolice.invoices[0].to : "Não disponível";
-
-                              // Calcula a diferença de dias até a expiração
-                              let diasRestantes = "Não disponível";
-                              if (dataExpiracao !== "Não disponível") {
-                                  const hoje = new Date();
-                                  const dataExpiracaoDate = new Date(dataExpiracao);
-                                  const diferencaMs = dataExpiracaoDate - hoje;
-                                  diasRestantes = Math.ceil(diferencaMs / (1000 * 60 * 60 * 24));
-
-                                  if (diasRestantes < 0) {
-                                      diasRestantes = "Apólice vencida";
-                                  } else {
-                                      diasRestantes += " dias restantes";
-                                  }
-                              }
-
-                              // Traduzir o status
-                              const statusTraduzido = traduzirStatus(apolice.contractStatus);
-
-                              content += `
-                                  <div style="border-bottom: 1px solid #ddd; padding: 10px 0;">
-                                      <p><strong>Produto:</strong> ${apolice.productName || "Não disponível"}</p>
-                                      <p><strong>Número do Contrato:</strong> ${apolice.contractNumber || "Não disponível"}</p>
-                                      <p><strong>Cliente:</strong> ${apolice.clientName || "Não disponível"}</p>
-                                      <p><strong>Contato:</strong> ${apolice.primaryMobileContact || "Não disponível"}</p>
-                                      <p><strong>Produtor:</strong> ${apolice.producerName || "Não disponível"}</p>
-                                      <p><strong>Registro:</strong> ${apolice.registration || "Não disponível"}</p>
-                                      <p><strong>Valor:</strong> ${valor}</p>
-                                      <p><strong>Status:</strong> ${statusTraduzido}</p>
-                                      <p><strong>Data de Adesão:</strong> ${dataAdesao}</p>
-                                      <p><strong>Data de Expiração:</strong> ${dataExpiracao}</p>
-                                      <p><strong>Tempo Restante:</strong> ${diasRestantes}</p>
-                                      <button onclick="baixarDocumentacao('${apolice.contractNumber}')"class="btn btn-primary">Baixar Documentação</button>
-                                      ${invoiceNumber ? `<button onclick="baixarRecibo('${invoiceNumber}')"class="btn btn-primary">Baixar Recibo</button>` : ""}
+              
+              // Evento de submissão do formulário
+              document.getElementById("postForm").addEventListener("submit", async function(event) {
+                  event.preventDefault();
+                  const numero = document.getElementById("numero").value;
+                  const responseContainer = document.getElementById("responseData");
+                  responseContainer.innerHTML = "<p>Buscando...</p>";
+              
+                  try {
+                      const data = await fetchData(numero);
+              
+                      if (!Array.isArray(data) || data.length === 0) {
+                          responseContainer.innerHTML = `<p style="color: red;">Nenhuma apólice encontrada</p>`;
+                          return;
+                      }
+              
+                      let content = `<p><strong>Total de Apólices:</strong> ${data.length}</p>`;
+                      data.forEach(apolice => {
+                          const { dataAdesao, dataExpiracao, diasRestantes } = calcularDatas(apolice);
+                          const valor = apolice.invoices && apolice.invoices.length > 0 ? formatarValor(apolice.invoices[0].value) + " KZ" : "Não disponível";
+                          const invoiceNumber = apolice.invoices && apolice.invoices.length > 0 ? apolice.invoices[0].number : null;
+              
+                          const statusTraduzido = traduzirStatus(apolice.contractStatus);
+              
+                          content += `
+                              <div style="border-bottom: 1px solid #ddd; padding: 10px 0;">
+                                  <p><strong>Produto:</strong> ${apolice.productName || "Não disponível"}</p>
+                                  <p><strong>Número do Contrato:</strong> ${apolice.contractNumber || "Não disponível"}</p>
+                                  <p><strong>Cliente:</strong> ${apolice.clientName || "Não disponível"}</p>
+                                  <p><strong>Contato:</strong> ${apolice.primaryMobileContact || "Não disponível"}</p>
+                                  <p><strong>Produtor:</strong> ${apolice.producerName || "Não disponível"}</p>
+                                  <p><strong>Registro:</strong> ${apolice.registration || "Não disponível"}</p>
+                                  <p><strong>Valor:</strong> ${valor}</p>
+                                  <p><strong>Estado do Contrato:</strong> ${statusTraduzido}</p>
+                                  <p><strong>Data de Adesão:</strong> ${dataAdesao}</p>
+                                  <p><strong>Data de Expiração:</strong> ${dataExpiracao}</p>
+                                  <p><strong>Tempo Restante:</strong> ${diasRestantes}</p>
+                                 
+                                    ${invoiceNumber ? `<button onclick="baixarArquivo('${reciboApiUrl}', { invoice: '${invoiceNumber}' }, 'recibo_${invoiceNumber}.pdf')" class="btn btn-primary" style="margin:10px;">Baixar Recibo</button>` : ""}
+                                  <button onclick="baixarArquivo('${downloadApiUrl}', { contract: '${apolice.contractNumber}' }, 'documentacao_${apolice.contractNumber}.pdf')" class="btn btn-primary" style="margin:10px;">Baixar Documentação</button>
+                             
                                   </div>
-                              `;
-                          });
-
-                          responseContainer.innerHTML = content;
-                      } catch (error) {
-                          responseContainer.innerHTML = `<p style="color: red;">Erro: ${error.message}</p>`;
-                      }
-                  });
-
+                          `;
+                      });
+              
+                      responseContainer.innerHTML = content;
+                  } catch (error) {
+                      responseContainer.innerHTML = `<p style="color: red;">Erro: ${error.message}</p>`;
+                  }
+              });
+                             
               </script>
 
 
@@ -495,6 +476,8 @@
             </div>
           </div>
         </div>
+
+             <!-- FIM  DOCUMENTAÇÁO DE APÓLICE -->
 
              <!-- FIM  DOCUMENTAÇÁO DE APÓLICE -->
 
