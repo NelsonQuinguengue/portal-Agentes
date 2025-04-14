@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags --> 
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>MY STAS</title>
+  <!-- base:css -->
+  <link rel="stylesheet" href="vendors/mdi/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="vendors/feather/feather.css">
+  <link rel="stylesheet" href="vendors/base/vendor.bundle.base.css">
+  <!-- endinject -->
+  <!-- plugin css for this page -->
+  <link rel="stylesheet" href="vendors/flag-icon-css/css/flag-icon.min.css"/>
+  <link rel="stylesheet" href="vendors/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="vendors/jquery-bar-rating/fontawesome-stars-o.css">
+  <link rel="stylesheet" href="vendors/jquery-bar-rating/fontawesome-stars.css">
+  <!-- End plugin css for this page -->
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+<!-- <a href="https://wa.link/bslkgw" style="position:fixed;width:60px;height:60px;bottom:40px;right:40px;background-color:#25d366;color:#FFF;border-radius:50px;text-align:center;font-size:30px;box-shadow: 1px 1px 2px #888;
+  z-index:1000;" target="_blank">
+<i style="margin-top:16px" class="fa fa-whatsapp"></i>
+</a>-->
+  <!-- inject:css -->
+  <link rel="stylesheet" href="css/style.css">
+  <!-- endinject -->
+  <link rel="shortcut icon" href="images/favicon.ico" />
+
+  <style>
+    .response-container {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+    }
+    .response-container p {
+        margin: 5px 0;
+        font-size: 16px;
+    }
+    .response-container strong {
+        color: #51358C;
+    }
+    .apolice-item {
+            background: #ffffff;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+        }
+        .veiculos-list {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+
+        .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+    }
+    input, textarea, button {
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .preview {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .file-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #f0f0f0;
+      padding: 6px 10px;
+      border-radius: 6px;
+    }
+    .file-icon {
+      font-size: 20px;
+      color: #555;
+    }
+</style>
+</head>
+<body>
+  <div class="container-scroller"> 
+    <!-- partial:partials/_navbar.html -->
+    <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+      <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+        
+        <a class="navbar-brand brand-logo-mini" href="index.html"><img src="images/favicon.ico" alt="logo"/></a>
+      </div>
+      <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
+        <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+          <span class="icon-menu"></span>
+        </button>
+  
+        <ul class="navbar-nav navbar-nav-right">
+            
+          
+          <li class="nav-item dropdown d-flex mr-4 ">
+            <a class="nav-link count-indicator dropdown-toggle d-flex align-items-center justify-content-center" id="notificationDropdown" href="#" data-toggle="dropdown">
+              <i class="icon-cog"></i>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
+              <p class="mb-0 font-weight-normal float-left dropdown-header">Difinições</p>
+              <a class="dropdown-item preview-item"href="Perfil.html">               
+                  <i class="icon-head"></i> Perfil
+              </a>
+              <a class="dropdown-item preview-item" href="pages/samples/login.html">
+                  <i class="icon-inbox"></i> Logout
+              </a>
+            </div>
+          </li>
+          
+        </ul>
+        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
+          <span class="icon-menu"></span>
+        </button>
+      </div>
+    </nav>
+    <!-- partial -->
+    <div class="container-fluid page-body-wrapper">
+      
+      <!-- partial:partials/_sidebar.html -->
+      <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <div class="user-profile">
+          <div class="user-image">
+            <img src="images/faces/face28.png">
+          </div>
+          <div class="user-name">
+            <a href="Perfil.html"style="color: white;">Osvaldo Spencer</a>  
+          </div>
+          <div class="user-designation">
+            <a href="index.html"><p style="color: white;">Bem Vindo</p></a>  
+          </div>
+        </div>
+        <ul class="nav">
+
+          
+          <li class="nav-item">
+            <a class="nav-link" href="index.html">
+              <i class="icon-box menu-icon"></i>
+              <span class="menu-title">Inicio</span>
+            </a>
+          </li> 
+            <!--
+          <li class="nav-item"style="">
+            <a class="nav-link" href="meus_seguros.html">
+              <i class="icon-pie-graph menu-icon"style=""></i>
+              <span class="menu-title"style="">A minha Carteira</span>
+            </a>
+          </li>
+                 -->
+
+          <li class="nav-item"style="">
+            <a class="nav-link" href="#popup4">
+              <i class="icon-paper menu-icon"style=""></i>
+              <span class="menu-title"style="">Documentação da Apólice</span>
+            </a>
+          </li>
+
+          <!-- TIPOS DE RC FIM 
+         
+
+          <li class="nav-item"style="">
+            <a class="nav-link" href="#popup5">
+              <i class="icon-clipboard menu-icon"style=""></i>
+              <span class="menu-title"style="">Documentação Financeira</span>
+            </a>
+          </li>-->
+     
+          <li class="nav-item"style="">
+            <a class="nav-link" href="#popup7">
+              <i class="icon-paper menu-icon"></i>
+              <span class="menu-title">Documentação Generica</span>
+            </a>
+          </li>
+          
+
+          <li class="nav-item">
+            <a class="nav-link" href="#popup1">
+              <i class="icon-box menu-icon"></i>
+              <span class="menu-title">Simulações</span>
+            </a>
+          </li>
+
+          <li class="nav-item"style="">
+            <a class="nav-link" href="#popup1">
+              <i class="icon-box menu-icon"style=""></i>
+              <span class="menu-title"style="">Concursos</span>
+            </a>
+          </li>
+
+          <li class="nav-item"style="">
+            <a class="nav-link" href="participaçáo.html">
+              <i class="fa fa-car menu-icon"style=""></i>
+              <span class="menu-title"style="">Participar Sinistro Auto</span>
+            </a>
+          </li>
+
+          <li class="nav-item"style="">
+            <a class="nav-link" href="participaçáo.html">
+              <i class="fa fa-male menu-icon"style=""></i>
+              <span class="menu-title"style="">Participar Sinistro .A.T</span>
+            </a>
+          </li>
+          
+          <li class="nav-item"style="">
+            <a class="nav-link" href="participaçáo.html">
+              <i class="fa fa-home menu-icon"style=""></i>
+              <span class="menu-title"style="">Participar Sinistro .M.R.H</span>
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="#popup8">
+              <i class="fa fa-phone menu-icon"></i>
+              <span class="menu-title">Contactos</span>
+            </a>
+          </li>
+
+          <li class="nav-item"style="">
+            <a class="nav-link" href="mensaguens.html">
+              <i class="fa fa-envelope-o menu-icon"style=""></i>
+              <span class="menu-title"style="">Caixa de Mensaguens</span>
+            </a>
+          </li>
+
+          
+
+       
+      
+        </ul>
+      </nav>
+
+              
+
+
+      <!-- partial -->
+      <div class="main-panel">
+        <div class="content-wrapper">
+         
+          <div class="container">
+            <h2>Enviar Documentos</h2>
+            <form id="formulario">
+              <label>Mensagem:</label>
+              <textarea id="mensagem" rows="5" placeholder="Digite sua mensagem..."></textarea>
+        
+              <label>Documentos (PDF, JPG, PNG):</label>
+              <input type="file" id="documentos" multiple accept="application/pdf,image/jpeg,image/png">
+        
+              <div class="preview" id="preview"></div>
+        
+              <button type="submit"class="btn btn-primary">Enviar</button>
+            </form>
+            <div id="status"></div>
+          </div>
+        
+          <script>
+            const inputDocs = document.getElementById('documentos');
+            const previewDiv = document.getElementById('preview');
+        
+            inputDocs.addEventListener('change', () => {
+              previewDiv.innerHTML = '';
+              const arquivos = inputDocs.files;
+              for (let i = 0; i < arquivos.length; i++) {
+                const file = arquivos[i];
+                const div = document.createElement('div');
+                div.className = 'file-item';
+                div.innerHTML = `
+                  <span class="file-icon">📄</span>
+                  <span>${file.name}</span>
+                `;
+                previewDiv.appendChild(div);
+              }
+            });
+        
+            document.getElementById('formulario').addEventListener('submit', async function(e) {
+              e.preventDefault();
+              const mensagem = document.getElementById('mensagem').value;
+              const arquivos = document.getElementById('documentos').files;
+              const status = document.getElementById('status');
+        
+              if (!mensagem || arquivos.length === 0) {
+                status.innerText = "Preencha a mensagem e anexe ao menos um documento.";
+                return;
+              }
+        
+              status.innerText = "Enviando...";
+        
+              const formData = new FormData();
+              formData.append('mensagem', mensagem);
+              for (let i = 0; i < arquivos.length; i++) {
+                formData.append('documentos', arquivos[i]);
+              }
+        
+              try {
+                const resposta = await fetch('http://localhost:3001/mensagens', {
+                  method: 'POST',
+                  body: formData
+                });
+        
+                const resultado = await resposta.json();
+                if (resultado.sucesso) {
+                  status.innerText = "Documentos enviados com sucesso!";
+                } else {
+                  status.innerText = "Falha ao enviar: " + resultado.erro;
+                }
+              } catch (err) {
+                status.innerText = "Erro na requisição: " + err.message;
+              }
+            });
+          </script>
+           
+        </div>
+             <!-- content-wrapper ends -->
+      
+          
+        </div>       </div>   </div>
+        <!-- DOCUMENTAÇÁO DE APÓLICE  -->
+        <div id="popup4" class="overlay">
+          <div class="popup">
+            <h4>APÓLICE</h4>
+            <div class="content">
+                <span class="text-muted text-center" > </span>
+            </div>
+            <a class="close" href="#">&times;</a>
+            <div class="content">
+              <form class="pt-3" id="postForm">
+                <div class="form-group">
+                  <label for="">Nª de Telefone</label>
+                  <input type="text" class="form-control form-control-lg"id="numero" name="numero" required>
+                </div>
+                
+                <div class="mt-3">
+                  <button type="submit"class="btn btn-primary" >Buscar Apólices</button>
+                </div>
+                
+              </form>
+
+       <!-- CONSUMINDO API DE CONSULTA DE APOLICES  -->
+              
+              
+              <div id="responseData" class="response-container"></div>
+          
+              <script>
+                  
+                  const apiUrl = "https://prod-140.westeurope.logic.azure.com:443/workflows/74734cce81d84cd6ae60286398788687/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Vcpb71QWuF6Ln8R469v_KoX3U97UeqehBdqq-O6runY";
+                  const downloadApiUrl = "https://prod-202.westeurope.logic.azure.com/workflows/6f3a396d2faa48c5ae47c91176356950/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=_-14N-R4v9VJMRahRM4hW5KPCIhxEwXGuWjlEKZEER8";
+                  const reciboApiUrl = "https://prod-20.westeurope.logic.azure.com/workflows/6dfe7adab38c46a7bf5f843c8b0026a1/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=0ZcBlCoIow3P9-qxBAf8AJid5H07lXBjkuQIJrJvLm8";
+
+                  // Formata um número para o formato "200.000,00"
+                  function formatarValor(valor) {
+                      return parseFloat(valor).toLocaleString("pt-PT", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                  }
+
+                  // Função para traduzir o status do contrato
+                  function traduzirStatus(status) {
+                      switch (status) {
+                          case "C":
+                              return "Ativa";
+                          case "D":
+                              return "Anulada";
+                          case "T":
+                              return "Caducada";
+                          default:
+                              return "Não disponível";
+                      }
+                  }
+
+                  // Função para baixar a documentação da apólice
+                  async function baixarDocumentacao(contract) {
+                      try {
+                          const requestBody = JSON.stringify({ contract });
+                          const response = await fetch(downloadApiUrl, {
+                              method: "POST",
+                              headers: { 
+                                  "Content-Type": "application/json",
+                                  "Accept": "application/json"
+                              },
+                              body: requestBody
+                          });
+
+                          if (!response.ok) {
+                              throw new Error(`Erro ao baixar documentação: ${response.statusText}`);
+                          }
+
+                          // Criar um link para download do arquivo
+                          const blob = await response.blob();
+                          const url = window.URL.createObjectURL(blob);
+                          const a = document.createElement("a");
+                          a.href = url;
+                          a.download = `documentacao_${contract}.pdf`;
+                          document.body.appendChild(a);
+                          a.click();
+                          document.body.removeChild(a);
+                      } catch (error) {
+                          alert("Erro ao baixar a documentação: " + error.message);
+                      }
+                  }
+
+                  // Função para baixar o recibo da apólice
+                  async function baixarRecibo(invoice) {
+                      try {
+                          const requestBody = JSON.stringify({ invoice });
+                          const response = await fetch(reciboApiUrl, {
+                              method: "POST",
+                              headers: { 
+                                  "Content-Type": "application/json",
+                                  "Accept": "application/json"
+                              },
+                              body: requestBody
+                          });
+
+                          if (!response.ok) {
+                              throw new Error(`Erro ao baixar recibo: ${response.statusText}`);
+                          }
+
+                          // Criar um link para download do arquivo
+                          const blob = await response.blob();
+                          const url = window.URL.createObjectURL(blob);
+                          const a = document.createElement("a");
+                          a.href = url;
+                          a.download = `recibo_${invoice}.pdf`;
+                          document.body.appendChild(a);
+                          a.click();
+                          document.body.removeChild(a);
+                      } catch (error) {
+                          alert("Erro ao baixar o recibo: " + error.message);
+                      }
+                  }
+
+                  async function fetchData(numero) {
+                      try {
+                          const requestBody = JSON.stringify({ contact: numero });
+                          const response = await fetch(apiUrl, {
+                              method: "POST",
+                              headers: { 
+                                  "Content-Type": "application/json",
+                                  "Accept": "application/json"
+                              },
+                              body: requestBody
+                          });
+
+                          if (!response.ok) {
+                              const errorText = await response.text();
+                              throw new Error(`Erro HTTP: ${response.status} - ${errorText}`);
+                          }
+
+                          return await response.json();
+                      } catch (error) {
+                          console.error("Erro na requisição:", error);
+                          throw error;
+                      }
+                  }
+
+                  document.getElementById("postForm").addEventListener("submit", async function(event) {
+                      event.preventDefault();
+                      const numero = document.getElementById("numero").value;
+                      const responseContainer = document.getElementById("responseData");
+                      responseContainer.innerHTML = "<p>Buscando...</p>";
+
+                      try {
+                          const data = await fetchData(numero);
+
+                          if (!Array.isArray(data) || data.length === 0) {
+                              responseContainer.innerHTML = `<p style="color: red;">Nenhuma apólice encontrada</p>`;
+                              return;
+                          }
+
+                          let content = `<p><strong>Total de Apólices:</strong> ${data.length}</p>`;
+                          data.forEach(apolice => {
+                              const valor = apolice.invoices && apolice.invoices.length > 0 ? formatarValor(apolice.invoices[0].value) + " KZ" : "Não disponível";
+                              const invoiceNumber = apolice.invoices && apolice.invoices.length > 0 ? apolice.invoices[0].number : null;
+                              const dataAdesao = apolice.invoices && apolice.invoices.length > 0 ? apolice.invoices[0].from : "Não disponível";
+                              const dataExpiracao = apolice.invoices && apolice.invoices.length > 0 ? apolice.invoices[0].to : "Não disponível";
+
+                              // Calcula a diferença de dias até a expiração
+                              let diasRestantes = "Não disponível";
+                              if (dataExpiracao !== "Não disponível") {
+                                  const hoje = new Date();
+                                  const dataExpiracaoDate = new Date(dataExpiracao);
+                                  const diferencaMs = dataExpiracaoDate - hoje;
+                                  diasRestantes = Math.ceil(diferencaMs / (1000 * 60 * 60 * 24));
+
+                                  if (diasRestantes < 0) {
+                                      diasRestantes = "Apólice vencida";
+                                  } else {
+                                      diasRestantes += " dias restantes";
+                                  }
+                              }
+
+                              // Traduzir o status
+                              const statusTraduzido = traduzirStatus(apolice.contractStatus);
+
+                              content += `
+                                  <div style="border-bottom: 1px solid #ddd; padding: 10px 0;">
+                                      <p><strong>Produto:</strong> ${apolice.productName || "Não disponível"}</p>
+                                      <p><strong>Número do Contrato:</strong> ${apolice.contractNumber || "Não disponível"}</p>
+                                      <p><strong>Cliente:</strong> ${apolice.clientName || "Não disponível"}</p>
+                                      <p><strong>Contato:</strong> ${apolice.primaryMobileContact || "Não disponível"}</p>
+                                      <p><strong>Produtor:</strong> ${apolice.producerName || "Não disponível"}</p>
+                                      <p><strong>Registro:</strong> ${apolice.registration || "Não disponível"}</p>
+                                      <p><strong>Valor:</strong> ${valor}</p>
+                                      <p><strong>Status:</strong> ${statusTraduzido}</p>
+                                      <p><strong>Data de Adesão:</strong> ${dataAdesao}</p>
+                                      <p><strong>Data de Expiração:</strong> ${dataExpiracao}</p>
+                                      <p><strong>Tempo Restante:</strong> ${diasRestantes}</p>
+                                      <button onclick="baixarDocumentacao('${apolice.contractNumber}')"class="btn btn-primary">Baixar Documentação</button>
+                                      ${invoiceNumber ? `<button onclick="baixarRecibo('${invoiceNumber}')"class="btn btn-primary">Baixar Recibo</button>` : ""}
+                                  </div>
+                              `;
+                          });
+
+                          responseContainer.innerHTML = content;
+                      } catch (error) {
+                          responseContainer.innerHTML = `<p style="color: red;">Erro: ${error.message}</p>`;
+                      }
+                  });
+
+              </script>
+
+
+
+            </div>
+          </div>
+        </div>
+
+             <!-- FIM  DOCUMENTAÇÁO DE APÓLICE -->
+
+             
+        <!-- DOCUMENTAÇÁO FINACEIRA  -->
+        <div id="popup5" class="overlay">
+          <div class="popup">
+            <h4>APÓLICE</h4>
+            <div class="content">
+                <span class="text-muted text-center" > </span>
+            </div>
+            <a class="close" href="#">&times;</a>
+            <div class="content">
+              <form class="pt-3">
+                <div class="form-group">
+                  <label for="">Nª da Apólice</label>
+                  <input type="text" class="form-control form-control-lg"  placeholder="">
+                  <br>
+                  
+                </div>
+                
+                <div class="mt-3">
+                  <a class="btn btn-primary">CONSULTAR</a>
+                </div>
+                
+              </form>
+              
+            
+            </div>
+          </div>
+        </div>
+
+             <!-- FIM  DOCUMENTAÇÁO DE APÓLICE -->
+
+                
+         <!-- FIM  DOCUMENTAÇÁO DE APÓLICE -->
+         <div id="popup7" class="overlay">
+          <div class="popup">
+            <img src="images/faces/Arte7@2x.png" alt=""style="width:70px;margin: 10px;">
+            <h4 style="color:#e39b03;"class="text-center">PRODUTOS</h4>
+            <div class="content">
+              <br>
+                <h4 class="text-center"style="color:#e39b03;" >Escolha o produto que pretende consultar </h4>
+            </div>
+            <a class="close" href="#">&times;</a>
+            <div class="content">
+              <form class="pt-3">
+                <div class="form-group">
+                  <a href="documentos.html">
+                    <button type="button" class="btn btn-primary btn-rounded btn-icon">
+                      <i class="fa fa-car menu-icon"placeholder="Automovél"></i>
+                    </button>
+                  </a>
+                  
+                  
+                  <button type="button" class="btn btn-primary btn-rounded btn-icon">
+                    <i class="fa fa-plane menu-icon"></i>
+                  </button>
+
+                  <a href="documentacaoGenericaMRH.html">
+                  <button type="button" class="btn btn-primary btn-rounded btn-icon">
+                    <i class="fa fa-home menu-icon"></i>
+                  </button>
+                  </a>
+                                       
+                  
+                </div>
+                
+               
+                
+              </form>
+            </div>
+          </div>
+
+          
+        </div>
+
+            
+    <!-- DOCUMENTAÇÁO FINACEIRA  -->
+           <!-- CONTACTOS TELEFONICOS  -->
+           <div id="popup8" class="overlay">
+            <div class="popup">
+              <h4>CONTACTOS</h4>
+              <div class="content">
+                  <span class="text-muted text-center" > </span>
+              </div>
+              <a class="close" href="#">&times;</a>
+              <div class="content">
+                <form class="pt-3">
+                  <div class="form-group">
+                    <h4>Geral</h4>
+                   <p>Tel: +244 222 724 188</p>
+                   <p style="color: #51358C;">Email: geral@stas.co.ao</p>
+                  <hr>
+                   <h4>Comercial</h4>
+                   <p>Tel: +244 946 123 425</p>
+                   <p style="color: #51358C;">Email: comercial@stas.co.ao</p>
+
+                   <hr>
+                   <h4 >Sinistros</h4>
+                   <p>Tel: +244 946 123 424</p>
+                   <p style="color: #51358C;">Email: sinistros@stas.co.ao</p>
+                    
+                  </div>
+                  
+                 
+                </form>
+              </div>
+            </div>
+          </div>
+  
+               <!-- FIM  DOCUMENTAÇÁO DE APÓLICE -->
+
+             <!-- FIM  DOCUMENTAÇÁO DE APÓLICE -->
+             
+             
+        <!-- DOCUMENTAÇÁO DE GENERICA  -->
+        <div id="popup6" class="overlay">
+          <div class="popup">
+            <h4>APÓLICE</h4>
+            <div class="content">
+                <span class="text-muted text-center" > </span>
+            </div>
+            <a class="close" href="#">&times;</a>
+            <div class="content">
+              <form class="pt-3">
+                <div class="form-group">
+                  <label for="">Nª da Apólice</label>
+                  <input type="text" class="form-control form-control-lg"  placeholder="">
+                </div>
+                
+                <div class="mt-3">
+                  <a class="btn btn-primary" href="documentos.html">CONSULTAR</a>
+                </div>
+                
+              </form>
+            </div>
+          </div>
+        </div>
+
+             <!-- FIM  DOCUMENTAÇÁO DE APÓLICE -->
+      
+        
+                       <!-- POPUP DE SIMULAÇÕES -->
+             <div id="popup1" class="overlay">
+              <div class="popup">
+                <img src="images/faces/Arte7@2x.png" alt=""style="width:70px;margin: 10px;">
+                <h4 style="color:#e39b03;"class="text-center">PRODUTOS</h4>
+                <div class="content">
+                  <br>
+                    <h4 class="text-center"style="color:#e39b03;" >Escolha o produto que pretende Simular </h4>
+                </div>
+                <a class="close" href="#">&times;</a>
+                <div class="content">
+                  <form class="pt-3">
+                    <div class="form-group">
+
+                     
+                      <div class="d-flex justify-content-center">
+                      <a href="#">
+                        <button type="button" class="btn btn-primary btn-rounded ">
+                          <i class="fa fa-car menu-icon"placeholder="Automovél"> Automovél</i>
+                        </button>
+                      </a>
+                    </div><br>
+    
+                    <div class="d-flex justify-content-center">
+                        <a href="formulario_Viaguem.html">
+                        <button type="button" class="btn btn-primary btn-rounded ">
+                          <i class="fa fa-plane menu-icon"> Viagem</i>
+                        </button>
+                      </a>
+                  </div><br>
+    
+                      <div class="d-flex justify-content-center">
+                            <a href="#popupRC">
+                                <button type="button" class="btn btn-primary btn-rounded ">
+                                  <i class="fa fa-users menu-icon"> RC Profissional</i>
+                                </button>
+                            </a>
+    
+                      </div>
+                    </div>
+                    
+                    
+                    
+                  </form>
+                </div>
+              </div>
+    
+              
+            </div>
+  <!-- POPUP DE SIMULAÇÕES FIM -->
+
+           <!-- TIPOS DE RC FIM -->
+        <div id="popupRC" class="overlay">
+          <div class="popup">
+            <img src="images/faces/Arte7@2x.png" alt=""style="width:70px;margin: 10px;">
+            <h4 style="color:#e39b03;"class="text-center">Qual o seguro de Responsabilidade Civil Profissional que deseja simular?</h4>
+            <div class="content">
+              <br>
+                
+            </div>
+            <a class="close" href="#">&times;</a>
+            <div class="content">
+              <form class="pt-3">
+                <div class="form-group">
+                  
+
+                  <div class="d-flex justify-content-sm-between">
+                  <a href="#">
+                    <button type="button" class="btn btn-primary btn-rounded ">
+                      <i class="fa fa-users menu-icon"placeholder="Automovél"> Administrador</i>
+                    </button>
+                  </a>
+                </div>
+                  <br>
+                  
+                  <div class="d-flex justify-content-sm-between">
+                    <a href="formulario_RC_Advogado.html">
+                      <button type="button" class="btn btn-primary btn-rounded ">
+                        <i class="fa fa-users menu-icon"placeholder="Automovél"> Advogados / Solicitador</i>
+                      </button>
+                    </a>
+                  </div>
+                  <br>
+                    <div class="d-flex justify-content-sm-between">
+                    <a href="formulario_RC_Advogado.html">
+                      <button type="button" class="btn btn-primary btn-rounded ">
+                        <i class="fa fa-users menu-icon"placeholder="Automovél"> Mediador / Corretor</i>
+                      </button>
+                    </a>
+                  </div>
+                  <br>
+                  <div class="d-flex justify-content-sm-between">
+                    <a href="#">
+                      <button type="button" class="btn btn-primary btn-rounded ">
+                        <i class="fa fa-users menu-icon"placeholder="Automovél"> Médicos</i>
+                      </button>
+                    </a>
+                  </div>
+                  <br>
+                    <div class="d-flex justify-content-sm-between">
+                    <a href="#">
+                      <button type="button" class="btn btn-primary btn-rounded ">
+                        <i class="fa fa-users menu-icon"placeholder="Automovél"> Enfermeiro</i>
+                      </button>
+                    </a>
+                  </div>
+                  <br>
+                    <div class="d-flex justify-content-sm-between">
+                    <a href="#">
+                      <button type="button" class="btn btn-primary btn-rounded ">
+                        <i class="fa fa-users menu-icon"placeholder="Automovél"> Outras Profissões de Saúde</i>
+                      </button>
+                    </a>
+                  </div>
+                  <br>
+                  <div class="d-flex justify-content-sm-between">
+                    <a href="#">
+                      <button type="button" class="btn btn-primary btn-rounded ">
+                        <i class="fa fa-users menu-icon"placeholder="Automovél"> Laboratórios e A. Clínicas</i>
+                      </button>
+                    </a>
+                  </div>
+
+                  <br>
+                   
+                  <div class="d-flex justify-content-sm-between">
+                    <a href="#">
+                      <button type="button" class="btn btn-primary btn-rounded ">
+                        <i class="fa fa-users menu-icon"placeholder="Automovél">Economista / Auditores</i>
+                      </button>
+                    </a>
+                  </div>
+
+                  <br>
+                 
+                    <div class="d-flex justify-content-sm-between">
+                    <a href="#">
+                      <button type="button" class="btn btn-primary btn-rounded ">
+                        <i class="fa fa-users menu-icon"placeholder="Automovél"> Engenheiro / Arqitecto</i>
+                      </button>
+                    </a>
+                  </div>
+                  <br>
+                  <div class="d-flex justify-content-sm-between">
+                    <a href="#">
+                      <button type="button" class="btn btn-primary btn-rounded ">
+                        <i class="fa fa-users menu-icon"placeholder="Automovél"> Outras Profissões </i>
+                      </button>
+                    </a>
+                  </div>
+
+
+
+                </div>
+                
+                
+                
+              </form>
+            </div>
+          </div>
+
+          
+        </div>
+
+   <!-- TIPOS DE RC FIM-->
+
+ <!-- partial:partials/_footer.html -->
+        <div id="popup2" class="overlay">
+          <div class="popupAuto">
+            <h4>AUTOMOVÉL INDIVIDUAL</h4>
+            
+            <a class="close" href="#">&times;</a>
+            <div class="content">
+              <form class="pt-3">
+                <div class="form-group">
+
+                  <h4 style="text-align: center;">Dados da Viatura</h4>
+                  <label for="">Marca  </label>
+                  <input type="text" class="form-control form-control-lg"  placeholder="">
+                  <label for="">Modelo</label>
+                  <input type="text" class="form-control form-control-lg"  placeholder="">
+                  <label for="">Matricula </label>
+                  <input type="text" class="form-control form-control-lg"  placeholder="">
+                  <label for="">Chassi</label>
+                  <input type="text" class="form-control form-control-lg"  placeholder="">
+                  <hr>
+                  <h4 style="text-align: center;">Dados do Tomador</h4>
+                  </hr>
+                  
+                  <label for="">Nome do tomador</label>
+                  <input type="text" class="form-control form-control-lg"  placeholder="">
+                  <label for="">Nª Telefone</label>
+                  <input type="text" class="form-control form-control-lg"  placeholder="">
+                  <label for="">Nª de Bilhete </label>
+                  <input type="text" class="form-control form-control-lg"  placeholder="">
+                    
+                    
+                  
+                </div>
+                
+                <div class="mt-3">
+                  <a class="btn btn-primary btn-rounded btn-fw" href="#">Submeter a Solicitação</a>
+                </div>
+                
+              </form>
+            </div>
+          </div>
+
+
+
+          
+        </div>
+
+        <!-- partial:partials/_footer.html -->
+        <footer class="footer">
+          <div class="d-sm-flex justify-content-center justify-content-sm-between">
+            <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © STA Seguros 2024</span>
+            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"><a href="https://www.stas.co.ao/" target="_blank">Olhamos pelo seu Futuro</a> STA SEGURO</span>
+          </div>
+          <span class="text-muted d-block text-center text-sm-left d-sm-inline-block mt-2">Distributed By: <a href="https://www.themewagon.com/" target="_blank">STA SEGURO</a></span> 
+        </footer>
+        <!-- partial -->
+      </div>
+      <!-- main-panel ends -->
+    </div>
+    <!-- page-body-wrapper ends -->
+  </div>
+  <!-- container-scroller -->
+  <script>
+    (function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="am9B0VkeXuVOfrPm0FBVl";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
+
+    </script>
+  <!-- base:js -->
+  <script src="vendors/base/vendor.bundle.base.js"></script>
+  <!-- endinject -->
+  <!-- Plugin js for this page-->
+  <!-- End plugin js for this page-->
+  <!-- inject:js -->
+  <script src="js/off-canvas.js"></script>
+  <script src="js/hoverable-collapse.js"></script>
+  <script src="js/template.js"></script>
+  <!-- endinject -->
+  <!-- plugin js for this page -->
+  <script src="vendors/chart.js/Chart.min.js"></script>
+  <script src="vendors/jquery-bar-rating/jquery.barrating.min.js"></script>
+  <!-- End plugin js for this page -->
+  <!-- Custom js for this page-->
+  <script src="js/dashboard.js"></script>
+  <!-- End custom js for this page-->
+
+  <style>
+    .form-control, .select2-container--default .select2-selection--single, .select2-container--default .select2-selection--single .select2-search__field, .typeahead, .tt-query, .tt-hint {
+    border: 1px solid #e4e6f6;
+    font-weight: 400;
+    font-size: 0.875rem;
+    height:0;
+}
+  </style>
+
+<script>
+  var myIndex = 0;
+  carousel();
+  
+  function carousel() {
+    var i;
+    var x = document.getElementsByClassName("mySlides");
+    for (i = 0; i < x.length; i++) {
+      x[i].style.display = "none";  
+    }
+    myIndex++;
+    if (myIndex > x.length) {myIndex = 1}    
+    x[myIndex-1].style.display = "block";  
+    setTimeout(carousel, 2000); // Change image every 2 seconds
+  }
+  </script>
+</body>
+
+</html>
+
