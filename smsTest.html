@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Consultar Apólice</title>
+  <script type="module" src="app.js"></script>
+  <style>
+    input, button {
+      padding: 8px;
+      margin: 6px 0;
+      width: 100%;
+    }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <h2>Consultar Apólice</h2>
+
+  <div>
+    <input type="text" id="numero" placeholder="Digite seu número (ex: 927731371)" />
+    <button id="enviar-codigo">Enviar Código</button>
+    <div id="recaptcha-container"></div>
+  </div>
+
+  <div id="verificacao" class="hidden">
+    <input type="text" id="codigo" placeholder="Digite o código SMS recebido" />
+    <button id="verificar-codigo">Verificar Código</button>
+  </div>
+
+  <div id="responseData"></div>
+</body>
+</html>
