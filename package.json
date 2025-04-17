@@ -1,7 +1,6 @@
 {
-  "name": "Regal_admin",
+  "name": "regal_admin",
   "version": "1.0.0",
-  "description": "",
   "main": "index.html",
   "dependencies": {
     "@mdi/font": "^3.6.95",
@@ -39,10 +38,16 @@
     "run-sequence": "^2.2.1"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "author": "bootstrapdash",
   "url": "http://www.bootstrapdash.com/",
   "copyright": "",
-  "license": ""
+  "license": "ISC",
+  "directories": {
+    "doc": "docs"
+  },
+  "keywords": [],
+  "description": ""
 }

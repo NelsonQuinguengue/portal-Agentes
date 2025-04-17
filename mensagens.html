@@ -98,6 +98,87 @@
       font-size: 20px;
       color: #555;
     }
+    /* Container botão + texto */
+ #chatButtonContainer {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 9999;
+  }
+
+  /* Texto - aparece só no hover */
+  #chatButtonLabel {
+    background-color: white;
+    color: #e39b03;
+    padding: 8px 14px;
+    border-radius: 16px;
+    font-weight: 600;
+    font-family: sans-serif;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    opacity: 0;
+    transform: translateX(10px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+  }
+
+  #chatButtonContainer:hover #chatButtonLabel {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* Botão flutuante com animação de imagem */
+  #customChatbaseButton {
+  width:64px;
+  height:64px;
+  background-color: #51358C;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23ffffff' viewBox='0 0 24 24'%3E%3Cpath d='M12 2C6.48 2 2 5.94 2 10.5c0 2.38 1.41 4.5 3.5 5.87V22l4.4-2.4c.66.13 1.34.2 2.1.2 5.52 0 10-3.94 10-8.5S17.52 2 12 2z'/%3E%3C/svg%3E");
+  background-size: 65%;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+    align-items: center;
+    justify-content: center;
+  animation: floatyMove 2s ease-in-out infinite;
+}
+
+  /* Imagens diferentes para subir e descer */
+  @keyframes floatyMove {
+    0% {
+      transform: translateY(0);
+      background-image: url('images/faces/STAS-SEGUROS.png'); /* imagem base */
+      width:70px;
+      height:70px;
+      transform: translateY(-8px);
+    
+    }
+   
+   
+    
+  }
+
+  /* Esconde o SVG (caso queira só a imagem) */
+  #customChatbaseButton svg {
+    display: none;
+  }
+  /* Estilo do iframe do chat */
+  /* Iframe do chat */
+  #chatbaseFrame {
+    display: none;
+    position: fixed;
+    bottom: 90px;
+    right: 24px;
+    width: 370px;
+    height: 600px;
+    border: none;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    border-radius: 16px;
+    z-index: 9998;
+  }
 </style>
 </head>
 <body>
@@ -153,6 +234,7 @@
             <a href="index.html"><p style="color: white;">Bem Vindo</p></a>  
           </div>
         </div>
+       
         <ul class="nav">
 
           
@@ -162,14 +244,13 @@
               <span class="menu-title">Inicio</span>
             </a>
           </li> 
-            <!--
+        <!-- partial:partials/_sidebar.html
           <li class="nav-item"style="">
             <a class="nav-link" href="meus_seguros.html">
               <i class="icon-pie-graph menu-icon"style=""></i>
               <span class="menu-title"style="">A minha Carteira</span>
             </a>
-          </li>
-                 -->
+          </li> -->
 
           <li class="nav-item"style="">
             <a class="nav-link" href="#popup4">
@@ -204,7 +285,7 @@
           </li>
 
           <li class="nav-item"style="">
-            <a class="nav-link" href="#popup1">
+            <a class="nav-link" href="#">
               <i class="icon-box menu-icon"style=""></i>
               <span class="menu-title"style="">Concursos</span>
             </a>
@@ -238,13 +319,23 @@
             </a>
           </li>
 
-          <li class="nav-item"style="">
-            <a class="nav-link" href="mensaguens.html">
-              <i class="fa fa-envelope-o menu-icon"style=""></i>
-              <span class="menu-title"style="">Caixa de Mensaguens</span>
-            </a>
-          </li>
+      
 
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
+              <i class="fa fa-envelope-o menu-icon"></i>
+              <span class="menu-title">Caixa de Mensaguens</span>
+              <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="auth">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item"> <a class="nav-link" href="mensagens.html"> Compor mensagem </a></li>
+                <li class="nav-item"> <a class="nav-link" href="mensaguensEnviadas.html"> Enviadas </a></li>
+                <li class="nav-item"> <a class="nav-link" href="mensaguensRecebidas.html"> Recebida </a></li>
+                
+              </ul>
+            </div>
+          </li>
           
 
        
@@ -579,8 +670,8 @@
              <!-- FIM  DOCUMENTAÇÁO DE APÓLICE -->
 
                 
-         <!-- FIM  DOCUMENTAÇÁO DE APÓLICE -->
-         <div id="popup7" class="overlay">
+        <!-- FIM  DOCUMENTAÇÁO DE APÓLICE -->
+        <div id="popup7" class="overlay">
           <div class="popup">
             <img src="images/faces/Arte7@2x.png" alt=""style="width:70px;margin: 10px;">
             <h4 style="color:#e39b03;"class="text-center">PRODUTOS</h4>
@@ -593,21 +684,47 @@
               <form class="pt-3">
                 <div class="form-group">
                   <a href="documentos.html">
-                    <button type="button" class="btn btn-primary btn-rounded btn-icon">
+                    <button type="button" class="btn btn-primary btn-rounded btn-icon"
+                    
+                    title="STAS Auto">
                       <i class="fa fa-car menu-icon"placeholder="Automovél"></i>
                     </button>
                   </a>
                   
-                  
-                  <button type="button" class="btn btn-primary btn-rounded btn-icon">
+                  <a href="documentosACPessoais.html">
+                    <button type="button" class="btn btn-primary btn-rounded btn-icon"title="STAS Acidente de Trabalho">
+                      <i class="fa fa-wheelchair menu-icon"></i>
+                    </button>
+                    </a>
+                          
+                  <button type="button" class="btn btn-primary btn-rounded btn-icon"
+                  title="STAS Viagem">
                     <i class="fa fa-plane menu-icon"></i>
                   </button>
 
                   <a href="documentacaoGenericaMRH.html">
-                  <button type="button" class="btn btn-primary btn-rounded btn-icon">
+                  <button type="button" class="btn btn-primary btn-rounded btn-icon"
+                  title="STAS Habitação">
                     <i class="fa fa-home menu-icon"></i>
                   </button>
                   </a>
+
+                  <a href="documentacaoGenericaMRH.html">
+                    <button type="button" class="btn btn-primary btn-rounded btn-icon"
+                    title="STAS Saúde">
+                      <i class="fa fa-heart menu-icon"></i>
+                    </button>
+                    </a>
+
+                    <a href="documentacaoGenericaMRH.html">
+                      <button type="button" class="btn btn-primary btn-rounded btn-icon"
+                      title="STAS Mercadorias Perigosas">
+                        <i class="fa fa-truck menu-icon"></i
+                         >
+                      </button>
+                      </a>
+
+                       
                                        
                   
                 </div>
@@ -620,8 +737,6 @@
 
           
         </div>
-
-            
     <!-- DOCUMENTAÇÁO FINACEIRA  -->
            <!-- CONTACTOS TELEFONICOS  -->
            <div id="popup8" class="overlay">
@@ -852,53 +967,25 @@
         </div>
 
    <!-- TIPOS DE RC FIM-->
-
- <!-- partial:partials/_footer.html -->
-        <div id="popup2" class="overlay">
-          <div class="popupAuto">
-            <h4>AUTOMOVÉL INDIVIDUAL</h4>
-            
-            <a class="close" href="#">&times;</a>
-            <div class="content">
-              <form class="pt-3">
-                <div class="form-group">
-
-                  <h4 style="text-align: center;">Dados da Viatura</h4>
-                  <label for="">Marca  </label>
-                  <input type="text" class="form-control form-control-lg"  placeholder="">
-                  <label for="">Modelo</label>
-                  <input type="text" class="form-control form-control-lg"  placeholder="">
-                  <label for="">Matricula </label>
-                  <input type="text" class="form-control form-control-lg"  placeholder="">
-                  <label for="">Chassi</label>
-                  <input type="text" class="form-control form-control-lg"  placeholder="">
-                  <hr>
-                  <h4 style="text-align: center;">Dados do Tomador</h4>
-                  </hr>
-                  
-                  <label for="">Nome do tomador</label>
-                  <input type="text" class="form-control form-control-lg"  placeholder="">
-                  <label for="">Nª Telefone</label>
-                  <input type="text" class="form-control form-control-lg"  placeholder="">
-                  <label for="">Nª de Bilhete </label>
-                  <input type="text" class="form-control form-control-lg"  placeholder="">
-                    
-                    
-                  
-                </div>
-                
-                <div class="mt-3">
-                  <a class="btn btn-primary btn-rounded btn-fw" href="#">Submeter a Solicitação</a>
-                </div>
-                
-              </form>
-            </div>
-          </div>
-
-
-
-          
+    
+      <!-- IFRAME escondido -->
+      <iframe
+        id="chatbaseFrame"
+        src="https://www.chatbase.co/chatbot-iframe/am9B0VkeXuVOfrPm0FBVl"
+      ></iframe>
+      
+      <!-- Botão + texto -->
+      <div id="chatButtonContainer">
+        <div id="chatButtonLabel">Fale connosco</div>
+        <div id="customChatbaseButton" onclick="toggleChatbaseIframe()">
+          <!-- SVG oculto, mas pode manter se quiser -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 5.94 2 10.5c0 2.38 1.41 4.5 3.5 5.87V22l4.4-2.4c.66.13 1.34.2 2.1.2 5.52 0 10-3.94 10-8.5S17.52 2 12 2z"/>
+          </svg>
         </div>
+      </div>
+      
+     
 
         <!-- partial:partials/_footer.html -->
         <footer class="footer">
@@ -915,10 +1002,7 @@
     <!-- page-body-wrapper ends -->
   </div>
   <!-- container-scroller -->
-  <script>
-    (function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="am9B0VkeXuVOfrPm0FBVl";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
-
-    </script>
+ 
   <!-- base:js -->
   <script src="vendors/base/vendor.bundle.base.js"></script>
   <!-- endinject -->

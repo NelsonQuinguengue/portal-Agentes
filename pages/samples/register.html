@@ -17,6 +17,120 @@
   <link rel="stylesheet" href="../../css/style.css">
   <!-- endinject -->
   <link rel="shortcut icon" href="../../images/favicon.ico" />
+  
+  <style>
+  
+    .response-container p {
+        margin: 5px 0;
+        font-size: 16px;
+    }
+    .response-container strong {
+        color: #51358C;
+    }
+        .response-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+        }
+        .apolice-item {
+            background: #ffffff;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+        }
+        .veiculos-list {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+ /* Container botão + texto */
+ #chatButtonContainer {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 9999;
+  }
+
+  /* Texto - aparece só no hover */
+  #chatButtonLabel {
+    background-color: white;
+    color: #e39b03;
+    padding: 8px 14px;
+    border-radius: 16px;
+    font-weight: 600;
+    font-family: sans-serif;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    opacity: 0;
+    transform: translateX(10px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+  }
+
+  #chatButtonContainer:hover #chatButtonLabel {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* Botão flutuante com animação de imagem */
+  #customChatbaseButton {
+  width:64px;
+  height:64px;
+  background-color: #51358C;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23ffffff' viewBox='0 0 24 24'%3E%3Cpath d='M12 2C6.48 2 2 5.94 2 10.5c0 2.38 1.41 4.5 3.5 5.87V22l4.4-2.4c.66.13 1.34.2 2.1.2 5.52 0 10-3.94 10-8.5S17.52 2 12 2z'/%3E%3C/svg%3E");
+  background-size: 65%;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+    align-items: center;
+    justify-content: center;
+  animation: floatyMove 2s ease-in-out infinite;
+}
+
+  /* Imagens diferentes para subir e descer */
+  @keyframes floatyMove {
+    0% {
+      transform: translateY(0);
+      background-image: url('../../images/faces/STAS-SEGUROS.png'); /* imagem base */
+      width:70px;
+      height:70px;
+      transform: translateY(-8px);
+    
+    }
+   
+   
+    
+  }
+
+  /* Esconde o SVG (caso queira só a imagem) */
+  #customChatbaseButton svg {
+    display: none;
+  }
+  /* Estilo do iframe do chat */
+  /* Iframe do chat */
+  #chatbaseFrame {
+    display: none;
+    position: fixed;
+    bottom: 90px;
+    right: 24px;
+    width: 370px;
+    height: 600px;
+    border: none;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    border-radius: 16px;
+    z-index: 9998;
+  }
+
+
+  
+         
+</style>
 </head>
 
 <body>
@@ -64,6 +178,30 @@
     <!-- page-body-wrapper ends -->
   </div>
   <!-- container-scroller -->
+     <!-- IFRAME escondido -->
+     <iframe
+     id="chatbaseFrame"
+     src="https://www.chatbase.co/chatbot-iframe/am9B0VkeXuVOfrPm0FBVl"
+   ></iframe>
+   
+   <!-- Botão + texto -->
+   <div id="chatButtonContainer">
+     <div id="chatButtonLabel">Fale connosco</div>
+     <div id="customChatbaseButton" onclick="toggleChatbaseIframe()">
+       <!-- SVG oculto, mas pode manter se quiser -->
+       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+         <path d="M12 2C6.48 2 2 5.94 2 10.5c0 2.38 1.41 4.5 3.5 5.87V22l4.4-2.4c.66.13 1.34.2 2.1.2 5.52 0 10-3.94 10-8.5S17.52 2 12 2z"/>
+       </svg>
+     </div>
+   </div>
+   
+   <!-- Script para mostrar/ocultar o chat -->
+   <script>
+     function toggleChatbaseIframe() {
+       const iframe = document.getElementById('chatbaseFrame');
+       iframe.style.display = (iframe.style.display === 'block') ? 'none' : 'block';
+     }
+   </script>
   <!-- base:js -->
   <script src="../../vendors/base/vendor.bundle.base.js"></script>
   <!-- endinject -->

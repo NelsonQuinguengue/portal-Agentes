@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel de Documentos</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #eef2f5;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .mensagem {
+      border-bottom: 1px solid #ccc;
+      padding: 15px 0;
+    }
+    .mensagem strong {
+      color: #333;
+    }
+    .arquivos {
+      margin-top: 10px;
+    }
+    .arquivo {
+      margin: 5px 0;
+    }
+    .arquivo a {
+      text-decoration: none;
+      color: #1a73e8;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Mensagens Recebidas</h2>
+    <div id="mensagens">Carregando...</div>
+  </div>
+
+  <script>
+    async function carregarMensagens() {
+      const container = document.getElementById('mensagens');
+      container.innerHTML = '';
+      try {
+        const resposta = await fetch('http://localhost:3001/mensagens');
+        const mensagens = await resposta.json();
+
+        if (mensagens.length === 0) {
+          container.innerHTML = '<p>Nenhuma mensagem encontrada.</p>';
+          return;
+        }
+
+        mensagens.reverse().forEach((msg, index) => {
+          const div = document.createElement('div');
+          div.className = 'mensagem';
+          div.innerHTML = `
+            <strong>Mensagem ${mensagens.length - index}:</strong>
+            <p>${msg.texto}</p>
+            <p><em>Data: ${new Date(msg.data).toLocaleString()}</em></p>
+            <div class="arquivos">
+              <strong>Arquivos:</strong>
+              ${msg.arquivos.map(arquivo => `<div class="arquivo"><a href="${arquivo}" target="_blank">📄 ${arquivo.split('/').pop()}</a></div>`).join('')}
+            </div>
+          `;
+          container.appendChild(div);
+        });
+      } catch (erro) {
+        container.innerHTML = '<p>Erro ao carregar mensagens.</p>';
+        console.error(erro);
+      }
+    }
+
+    carregarMensagens();
+  </script>
+</body>
+</html>

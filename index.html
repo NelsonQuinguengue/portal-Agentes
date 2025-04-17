@@ -136,6 +136,9 @@
     border-radius: 16px;
     z-index: 9998;
   }
+
+
+  
          
 </style>
 </head>
@@ -287,8 +290,8 @@
             <div class="collapse" id="auth">
               <ul class="nav flex-column sub-menu">
                 <li class="nav-item"> <a class="nav-link" href="mensagens.html"> Compor mensagem </a></li>
-                <li class="nav-item"> <a class="nav-link" href="#"> Enviadas </a></li>
-                <li class="nav-item"> <a class="nav-link" href="#"> Recebida </a></li>
+                <li class="nav-item"> <a class="nav-link" href="mensaguensEnviadas.html"> Enviadas </a></li>
+                <li class="nav-item"> <a class="nav-link" href="mensaguensRecebidas.html"> Recebida </a></li>
                 
               </ul>
             </div>
@@ -363,7 +366,7 @@
                 <div class="card-body">
                   <h4 class="card-title">DOCUMENTAÇÃO GENERICA</h4>
                   <img src="images/IconesSTA/docs.png" alt=""style="width: 60px;text-align: center;">
-                  <a href="#popup6"><button type="button" class="btn btn-primary"> VISUALIZAR</button></a>
+                  <a href="#popup7"><button type="button" class="btn btn-primary"> VISUALIZAR</button></a>
 
                 </div>
               </div>
@@ -440,7 +443,7 @@
                 <div class="card-body">
                   <h4 class="card-title">PARTICIPAÇÃO DE SINISTRO STAS AUTO </h4>
                   <img src="images/IconesSTA/Auto.png" alt=""style="width: 60px;text-align: center;">
-                  <a href="detalhes_Seguros.html"><button type="button" class="btn btn-primary">PARTICIPAR</button></a>
+                  <a href="participaçáo.html"><button type="button" class="btn btn-primary">PARTICIPAR</button></a>
 
                 </div>
               </div>
@@ -452,7 +455,7 @@
                   <h4 class="card-title">PARTICIPAÇÃO DE SINISTRO STAS AT </h4>
                   <img src="images/IconesSTA/AcidentedeTrabalho.png" alt=""style="width: 60px;text-align: center;">
                
-                  <a href="detalhes_Seguros.html"><button type="button" class="btn btn-primary">PARTICIPAR</button></a>
+                  <a href="participaçáo.html"><button type="button" class="btn btn-primary">PARTICIPAR</button></a>
 
 
                 </div>
@@ -465,7 +468,7 @@
                   <h4 class="card-title">PARTICIPAÇÃO DE SINISTRO STAS M.R.H </h4>
                   <img src="images/IconesSTA/STACASA.png" alt=""style="width: 60px;text-align: center;">
                
-                  <a href="detalhes_Seguros.html"><button type="button" class="btn btn-primary">PARTICIPAR</button></a>
+                  <a href="participaçáo.html"><button type="button" class="btn btn-primary">PARTICIPAR</button></a>
 
 
                 </div>
@@ -495,230 +498,230 @@
       
           
         </div>
-        <!-- DOCUMENTAÇÁO DE APÓLICE  -->
-        <div id="popup4" class="overlay">
-          <div class="popup">
-            <h4>APÓLICE</h4>
-            <div class="content">
-                <span class="text-muted text-center" > </span>
-            </div>
-            <a class="close" href="#">&times;</a>
-            <div class="content">
-              <form class="pt-3" id="postForm">
-                <div class="form-group">
-                  <label for="">Nª de Telefone</label>
-                  <input type="text" class="form-control form-control-lg"id="numero" name="numero" required>
-                </div>
+          <!-- DOCUMENTAÇÁO DE APÓLICE  -->
+          <div id="popup4" class="overlay">
+            <div class="popup">
+              <h4>APÓLICE</h4>
+              <div class="content">
+                  <span class="text-muted text-center" > </span>
+              </div>
+              <a class="close" href="#">&times;</a>
+              <div class="content">
+                <form class="pt-3" id="postForm">
+                  <div class="form-group">
+                    <label for="">Insira o Nª de Telefone associado a sua apolíce</label>
+                    <input type="text" class="form-control form-control-lg"id="numero" name="numero" required>
+                  </div>
+                  
+                  <div class="mt-3">
+                    <button type="submit"class="btn btn-primary" >Buscar Apólices</button>
+                  </div>
+                  
+                </form>
+  
+         <!-- CONSUMINDO API DE CONSULTA DE APOLICES  -->
                 
-                <div class="mt-3">
-                  <button type="submit"class="btn btn-primary" >Buscar Apólices</button>
-                </div>
                 
-              </form>
-
-       <!-- CONSUMINDO API DE CONSULTA DE APOLICES  -->
-              
-              
-              <div id="responseData" class="response-container"></div>
+                <div id="responseData" class="response-container"></div>
+            
+              <script>
           
-            <script>
-        
-        const apiUrl = "https://prod-140.westeurope.logic.azure.com:443/workflows/74734cce81d84cd6ae60286398788687/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Vcpb71QWuF6Ln8R469v_KoX3U97UeqehBdqq-O6runY";
-        const downloadApiUrl = "https://prod-202.westeurope.logic.azure.com/workflows/6f3a396d2faa48c5ae47c91176356950/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=_-14N-R4v9VJMRahRM4hW5KPCIhxEwXGuWjlEKZEER8";
-        const reciboApiUrl = "https://prod-20.westeurope.logic.azure.com/workflows/6dfe7adab38c46a7bf5f843c8b0026a1/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=0ZcBlCoIow3P9-qxBAf8AJid5H07lXBjkuQIJrJvLm8";
-
-// Função para buscar os dados da API
-async function fetchData(numero) {
-    try {
-        console.log("Enviando requisição com contact:", numero);
-        const requestBody = JSON.stringify({ contact: numero });
-
-        const response = await fetch(apiUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            },
-            body: requestBody
-        });
-
-        if (!response.ok) {
-            throw new Error(`Erro HTTP: ${response.status}`);
-        }
-
-        return await response.json();
-    } catch (error) {
-        console.error("Erro na requisição:", error);
-        throw error;
-    }
-}
-
-// Função para calcular datas e tempo restante
-function calcularDatas(apolice) {
-    if (!apolice.invoices || apolice.invoices.length === 0) {
-        return { dataAdesao: "Não disponível", dataExpiracao: "Não disponível", diasRestantes: "Não disponível" };
-    }
-
-    const hoje = new Date();
-    let dataAdesao, dataExpiracao, diasRestantes;
-
-    const primeiroInvoice = apolice.invoices[0];
-    const segundoInvoice = apolice.invoices.length > 1 ? apolice.invoices[1] : null;
-
-    if (primeiroInvoice.status === 5) {
-        dataAdesao = primeiroInvoice.from;
-        dataExpiracao = primeiroInvoice.to;
-    } else if (segundoInvoice) {
-        const dataExpiracaoSegundo = new Date(segundoInvoice.to);
-        if (dataExpiracaoSegundo > hoje) {
-            dataAdesao = segundoInvoice.from;
-            dataExpiracao = segundoInvoice.to;
-        }
-    }
-
-    if (!dataAdesao || !dataExpiracao) {
-        return { dataAdesao: "Não disponível", dataExpiracao: "Apólice expirada", diasRestantes: "Apólice expirada" };
-    }
-
-    const dataExpiracaoDate = new Date(dataExpiracao);
-    const diferencaMs = dataExpiracaoDate - hoje;
-    diasRestantes = Math.ceil(diferencaMs / (1000 * 60 * 60 * 24));
-
-    if (diasRestantes < 0) {
-        diasRestantes = "Apólice expirada";
-    } else {
-        diasRestantes += " dias restantes";
-    }
-
-    return { dataAdesao, dataExpiracao, diasRestantes };
-}
-
-// Função para traduzir o status
-function traduzirStatus(status) {
-    const statusMap = { "C": "Ativa", "D": "Anulada", "T": "Caducada" };
-    return statusMap[status] || "Desconhecido";
-}
-
-// Função para formatar valores
-function formatarValor(valor) {
-    return parseFloat(valor).toLocaleString('pt-PT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-
-// Função para baixar documentação
-async function baixarArquivo(url, body, filename) {
-            try {
-                const response = await fetch(url, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json", "Accept": "application/json" },
-                    body: JSON.stringify(body)
-                });
-        
-                if (!response.ok) throw new Error(`Erro ao baixar arquivo: ${response.statusText}`);
-        
-                const blob = await response.blob();
-                const link = document.createElement("a");
-                link.href = window.URL.createObjectURL(blob);
-                link.download = filename;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            } catch (error) {
-                alert("Erro ao baixar arquivo: " + error.message);
-            }
-        }
-
-// Evento de submissão do formulário
-document.getElementById("postForm").addEventListener("submit", async function(event) {
-    event.preventDefault();
-    const numero = document.getElementById("numero").value;
-    const responseContainer = document.getElementById("responseData");
-    responseContainer.innerHTML = "<p>Buscando...</p>";
-
-    try {
-        const data = await fetchData(numero);
-
-        if (!Array.isArray(data) || data.length === 0) {
-            responseContainer.innerHTML = `<p style="color: red;">Nenhuma apólice encontrada</p>`;
-            return;
-        }
-
-        let content = `<p><strong>Total de Apólices:</strong> ${data.length}</p>`;
-        data.forEach(apolice => {
-    const { dataAdesao, dataExpiracao, diasRestantes } = calcularDatas(apolice);
-    const valor = apolice.invoices && apolice.invoices.length > 0 ? formatarValor(apolice.invoices[0].value) + " KZ" : "Não disponível";
-    const invoiceNumber = apolice.invoices && apolice.invoices.length > 0 ? apolice.invoices[0].number : null;
-    const statusTraduzido = traduzirStatus(apolice.contractStatus);
-
-    const isExpirada = diasRestantes === "Apólice expirada";
-    const diasNum = typeof diasRestantes === "string" && diasRestantes.includes("dias") 
-        ? parseInt(diasRestantes) 
-        : isExpirada ? 0 : NaN;
-
-    const emCobranca = isExpirada || (!isNaN(diasNum) && diasNum <= 0);
-
-    const botaoRecibo = `
-    <button 
-        onclick="baixarArquivo('${reciboApiUrl}', { invoice: '${invoiceNumber}' }, 'recibo_${invoiceNumber}.pdf')" 
-        class="btn" 
-        style="margin:5px; ${emCobranca ? 'background-color:#ccc; cursor:not-allowed;' : 'background-color:#007bff; color:white;'}" 
-        ${emCobranca ? "disabled title='Recibo indisponível durante cobrança'" : "title='Baixar Recibo'"} >
-        Baixar Recibo
-    </button>`;
-
-const botaoCobranca = `
-    <button 
-        onclick="baixarArquivo('${reciboApiUrl}', { invoice: '${invoiceNumber}' }, 'cobranca_${invoiceNumber}.pdf')" 
-        class="btn" 
-        style="margin:5px; ${!emCobranca ? 'background-color:#ccc; cursor:not-allowed;' : 'background-color:#ffc107; color:black;'}"
-        ${!emCobranca ? "disabled title='Cobrança só disponível para apólices em atraso ou prestes a expirar'" : "title='Baixar Cobrança'"} >
-        Baixar Cobrança
-    </button>`;
-
-const botaoDoc = `
-    <button 
-        onclick="baixarArquivo('${downloadApiUrl}', { contract: '${apolice.contractNumber}' }, 'documentacao_${apolice.contractNumber}.pdf')" 
-        class="btn" 
-        style="margin:5px; background-color: #28a745; color: white;" 
-        title="Baixar Documentação">
-        Baixar Documentação
-    </button>`;
-
-    content += `
-        <div style="border-bottom: 1px solid #ddd; padding: 10px 0;">
-            <p><strong>Produto:</strong> ${apolice.productName || "Não disponível"}</p>
-            <p><strong>Número do Contrato:</strong> ${apolice.contractNumber || "Não disponível"}</p>
-            <p><strong>Cliente:</strong> ${apolice.clientName || "Não disponível"}</p>
-            <p><strong>Contato:</strong> ${apolice.primaryMobileContact || "Não disponível"}</p>
-            <p><strong>Produtor:</strong> ${apolice.producerName || "Não disponível"}</p>
-            <p><strong>Registro:</strong> ${apolice.registration || "Não disponível"}</p>
-            <p><strong>Valor:</strong> ${valor}</p>
-            <p><strong>Status:</strong> ${statusTraduzido}</p>
-            <p><strong>Data de Adesão:</strong> ${dataAdesao}</p>
-            <p><strong>Data de Expiração:</strong> ${dataExpiracao}</p>
-            <p><strong>Tempo Restante:</strong> ${diasRestantes}</p>
-
-            ${invoiceNumber ? `${botaoRecibo}${botaoCobranca}` : ""}
-            ${botaoDoc}
-        </div>
-    `;
-});
-
- 
-        responseContainer.innerHTML = content;
-    } catch (error) {
-        responseContainer.innerHTML = `<p style="color: red;">Erro: ${error.message}</p>`;
-    }
-});
-
-    </script>
-
-
-
+          const apiUrl = "https://prod-140.westeurope.logic.azure.com:443/workflows/74734cce81d84cd6ae60286398788687/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Vcpb71QWuF6Ln8R469v_KoX3U97UeqehBdqq-O6runY";
+          const downloadApiUrl = "https://prod-202.westeurope.logic.azure.com/workflows/6f3a396d2faa48c5ae47c91176356950/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=_-14N-R4v9VJMRahRM4hW5KPCIhxEwXGuWjlEKZEER8";
+          const reciboApiUrl = "https://prod-20.westeurope.logic.azure.com/workflows/6dfe7adab38c46a7bf5f843c8b0026a1/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=0ZcBlCoIow3P9-qxBAf8AJid5H07lXBjkuQIJrJvLm8";
+  
+  // Função para buscar os dados da API
+  async function fetchData(numero) {
+      try {
+          console.log("Enviando requisição com contact:", numero);
+          const requestBody = JSON.stringify({ contact: numero });
+  
+          const response = await fetch(apiUrl, {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json",
+                  "Accept": "application/json"
+              },
+              body: requestBody
+          });
+  
+          if (!response.ok) {
+              throw new Error(`Erro HTTP: ${response.status}`);
+          }
+  
+          return await response.json();
+      } catch (error) {
+          console.error("Erro na requisição:", error);
+          throw error;
+      }
+  }
+  
+  // Função para calcular datas e tempo restante
+  function calcularDatas(apolice) {
+      if (!apolice.invoices || apolice.invoices.length === 0) {
+          return { dataAdesao: "Não disponível", dataExpiracao: "Não disponível", diasRestantes: "Não disponível" };
+      }
+  
+      const hoje = new Date();
+      let dataAdesao, dataExpiracao, diasRestantes;
+  
+      const primeiroInvoice = apolice.invoices[0];
+      const segundoInvoice = apolice.invoices.length > 1 ? apolice.invoices[1] : null;
+  
+      if (primeiroInvoice.status === 5) {
+          dataAdesao = primeiroInvoice.from;
+          dataExpiracao = primeiroInvoice.to;
+      } else if (segundoInvoice) {
+          const dataExpiracaoSegundo = new Date(segundoInvoice.to);
+          if (dataExpiracaoSegundo > hoje) {
+              dataAdesao = segundoInvoice.from;
+              dataExpiracao = segundoInvoice.to;
+          }
+      }
+  
+      if (!dataAdesao || !dataExpiracao) {
+          return { dataAdesao: "Não disponível", dataExpiracao: "Apólice expirada", diasRestantes: "Apólice expirada" };
+      }
+  
+      const dataExpiracaoDate = new Date(dataExpiracao);
+      const diferencaMs = dataExpiracaoDate - hoje;
+      diasRestantes = Math.ceil(diferencaMs / (1000 * 60 * 60 * 24));
+  
+      if (diasRestantes < 0) {
+          diasRestantes = "Apólice expirada";
+      } else {
+          diasRestantes += " dias restantes";
+      }
+  
+      return { dataAdesao, dataExpiracao, diasRestantes };
+  }
+  
+  // Função para traduzir o status
+  function traduzirStatus(status) {
+      const statusMap = { "C": "Ativa", "D": "Anulada", "T": "Caducada" };
+      return statusMap[status] || "Desconhecido";
+  }
+  
+  // Função para formatar valores
+  function formatarValor(valor) {
+      return parseFloat(valor).toLocaleString('pt-PT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  
+  // Função para baixar documentação
+  async function baixarArquivo(url, body, filename) {
+              try {
+                  const response = await fetch(url, {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+                      body: JSON.stringify(body)
+                  });
+          
+                  if (!response.ok) throw new Error(`Erro ao baixar arquivo: ${response.statusText}`);
+          
+                  const blob = await response.blob();
+                  const link = document.createElement("a");
+                  link.href = window.URL.createObjectURL(blob);
+                  link.download = filename;
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+              } catch (error) {
+                  alert("Erro ao baixar arquivo: " + error.message);
+              }
+          }
+  
+  // Evento de submissão do formulário
+  document.getElementById("postForm").addEventListener("submit", async function(event) {
+      event.preventDefault();
+      const numero = document.getElementById("numero").value;
+      const responseContainer = document.getElementById("responseData");
+      responseContainer.innerHTML = "<p>Buscando...</p>";
+  
+      try {
+          const data = await fetchData(numero);
+  
+          if (!Array.isArray(data) || data.length === 0) {
+              responseContainer.innerHTML = `<p style="color: red;">Nenhuma apólice encontrada</p>`;
+              return;
+          }
+  
+          let content = `<p><strong>Total de Apólices:</strong> ${data.length}</p>`;
+          data.forEach(apolice => {
+      const { dataAdesao, dataExpiracao, diasRestantes } = calcularDatas(apolice);
+      const valor = apolice.invoices && apolice.invoices.length > 0 ? formatarValor(apolice.invoices[0].value) + " KZ" : "Não disponível";
+      const invoiceNumber = apolice.invoices && apolice.invoices.length > 0 ? apolice.invoices[0].number : null;
+      const statusTraduzido = traduzirStatus(apolice.contractStatus);
+  
+      const isExpirada = diasRestantes === "Apólice expirada";
+      const diasNum = typeof diasRestantes === "string" && diasRestantes.includes("dias") 
+          ? parseInt(diasRestantes) 
+          : isExpirada ? 0 : NaN;
+  
+      const emCobranca = isExpirada || (!isNaN(diasNum) && diasNum <= 0);
+  
+      const botaoRecibo = `
+      <button 
+          onclick="baixarArquivo('${reciboApiUrl}', { invoice: '${invoiceNumber}' }, 'recibo_${invoiceNumber}.pdf')" 
+          class="btn" 
+          style="margin:5px; ${emCobranca ? 'background-color:#ccc; cursor:not-allowed;' : 'background-color:#007bff; color:white;'}" 
+          ${emCobranca ? "disabled title='Recibo indisponível durante cobrança'" : "title='Baixar Recibo'"} >
+          Baixar Recibo
+      </button>`;
+  
+  const botaoCobranca = `
+      <button 
+          onclick="baixarArquivo('${reciboApiUrl}', { invoice: '${invoiceNumber}' }, 'cobranca_${invoiceNumber}.pdf')" 
+          class="btn" 
+          style="margin:5px; ${!emCobranca ? 'background-color:#ccc; cursor:not-allowed;' : 'background-color:#ffc107; color:black;'}"
+          ${!emCobranca ? "disabled title='Cobrança só disponível para apólices em atraso ou prestes a expirar'" : "title='Baixar Cobrança'"} >
+          Baixar Cobrança
+      </button>`;
+  
+  const botaoDoc = `
+      <button 
+          onclick="baixarArquivo('${downloadApiUrl}', { contract: '${apolice.contractNumber}' }, 'documentacao_${apolice.contractNumber}.pdf')" 
+          class="btn" 
+          style="margin:5px; background-color: #28a745; color: white;" 
+          title="Baixar Documentação">
+          Baixar Documentação
+      </button>`;
+  
+      content += `
+          <div style="border-bottom: 1px solid #ddd; padding: 10px 0;">
+              <p><strong>Produto:</strong> ${apolice.productName || "Não disponível"}</p>
+              <p><strong>Número do Contrato:</strong> ${apolice.contractNumber || "Não disponível"}</p>
+              <p><strong>Cliente:</strong> ${apolice.clientName || "Não disponível"}</p>
+              <p><strong>Contato:</strong> ${apolice.primaryMobileContact || "Não disponível"}</p>
+              <p><strong>Produtor:</strong> ${apolice.producerName || "Não disponível"}</p>
+              <p><strong>Registro:</strong> ${apolice.registration || "Não disponível"}</p>
+              <p><strong>Valor:</strong> ${valor}</p>
+              <p><strong>Status:</strong> ${statusTraduzido}</p>
+              <p><strong>Data de Adesão:</strong> ${dataAdesao}</p>
+              <p><strong>Data de Expiração:</strong> ${dataExpiracao}</p>
+              <p><strong>Tempo Restante:</strong> ${diasRestantes}</p>
+  
+              ${invoiceNumber ? `${botaoRecibo}${botaoCobranca}` : ""}
+              ${botaoDoc}
+          </div>
+      `;
+  });
+  
+   
+          responseContainer.innerHTML = content;
+      } catch (error) {
+          responseContainer.innerHTML = `<p style="color: red;">Erro: ${error.message}</p>`;
+      }
+  });
+  
+      </script>
+  
+  
+  
+              </div>
             </div>
           </div>
-        </div>
-
-             <!-- FIM  DOCUMENTAÇÁO DE APÓLICE -->
+  
+               <!-- FIM  DOCUMENTAÇÁO DE APÓLICE -->
 
              
         <!-- DOCUMENTAÇÁO FINACEIRA  -->
@@ -763,21 +766,47 @@ const botaoDoc = `
                   <form class="pt-3">
                     <div class="form-group">
                       <a href="documentos.html">
-                        <button type="button" class="btn btn-primary btn-rounded btn-icon">
+                        <button type="button" class="btn btn-primary btn-rounded btn-icon"
+                        
+                        title="STAS Auto">
                           <i class="fa fa-car menu-icon"placeholder="Automovél"></i>
                         </button>
                       </a>
                       
-                      
-                      <button type="button" class="btn btn-primary btn-rounded btn-icon">
+                      <a href="documentosACPessoais.html">
+                        <button type="button" class="btn btn-primary btn-rounded btn-icon"title="STAS Acidente de Trabalho">
+                          <i class="fa fa-wheelchair menu-icon"></i>
+                        </button>
+                        </a>
+                              
+                      <button type="button" class="btn btn-primary btn-rounded btn-icon"
+                      title="STAS Viagem">
                         <i class="fa fa-plane menu-icon"></i>
                       </button>
     
                       <a href="documentacaoGenericaMRH.html">
-                      <button type="button" class="btn btn-primary btn-rounded btn-icon">
+                      <button type="button" class="btn btn-primary btn-rounded btn-icon"
+                      title="STAS Habitação">
                         <i class="fa fa-home menu-icon"></i>
                       </button>
                       </a>
+
+                      <a href="documentacaoGenericaMRH.html">
+                        <button type="button" class="btn btn-primary btn-rounded btn-icon"
+                        title="STAS Saúde">
+                          <i class="fa fa-heart menu-icon"></i>
+                        </button>
+                        </a>
+
+                        <a href="documentacaoGenericaMRH.html">
+                          <button type="button" class="btn btn-primary btn-rounded btn-icon"
+                          title="STAS Mercadorias Perigosas">
+                            <i class="fa fa-truck menu-icon"></i
+                             >
+                          </button>
+                          </a>
+
+                           
                                            
                       
                     </div>
@@ -1025,52 +1054,6 @@ const botaoDoc = `
 
    <!-- TIPOS DE RC FIM-->
 
- <!-- partial:partials/_footer.html -->
-        <div id="popup2" class="overlay">
-          <div class="popupAuto">
-            <h4>AUTOMOVÉL INDIVIDUAL</h4>
-            
-            <a class="close" href="#">&times;</a>
-            <div class="content">
-              <form class="pt-3">
-                <div class="form-group">
-
-                  <h4 style="text-align: center;">Dados da Viatura</h4>
-                  <label for="">Marca  </label>
-                  <input type="text" class="form-control form-control-lg"  placeholder="">
-                  <label for="">Modelo</label>
-                  <input type="text" class="form-control form-control-lg"  placeholder="">
-                  <label for="">Matricula </label>
-                  <input type="text" class="form-control form-control-lg"  placeholder="">
-                  <label for="">Chassi</label>
-                  <input type="text" class="form-control form-control-lg"  placeholder="">
-                  <hr>
-                  <h4 style="text-align: center;">Dados do Tomador</h4>
-                  </hr>
-                  
-                  <label for="">Nome do tomador</label>
-                  <input type="text" class="form-control form-control-lg"  placeholder="">
-                  <label for="">Nª Telefone</label>
-                  <input type="text" class="form-control form-control-lg"  placeholder="">
-                  <label for="">Nª de Bilhete </label>
-                  <input type="text" class="form-control form-control-lg"  placeholder="">
-                    
-                    
-                  
-                </div>
-                
-                <div class="mt-3">
-                  <a class="btn btn-primary btn-rounded btn-fw" href="#">Submeter a Solicitação</a>
-                </div>
-                
-              </form>
-            </div>
-          </div>
-
-
-
-          
-        </div>
 
          
       <!-- IFRAME escondido -->
