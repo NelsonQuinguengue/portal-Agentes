@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <title>Simulador de Seguro de Viagem</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            padding: 20px;
+        }
+        .container {
+            max-width: 700px;
+            margin: auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+        }
+        label {
+            margin-top: 10px;
+            display: block;
+            font-weight: bold;
+        }
+        select, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+        }
+        .resultado {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e9f5ff;
+            border-radius: 5px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Simulador de Seguro de Viagem</h2>
+
+    <label>Tipo de Seguro</label>
+    <select id="tipo" onchange="atualizarOpcoes()">
+        <option value="normal">Viagem Normal</option>
+        <option value="estudante">Estudante</option>
+    </select>
+
+    <label>Âmbito Geográfico</label>
+    <select id="ambito"></select>
+
+    <label>Plano</label>
+    <select id="plano"></select>
+
+    <label>Período de Cobertura</label>
+    <select id="periodo"></select>
+
+    <button onclick="calcular()">Calcular Prémio</button>
+
+    <div class="resultado" id="resultado">
+        Selecione as opções para ver o prémio.
+    </div>
+</div>
+
+<script>
+const tabelaNormal = {
+    "EUROPA": {
+        "EUROPA": {
+            "Até 8 dias": 11047.00,
+            "Até 10 dias": 13132.80,
+            "Até 15 dias": 16782.95,
+            "Até 21 dias": 23561.79,
+            "Até 32 dias": 28042.39,
+            "Até 60 dias": 48938.99,
+            "Até 92 dias": 64717.67,
+            "Até 120 dias": 82234.50,
+            "Até 180 dias": 89727.92,
+            "Múltiplas viagens anuais": 134418.07
+        },
+        "EUROPA BÁSICO": {
+            "Até 8 dias": 8864.64,
+            "Até 10 dias": 10506.24,
+            "Até 15 dias": 13441.81,
+            "Até 21 dias": 21128.36,
+            "Até 32 dias": 25628.27,
+            "Até 60 dias": 43898.32,
+            "Até 92 dias": 58807.91,
+            "Até 120 dias": 65818.50,
+            "Até 180 dias": 71824.83,
+            "Múltiplas viagens anuais": 107534.46
+        }
+    },
+    "BRASIL": {
+        "BRASIL": {
+            "Até 8 dias": 12167.15,
+            "Até 10 dias": 14426.77,
+            "Até 15 dias": 18463.17,
+            "Até 21 dias": 25917.97,
+            "Até 32 dias": 30842.77,
+            "Até 60 dias": 53825.17,
+            "Até 92 dias": 71187.50,
+            "Até 120 dias": 90461.82,
+            "Até 180 dias": 98689.13,
+            "Múltiplas viagens anuais": 147859.88
+        }
+    },
+    "MUNDIAL": {
+        "TRAVELLER": {
+            "Até 8 dias": 20587.60,
+            "Até 10 dias": 21997.44,
+            "Até 15 dias": 23407.28,
+            "Até 21 dias": 26478.04,
+            "Até 32 dias": 41329.69,
+            "Até 60 dias": 67460.10,
+            "Até 92 dias": 81790.31,
+            "Até 120 dias": 113366.96,
+            "Até 180 dias": 144943.62,
+            "Múltiplas viagens anuais": 266402.71
+        },
+        "PEARL": {
+            "Até 8 dias": 16454.63,
+            "Até 10 dias": 17594.09,
+            "Até 15 dias": 18714.24,
+            "Até 21 dias": 21186.30,
+            "Até 32 dias": 33063.76,
+            "Até 60 dias": 53960.36,
+            "Até 92 dias": 65412.93,
+            "Até 120 dias": 90674.26,
+            "Até 180 dias": 115935.59,
+            "Múltiplas viagens anuais": 213079.68
+        }
+    },
+    "AFRICA": {
+        "AFRICA": {
+            "Até 8 dias": 8748.76,
+            "Até 10 dias": 12611.35,
+            "Até 15 dias": 15237.91,
+            "Até 21 dias": 17072.64,
+            "Até 32 dias": 24392.24,
+            "Até 60 dias": 40653.74,
+            "Até 92 dias": 48378.92,
+            "Até 120 dias": 57745.69,
+            "Até 180 dias": 67093.16,
+            "Múltiplas viagens anuais": 119952.68
+        }
+    }
+};
+
+const tabelaEstudante = {
+    "EUROPA": {
+        "6 meses": 186698.20,
+        "1 ano": 254003.80
+    },
+    "MUNDIAL": {
+        "6 meses": 214586.09,
+        "1 ano": 291973.04
+    }
+};
+
+function atualizarOpcoes() {
+    const tipo = document.getElementById("tipo").value;
+    const ambito = document.getElementById("ambito");
+    const plano = document.getElementById("plano");
+    const periodo = document.getElementById("periodo");
+
+    ambito.innerHTML = plano.innerHTML = periodo.innerHTML = "";
+
+    if (tipo === "normal") {
+        Object.keys(tabelaNormal).forEach(a => ambito.add(new Option(a, a)));
+    } else {
+        Object.keys(tabelaEstudante).forEach(a => ambito.add(new Option(a, a)));
+    }
+    atualizarPlanos();
+}
+
+function atualizarPlanos() {
+    const tipo = document.getElementById("tipo").value;
+    const ambito = document.getElementById("ambito").value;
+    const plano = document.getElementById("plano");
+    const periodo = document.getElementById("periodo");
+
+    plano.innerHTML = periodo.innerHTML = "";
+
+    if (tipo === "normal") {
+        Object.keys(tabelaNormal[ambito]).forEach(p => plano.add(new Option(p, p)));
+        atualizarPeriodos();
+    } else {
+        plano.add(new Option("ESTUDANTE", "ESTUDANTE"));
+        Object.keys(tabelaEstudante[ambito]).forEach(per => periodo.add(new Option(per, per)));
+    }
+}
+
+function atualizarPeriodos() {
+    const ambito = document.getElementById("ambito").value;
+    const plano = document.getElementById("plano").value;
+    const periodo = document.getElementById("periodo");
+
+    periodo.innerHTML = "";
+    Object.keys(tabelaNormal[ambito][plano]).forEach(p => periodo.add(new Option(p, p)));
+}
+
+function calcular() {
+    const tipo = document.getElementById("tipo").value;
+    const ambito = document.getElementById("ambito").value;
+    const plano = document.getElementById("plano").value;
+    const periodo = document.getElementById("periodo").value;
+
+    let valor;
+    if (tipo === "normal") {
+        valor = tabelaNormal[ambito][plano][periodo];
+    } else {
+        valor = tabelaEstudante[ambito][periodo];
+    }
+
+    document.getElementById("resultado").innerHTML =
+        `<strong>Prémio Total:</strong> ${valor.toLocaleString("pt-PT")} AOA`;
+}
+
+document.getElementById("ambito").addEventListener("change", atualizarPlanos);
+document.getElementById("plano").addEventListener("change", atualizarPeriodos);
+
+atualizarOpcoes();
+</script>
+
+</body>
+</html>
