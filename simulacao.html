@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="pt-ao">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STA Seguros - Simulador Vida Risco</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        [x-cloak] { display: none !important; }
+        .text-sta-purple { color: #51358C; }
+        .bg-sta-purple { background-color: #51358C; }
+        .border-sta-gold { border-color: #e39b03; }
+        .text-sta-gold { color: #e39b03; }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans text-slate-800" x-data="simuladorSTA()">
+
+<div class="max-w-6xl mx-auto py-8 px-4">
+    <div class="bg-white rounded-t-2xl p-6 border-b-4 border-sta-gold flex justify-between items-center shadow-sm">
+        <div>
+            <h1 class="text-2xl font-bold text-sta-purple">Simulador Vida Risco PU</h1>
+            <p class="text-sm text-gray-500">Data da Simulação: <span x-text="dataHoje"></span></p>
+        </div>
+        <div class="flex items-center space-x-2">
+            <div class="text-right">
+               
+                <img src="LogoSTAatual.png" alt="STA Seguros" class="w-16 h-16 mx-auto">
+            </div>
+            
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-0 shadow-2xl rounded-b-2xl overflow-hidden">
+        
+        <div class="lg:col-span-5 bg-white p-8 border-r border-gray-100">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-sta-purple mb-6 border-b pb-2 border-gray-100">Dados do Segurado</h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Nome Completo</label>
+                    <input type="text" x-model="form.nome" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-sta-purple outline-none transition">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Gênero</label>
+                        <select x-model="form.genero" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 outline-none">
+                            <option value="Masculino">Masculino</option>
+                            <option value="Feminino">Feminino</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Nº Identificação</label>
+                        <input type="text" x-model="form.documento" placeholder="BI / Passaporte" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Data de Nascimento</label>
+                        <input type="date" x-model="form.nascimento" @change="calcularIdade()" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Idade (Auto)</label>
+                        <input type="number" x-model="form.idade" readonly class="w-full bg-gray-100 border border-gray-200 rounded-lg px-4 py-2 font-bold text-sta-purple cursor-not-allowed">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Telefone</label>
+                        <input type="text" x-model="form.telefone" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">E-mail</label>
+                        <input type="email" x-model="form.email" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 outline-none">
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-gray-50">
+                    <h3 class="text-sm font-bold uppercase tracking-wider text-sta-purple mb-4">Condições da Apólice</h3>
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Capital (AKZ)</label>
+                            <input type="number" x-model.number="form.capital" @input="recalcular()" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 font-black text-sta-purple outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Período (Meses)</label>
+                            <input type="number" x-model.number="form.periodo" @input="recalcular()" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 outline-none">
+                        </div>
+                    </div>
+
+                    <label class="block text-[10px] font-bold text-gray-400 uppercase mb-2">Coberturas Adicionais</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <template x-for="(label, key) in coberturasDisponiveis">
+                            <label class="flex items-center p-2 bg-gray-50 rounded border border-gray-100 cursor-pointer hover:bg-purple-50 transition">
+                                <input type="checkbox" x-model="form.coberturas[key]" @change="recalcular()" class="text-sta-purple rounded">
+                                <span class="ml-2 text-xs font-semibold text-gray-600" x-text="label"></span>
+                            </label>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-7 bg-slate-50 p-8">
+            <div class="flex justify-between items-start mb-8">
+                <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400">Resumo da Cotação</h3>
+                <div class="bg-sta-gold text-white px-3 py-1 rounded text-[10px] font-black uppercase shadow-sm">Válido por 30 dias</div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                    <p class="text-xs text-slate-400 font-bold uppercase">Prémio Comercial</p>
+                    <p class="text-2xl font-black text-sta-purple mt-1" x-text="formatar(res.premioComercial)"></p>
+                </div>
+                <div class="bg-sta-purple p-6 rounded-2xl shadow-lg text-white">
+                    <p class="text-xs text-purple-200 font-bold uppercase">Total a Pagar (PU)</p>
+                    <p class="text-2xl font-black mt-1 text-sta-gold" x-text="formatar(res.premioTotal)"></p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-slate-100 p-6 space-y-4 shadow-sm">
+                <div class="flex justify-between text-sm">
+                    <span class="text-slate-500 italic">Taxa Técnica Aplicada</span>
+                    <span class="font-mono font-bold text-sta-purple" x-text="res.taxaAplicada.toFixed(5)"></span>
+                </div>
+                <div class="flex justify-between text-sm">
+                    <span class="text-slate-500 italic">Encargos de Gestão (10%)</span>
+                    <span class="font-bold text-slate-700" x-text="formatar(res.encargos)"></span>
+                </div>
+                <div class="flex justify-between text-sm">
+                    <span class="text-slate-500 italic">Imposto de Selo (0.6%)</span>
+                    <span class="font-bold text-slate-700" x-text="formatar(res.imposto)"></span>
+                </div>
+                
+                <div class="pt-4 border-t border-dashed">
+                    <h4 class="text-[10px] font-bold text-slate-400 uppercase mb-3">Coberturas Ativadas</h4>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-[10px] font-bold">✓ MORTE (BASE)</span>
+                        <template x-for="(label, key) in coberturasDisponiveis">
+                            <span x-show="form.coberturas[key]" class="bg-sta-purple text-white px-2 py-1 rounded text-[10px] font-bold" x-text="'✓ ' + label.toUpperCase()"></span>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <button @click="baixarPDF()" class="w-full mt-8 bg-sta-purple hover:bg-black text-white font-bold py-4 rounded-xl transition-all shadow-lg flex items-center justify-center group">
+                <i class="fa-solid fa-file-pdf mr-3 text-sta-gold group-hover:scale-110"></i> Gerar Proposta Oficial PDF
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="pdf-template" class="hidden">
+    <div style="padding: 40px; font-family: sans-serif; color: #333;">
+        <div style="display: flex; justify-content: space-between; border-bottom: 4px solid #e39b03; padding-bottom: 20px;">
+            <div>
+                <h1 style="color: #51358C; margin: 0; font-size: 28px;">PROPOSTA DE SEGURO</h1>
+                <p style="color: #666; margin: 5px 0;">Ramo: Vida Risco (Prémio Único)</p>
+            </div>
+            <div style="text-align: right;">
+                <h2 style="color: #51358C; margin: 0;">STA SEGUROS</h2>
+                <p style="color: #e39b03; font-weight: bold; margin: 0;">Olhamos pelo seu Futuro</p>
+            </div>
+        </div>
+
+        <div style="margin-top: 30px; background: #f9f9f9; padding: 20px; border-radius: 10px;">
+            <h3 style="color: #51358C; border-bottom: 1px solid #ddd; padding-bottom: 5px;">DADOS DO SEGURADO</h3>
+            <table style="width: 100%; font-size: 13px; margin-top: 10px;">
+                <tr>
+                    <td style="padding: 5px; font-weight: bold;">Nome:</td>
+                    <td style="padding: 5px;" x-text="form.nome || '---'"></td>
+                    <td style="padding: 5px; font-weight: bold;">Gênero:</td>
+                    <td style="padding: 5px;" x-text="form.genero"></td>
+                </tr>
+                <tr>
+                    <td style="padding: 5px; font-weight: bold;">Identificação:</td>
+                    <td style="padding: 5px;" x-text="form.documento || '---'"></td>
+                    <td style="padding: 5px; font-weight: bold;">Data Nasc.:</td>
+                    <td style="padding: 5px;" x-text="formatarData(form.nascimento)"></td>
+                </tr>
+                <tr>
+                    <td style="padding: 5px; font-weight: bold;">Telefone:</td>
+                    <td style="padding: 5px;" x-text="form.telefone || '---'"></td>
+                    <td style="padding: 5px; font-weight: bold;">Idade:</td>
+                    <td style="padding: 5px;" x-text="form.idade + ' anos'"></td>
+                </tr>
+            </table>
+        </div>
+
+        <div style="margin-top: 30px;">
+            <h3 style="color: #51358C; border-bottom: 1px solid #ddd; padding-bottom: 5px;">DETALHES DA SIMULAÇÃO</h3>
+            <table style="width: 100%; font-size: 13px; margin-top: 10px; border-collapse: collapse;">
+                <tr style="background: #f4f4f4;">
+                    <td style="padding: 10px; font-weight: bold;">Capital Seguro</td>
+                    <td style="padding: 10px; text-align: right;" x-text="formatar(form.capital)"></td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; font-weight: bold;">Período de Cobertura</td>
+                    <td style="padding: 10px; text-align: right;" x-text="form.periodo + ' meses'"></td>
+                </tr>
+                <tr style="background: #f4f4f4;">
+                    <td style="padding: 10px; font-weight: bold;">Prémio Comercial</td>
+                    <td style="padding: 10px; text-align: right;" x-text="formatar(res.premioComercial)"></td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; font-weight: bold;">Encargos de Gestão</td>
+                    <td style="padding: 10px; text-align: right;" x-text="formatar(res.encargos)"></td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; font-weight: bold;">Imposto de Selo</td>
+                    <td style="padding: 10px; text-align: right;" x-text="formatar(res.imposto)"></td>
+                </tr>
+                <tr style="background: #51358C; color: white;">
+                    <td style="padding: 15px; font-weight: bold; font-size: 16px;">TOTAL A PAGAR (AKZ)</td>
+                    <td style="padding: 15px; text-align: right; font-size: 18px; font-weight: black; color: #e39b03;" x-text="formatar(res.premioTotal)"></td>
+                </tr>
+            </table>
+        </div>
+
+        <div style="margin-top: 40px; font-size: 11px; color: #777; text-align: center; border-top: 1px solid #eee; padding-top: 20px;">
+            <p>STA Seguros -Sociedade Transnacional Angolana de Seguros, S.A.</p>
+            <p>Simulação gerada em <span x-text="dataHoje"></span> | Válida por 30 dias úteis.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function simuladorSTA() {
+        return {
+            dataHoje: new Date().toLocaleDateString('pt-AO'),
+            form: {
+                nome: '',
+                genero: 'Masculino',
+                documento: '',
+                nascimento: '',
+                idade: 30,
+                telefone: '',
+                email: '',
+                capital: 1000000,
+                periodo: 12,
+                coberturas: {
+                    itp: false,
+                    vidaMais: false,
+                    despedimento: false,
+                    doenca: false
+                }
+            },
+            coberturasDisponiveis: {
+                itp: 'Invalidez (ITP)',
+                vidaMais: 'Vida +',
+                despedimento: 'Despedimento',
+                doenca: 'Doença Grave'
+            },
+            res: {
+                taxaAplicada: 0,
+                premioComercial: 0,
+                encargos: 0,
+                imposto: 0,
+                premioTotal: 0
+            },
+
+            init() {
+                this.recalcular();
+            },
+
+            calcularIdade() {
+                if (!this.form.nascimento) return;
+                const nasc = new Date(this.form.nascimento);
+                const hoje = new Date();
+                let idade = hoje.getFullYear() - nasc.getFullYear();
+                const m = hoje.getMonth() - nasc.getMonth();
+                if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) {
+                    idade--;
+                }
+                this.form.idade = idade;
+                this.recalcular();
+            },
+
+            recalcular() {
+                // Lógica de taxas conforme escalões
+                let taxa = 0.00085;
+                const id = this.form.idade;
+                if (id >= 18 && id <= 30) taxa = 0.00110;
+                else if (id <= 45) taxa = 0.00195;
+                else if (id <= 55) taxa = 0.00350;
+                else if (id <= 65) taxa = 0.00780;
+                else taxa = 0.01500;
+
+                this.res.taxaAplicada = taxa;
+
+                let premioBase = (this.form.capital * taxa) * (this.form.periodo / 12);
+                
+                let agravamento = 1.0;
+                if(this.form.coberturas.itp) agravamento += 0.15;
+                if(this.form.coberturas.vidaMais) agravamento += 0.10;
+                if(this.form.coberturas.despedimento) agravamento += 0.20;
+                if(this.form.coberturas.doenca) agravamento += 0.25;
+
+                this.res.premioComercial = premioBase * agravamento;
+                this.res.encargos = this.res.premioComercial * 0.10;
+                this.res.imposto = (this.res.premioComercial + this.res.encargos) * 0.006;
+                this.res.premioTotal = this.res.premioComercial + this.res.encargos + this.res.imposto;
+            },
+
+            formatar(valor) {
+                return new Intl.NumberFormat('pt-AO', { style: 'currency', currency: 'AKZ' }).format(valor);
+            },
+
+            formatarData(data) {
+                if(!data) return '---';
+                return new Date(data).toLocaleDateString('pt-AO');
+            },
+
+            baixarPDF() {
+                // Exibe o template temporariamente para o html2pdf capturar
+                const element = document.getElementById('pdf-template');
+                element.classList.remove('hidden');
+                
+                const opt = {
+                    margin: 0,
+                    filename: `STA_Simulacao_${this.form.nome || 'Cliente'}.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 3, useCORS: true },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+
+                html2pdf().set(opt).from(element).save().then(() => {
+                    element.classList.add('hidden');
+                });
+            }
+        }
+    }
+</script>
+
+</body>
+</html>
