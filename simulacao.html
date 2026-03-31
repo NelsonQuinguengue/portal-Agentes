@@ -14,6 +14,17 @@
         .bg-sta-purple { background-color: #51358C; }
         .border-sta-gold { border-color: #e39b03; }
         .text-sta-gold { color: #e39b03; }
+
+        /* Estilo específico para garantir o alinhamento no PDF */
+        .pdf-footer {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 50px;
+            padding-top: 15px;
+            border-top: 1px solid #e39b03;
+        }
     </style>
 </head>
 <body class="bg-gray-100 font-sans text-slate-800" x-data="simuladorSTA()">
@@ -61,10 +72,10 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Data de Nascimento</label>
-                        <input type="date" x-model="form.nascimento" @change="calcularIdade()" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 outline-none">
+                          <input type="date" x-model="form.nascimento"  @change="calcularIdade()"class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-sta-purple">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Idade (Auto)</label>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Idade (Actuarial)</label>
                         <input type="number" x-model="form.idade" readonly class="w-full bg-gray-100 border border-gray-200 rounded-lg px-4 py-2 font-bold text-sta-purple cursor-not-allowed">
                     </div>
                 </div>
@@ -84,8 +95,12 @@
                     <h3 class="text-sm font-bold uppercase tracking-wider text-sta-purple mb-4">Condições da Apólice</h3>
                     <div class="grid grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Capital (AKZ)</label>
-                            <input type="number" x-model.number="form.capital" @input="recalcular()" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 font-black text-sta-purple outline-none">
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Capital Seguro (AKZ)</label>
+                            <input type="text" 
+                                x-model="displayCapital"
+                                @input="atualizarCapital($event.target.value)"
+                                class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 font-black text-sta-purple outline-none focus:ring-2 focus:ring-sta-purple"
+                                placeholder="0,00 Kz">
                         </div>
                         <div>
                             <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Período (Meses)</label>
@@ -124,23 +139,21 @@
             </div>
 
             <div class="bg-white rounded-2xl border border-slate-100 p-6 space-y-4 shadow-sm">
-                <div class="flex justify-between text-sm">
-                    <span class="text-slate-500 italic">Taxa Técnica Aplicada</span>
-                    <span class="font-mono font-bold text-sta-purple" x-text="res.taxaAplicada.toFixed(5)"></span>
-                </div>
-                <div class="flex justify-between text-sm">
-                    <span class="text-slate-500 italic">Encargos de Gestão (10%)</span>
+                
+                 <div class="flex justify-between text-sm">
+                    <span class="text-slate-500 italic">Encargos (20%)</span>
                     <span class="font-bold text-slate-700" x-text="formatar(res.encargos)"></span>
                 </div>
                 <div class="flex justify-between text-sm">
-                    <span class="text-slate-500 italic">Imposto de Selo (0.6%)</span>
+                    <span class="text-slate-500 italic"> ARSEG (0.2%)</span>
                     <span class="font-bold text-slate-700" x-text="formatar(res.imposto)"></span>
                 </div>
+                
                 
                 <div class="pt-4 border-t border-dashed">
                     <h4 class="text-[10px] font-bold text-slate-400 uppercase mb-3">Coberturas Ativadas</h4>
                     <div class="flex flex-wrap gap-2">
-                        <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-[10px] font-bold">✓ MORTE (BASE)</span>
+                        <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-[10px] font-bold">✓ MORTE Invalidez (ITP) (BASE)</span>
                         <template x-for="(label, key) in coberturasDisponiveis">
                             <span x-show="form.coberturas[key]" class="bg-sta-purple text-white px-2 py-1 rounded text-[10px] font-bold" x-text="'✓ ' + label.toUpperCase()"></span>
                         </template>
@@ -149,8 +162,31 @@
             </div>
 
             <button @click="baixarPDF()" class="w-full mt-8 bg-sta-purple hover:bg-black text-white font-bold py-4 rounded-xl transition-all shadow-lg flex items-center justify-center group">
-                <i class="fa-solid fa-file-pdf mr-3 text-sta-gold group-hover:scale-110"></i> Gerar Proposta Oficial PDF
+                <i class="fa-solid fa-file-pdf mr-3 text-sta-gold group-hover:scale-110"></i> Gerar Proposta  PDF
             </button>
+         <div class="flex justify-between items-end mt-12 px-4 border-t border-gray-200 pt-6 print:mt-6">
+    
+            <div class="text-[10px] text-slate-600 leading-relaxed max-w-md">
+                <p class="font-bold text-sta-purple mb-1">STAS – Sociedade Transnacional Angolana de Seguros, S.A.</p>
+                <p>Belas Business Park, Edifício Cuando Cubango 1º Andar Porta 103 – 106 Talatona - Angola</p>
+                <p>NIF 5417280216 | Capital Social 3.500.000.000 AOA | Matrícula Comercial 3497-14</p>
+                <p>Tel. (+244) 925 044 450</p>
+                <p>
+                    <a href="https://www.stas.co.ao" class="text-sta-purple hover:underline">www.stas.co.ao</a> | 
+                    <a href="mailto:geral@stas.co.ao" class="text-slate-400 hover:underline">geral@stas.co.ao</a>
+                </p>
+            </div>
+
+            <div class="relative group">
+                <div class="bg-white p-1 rounded-xl border border-gray-200 shadow-sm">
+                    <img src="PU.png" 
+                        alt="QR Code" 
+                        class="w-20 h-20 md:w-24 md:h-24 object-contain rounded-lg"
+                        onerror="this.src='https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=STA-SIMULACAO-OFICIAL'">
+                </div>
+                <p class="text-[8px] text-center text-gray-400 font-bold mt-1 uppercase"></p>
+            </div>
+        </div>
         </div>
     </div>
 </div>
@@ -163,8 +199,7 @@
                 <p style="color: #666; margin: 5px 0;">Ramo: Vida Risco (Prémio Único)</p>
             </div>
             <div style="text-align: right;">
-                <h2 style="color: #51358C; margin: 0;">STA SEGUROS</h2>
-                <p style="color: #e39b03; font-weight: bold; margin: 0;">Olhamos pelo seu Futuro</p>
+                <img src="LogoSTAatual.png" alt="STA Seguros" style="width: 80px; height: 80px;">
             </div>
         </div>
 
@@ -212,7 +247,7 @@
                     <td style="padding: 10px; text-align: right;" x-text="formatar(res.encargos)"></td>
                 </tr>
                 <tr>
-                    <td style="padding: 10px; font-weight: bold;">Imposto de Selo</td>
+                    <td style="padding: 10px; font-weight: bold;">Contribuição ARSEG</td>
                     <td style="padding: 10px; text-align: right;" x-text="formatar(res.imposto)"></td>
                 </tr>
                 <tr style="background: #51358C; color: white;">
@@ -226,115 +261,164 @@
             <p>STA Seguros -Sociedade Transnacional Angolana de Seguros, S.A.</p>
             <p>Simulação gerada em <span x-text="dataHoje"></span> | Válida por 30 dias úteis.</p>
         </div>
+
+
+        <div class="flex justify-between items-end mt-12 px-4 border-t border-gray-200 pt-6 print:mt-6">
+    
+            <div class="text-[10px] text-slate-600 leading-relaxed max-w-md">
+                <p class="font-bold text-sta-purple mb-1">STAS – Sociedade Transnacional Angolana de Seguros, S.A.</p>
+                <p>Belas Business Park, Edifício Cuando Cubango 1º Andar Porta 103 – 106 Talatona - Angola</p>
+                <p>NIF 5417280216 | Capital Social 3.500.000.000 AOA | Matrícula Comercial 3497-14</p>
+                <p>Tel. (+244) 925 044 450</p>
+                <p>
+                    <a href="https://www.stas.co.ao" class="text-sta-purple hover:underline">www.stas.co.ao</a> | 
+                    <a href="mailto:geral@stas.co.ao" class="text-slate-400 hover:underline">geral@stas.co.ao</a>
+                </p>
+            </div>
+
+            <div class="relative group">
+                <div class="bg-white p-1 rounded-xl border border-gray-200 shadow-sm">
+                    <img src="PU.png" 
+                        alt="QR Code" 
+                        class="w-20 h-20 md:w-24 md:h-24 object-contain rounded-lg"
+                        onerror="this.src='https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=STA-SIMULACAO-OFICIAL'">
+                </div>
+                <p class="text-[8px] text-center text-gray-400 font-bold mt-1 uppercase"></p>
+            </div>
+        </div>
+
+
     </div>
 </div>
 
 <script>
     function simuladorSTA() {
-        return {
-            dataHoje: new Date().toLocaleDateString('pt-AO'),
-            form: {
-                nome: '',
-                genero: 'Masculino',
-                documento: '',
-                nascimento: '',
-                idade: 30,
-                telefone: '',
-                email: '',
-                capital: 1000000,
-                periodo: 12,
-                coberturas: {
-                    itp: false,
-                    vidaMais: false,
-                    despedimento: false,
-                    doenca: false
-                }
-            },
-            coberturasDisponiveis: {
-                itp: 'Invalidez (ITP)',
-                vidaMais: 'Vida +',
-                despedimento: 'Despedimento',
-                doenca: 'Doença Grave'
-            },
-            res: {
-                taxaAplicada: 0,
-                premioComercial: 0,
-                encargos: 0,
-                imposto: 0,
-                premioTotal: 0
-            },
+    return {
+        dataHoje: new Date().toLocaleDateString('pt-AO'),
+        displayCapital: '1.000.000,00 Kz', // Valor inicial formatado
+        form: {
+            nome: '',
+            genero: 'Masculino',
+            documento: '',
+            nascimento: '',
+            idade: 30,
+            telefone: '',
+            email: '',
+            capital: 1000000, // Valor numérico para cálculos
+            periodo: 12,
+            coberturas: { vidaMais: false, despedimento: false, doenca: false }
+        },
+        coberturasDisponiveis: {
+           // itp: 'Invalidez (ITP)',
+            vidaMais: 'Vida +',
+            despedimento: 'Despedimento',
+            doenca: 'Doença Grave'
+        },
+        res: { taxaAplicada: 0, premioComercial: 0, encargos: 0, imposto: 0, premioTotal: 0 },
 
-            init() {
-                this.recalcular();
-            },
+        init() {
+            this.recalcular();
+        },
 
-            calcularIdade() {
-                if (!this.form.nascimento) return;
-                const nasc = new Date(this.form.nascimento);
-                const hoje = new Date();
-                let idade = hoje.getFullYear() - nasc.getFullYear();
-                const m = hoje.getMonth() - nasc.getMonth();
-                if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) {
-                    idade--;
-                }
-                this.form.idade = idade;
-                this.recalcular();
-            },
+        // ESSA FUNÇÃO CORRIGE A DIGITAÇÃO DESORDENADA
+        atualizarCapital(valorRaw) {
+            // Remove tudo o que não é número
+            let apenasNumeros = valorRaw.replace(/\D/g, '');
+            
+            // Converte para centavos (ex: 1000 vira 10.00)
+            let valorNumerico = parseFloat(apenasNumeros) / 100;
+            
+            if (isNaN(valorNumerico)) valorNumerico = 0;
 
-            recalcular() {
-                // Lógica de taxas conforme escalões
-                let taxa = 0.00085;
-                const id = this.form.idade;
-                if (id >= 18 && id <= 30) taxa = 0.00110;
-                else if (id <= 45) taxa = 0.00195;
-                else if (id <= 55) taxa = 0.00350;
-                else if (id <= 65) taxa = 0.00780;
-                else taxa = 0.01500;
+            // Atualiza o valor real para o cálculo
+            this.form.capital = valorNumerico;
+            
+            // Atualiza o que o usuário vê com a formatação correta
+            this.displayCapital = this.formatar(valorNumerico);
+            
+            this.recalcular();
+        },
 
-                this.res.taxaAplicada = taxa;
+     calcularIdade() {
+            if (!this.form.nascimento) return;
 
-                let premioBase = (this.form.capital * taxa) * (this.form.periodo / 12);
-                
-                let agravamento = 1.0;
-                if(this.form.coberturas.itp) agravamento += 0.15;
-                if(this.form.coberturas.vidaMais) agravamento += 0.10;
-                if(this.form.coberturas.despedimento) agravamento += 0.20;
-                if(this.form.coberturas.doenca) agravamento += 0.25;
+            const dataNasc = new Date(this.form.nascimento);
+            const dataActual = new Date();
 
-                this.res.premioComercial = premioBase * agravamento;
-                this.res.encargos = this.res.premioComercial * 0.10;
-                this.res.imposto = (this.res.premioComercial + this.res.encargos) * 0.006;
-                this.res.premioTotal = this.res.premioComercial + this.res.encargos + this.res.imposto;
-            },
+            // Diferença em milissegundos
+            const diferencaMilissegundos = dataActual - dataNasc;
 
-            formatar(valor) {
-                return new Intl.NumberFormat('pt-AO', { style: 'currency', currency: 'AKZ' }).format(valor);
-            },
+            // Converte milissegundos para dias
+            const diferencaDias = diferencaMilissegundos / (1000 * 60 * 60 * 24);
 
-            formatarData(data) {
-                if(!data) return '---';
-                return new Date(data).toLocaleDateString('pt-AO');
-            },
+            // Aplica a fórmula: Arredondar((dataActual - dataNasc) / 365,25; 0)
+            // Math.round realiza o arredondamento para o inteiro mais próximo
+            let idade = Math.round(diferencaDias / 365.25);
 
-            baixarPDF() {
-                // Exibe o template temporariamente para o html2pdf capturar
-                const element = document.getElementById('pdf-template');
-                element.classList.remove('hidden');
-                
-                const opt = {
-                    margin: 0,
-                    filename: `STA_Simulacao_${this.form.nome || 'Cliente'}.pdf`,
-                    image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 3, useCORS: true },
-                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                };
+            // Garante que a idade não seja negativa caso a data seja futura
+            this.form.idade = idade < 0 ? 0 : idade;
 
-                html2pdf().set(opt).from(element).save().then(() => {
-                    element.classList.add('hidden');
-                });
-            }
+            this.recalcular();
+        },
+
+        recalcular() {
+            let taxa = 0.00085;
+            const id = this.form.idade;
+            if (id >= 18 && id <= 30) taxa = 0.00110;
+            else if (id <= 45) taxa = 0.00195;
+            else if (id <= 55) taxa = 0.00350;
+            else if (id <= 65) taxa = 0.00780;
+            else taxa = 0.01500;
+
+            this.res.taxaAplicada = taxa;
+
+            let premioBase = (this.form.capital * taxa) * (this.form.periodo / 12);
+            
+            let agravamento = 1.0;
+           // if(this.form.coberturas.itp) agravamento += 0.15;
+            if(this.form.coberturas.vidaMais) agravamento += 0.10;
+            if(this.form.coberturas.despedimento) agravamento += 0.20;
+            if(this.form.coberturas.doenca) agravamento += 0.25;
+
+            this.res.premioComercial = premioBase * agravamento;
+            this.res.encargos = this.res.premioComercial * 0.2;
+            this.res.imposto = (this.res.premioComercial + this.res.encargos) * 0.002;
+            this.res.premioTotal = this.res.premioComercial + this.res.encargos + this.res.imposto;
+        },
+
+        formatar(valor) {
+            return new Intl.NumberFormat('pt-AO', { 
+                style: 'currency', 
+                currency: 'AKZ',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(valor);
+        },
+
+        formatarData(data) {
+            if(!data) return '---';
+            const [ano, mes, dia] = data.split('-');
+            return `${dia}/${mes}/${ano}`;
+        },
+
+        baixarPDF() {
+            const element = document.getElementById('pdf-template');
+            element.classList.remove('hidden');
+            
+            const opt = {
+                margin: 0,
+                filename: `STA_Simulacao_${this.form.nome || 'Cliente'}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 3, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                element.classList.add('hidden');
+            });
         }
     }
+}
 </script>
 
 </body>
