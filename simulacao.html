@@ -7,6 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         [x-cloak] { display: none !important; }
@@ -24,6 +26,24 @@
             margin-top: 50px;
             padding-top: 15px;
             border-top: 1px solid #e39b03;
+        }
+        /* Ajuste para combinar com o teu design Gray-50/Rounded-LG */
+            /* Impede a sobreposição e garante que o input ocupe a largura correta */
+        .iti {
+            display: block !important;
+            width: 100% !important;
+        }
+
+        .iti__country-list {
+            max-width: 300px; /* Evita que a lista de países seja larga demais */
+            z-index: 50;      /* Garante que a lista apareça sobre outros campos */
+        }
+
+        /* Ajuste do padding interno para não esmagar o texto no ícone */
+        .iti--separate-dial-code .iti__selected-dial-code {
+            font-weight: bold;
+            color: #51358C; /* Cor Roxa da STA */
+            font-size: 14px;
         }
     </style>
 </head>
@@ -81,10 +101,37 @@
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Telefone</label>
-                        <input type="text" x-model="form.telefone" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 outline-none">
-                    </div>
+                    <div class="w-full">
+        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Telefone</label>
+        
+        <div x-data="{ 
+            initIti() {
+                const iti = window.intlTelInput(this.$refs.telInput, {
+                    initialCountry: 'ao',
+                    separateDialCode: true,
+                    preferredCountries: ['ao', 'pt', 'br'],
+                    utilsScript: 'https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js'
+                });
+
+                // Atualiza o formulário sempre que o número mudar ou o país for trocado
+                const updateValue = () => {
+                    this.form.telefone = iti.getNumber();
+                };
+
+                this.$refs.telInput.addEventListener('blur', updateValue);
+                this.$refs.telInput.addEventListener('countrychange', updateValue);
+                this.$refs.telInput.addEventListener('keyup', updateValue);
+            }
+        }" x-init="initIti()">
+            
+            <input type="tel" 
+                   x-ref="telInput"
+                   class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-sta-purple transition-all"
+                   autocomplete="off">
+        </div>
+            </div>
+                    
+
                     <div>
                         <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">E-mail</label>
                         <input type="email" x-model="form.email" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 outline-none">
