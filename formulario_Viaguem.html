@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vistoria 360 Pro | Nelson & Emanuel</title>
+    <title>Vistoria Pro | Bloqueio de Segurança</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
@@ -11,124 +11,129 @@
         .step { display: none; }
         .step.active { display: flex; flex-direction: column; }
         #cameraOverlay { display: none; }
-        .mask-overlay {
-            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.7);
-            border: 2px solid rgba(255, 255, 255, 0.5);
-        }
-        @keyframes scan { 0% { top: 10%; } 100% { top: 90%; } }
-        .scanner-line { animation: scan 2s linear infinite; }
+        .recording-pulse { animation: pulse-red 1.5s infinite; }
+        @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen">
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans">
 
-    <div class="max-w-md mx-auto min-h-screen flex flex-col">
+    <div class="max-w-md mx-auto min-h-screen flex flex-col border-x border-slate-900 bg-slate-950 shadow-2xl">
+        
         <!-- HEADER -->
-        <header class="p-6 bg-slate-900 border-b border-slate-800 sticky top-0 z-20">
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-blue-400 font-bold tracking-tighter text-xl">STAS <span class="text-white">AUTO</span></span>
-                <span id="progressText" class="text-xs font-mono">0/10 CONCLUÍDO</span>
+        <header class="p-6 bg-slate-900/50 backdrop-blur-md border-b border-slate-800 sticky top-0 z-20">
+            <div class="flex justify-between items-center mb-3">
+                <h1 class="font-black text-blue-500 tracking-tighter italic">AUTO<span class="text-white">CHECK</span></h1>
+                <span id="progressCount" class="text-[10px] font-mono bg-slate-800 px-2 py-1 rounded border border-slate-700">0 / 10</span>
             </div>
-            <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                <div id="progressBar" class="bg-blue-500 h-full transition-all duration-500" style="width: 0%"></div>
+            <div class="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+                <div id="progressBar" class="bg-blue-500 h-full transition-all duration-700" style="width: 0%"></div>
             </div>
         </header>
 
         <main class="flex-grow p-6">
-            <!-- PASSO 1: IDENTIFICAÇÃO -->
-            <section id="step1" class="step active space-y-4">
-                <div class="bg-blue-900/20 p-4 rounded-2xl border border-blue-500/30 mb-4 text-sm text-blue-200">
-                    Preencha os dados do tomador para desbloquear a câmera.
+            
+            <!-- PASSO 1: DADOS OBRIGATÓRIOS -->
+            <section id="step1" class="step active space-y-5">
+                <div class="space-y-4">
+                    <h2 class="text-xl font-bold">Identificação</h2>
+                    <input type="text" id="input_tomador" placeholder="Nome Completo do Tomador" class="w-full bg-slate-900 border border-slate-700 p-4 rounded-xl focus:border-blue-500 outline-none transition-all">
+                    <input type="text" id="input_matricula" placeholder="Matrícula" class="w-full bg-slate-900 border border-slate-700 p-4 rounded-xl focus:border-blue-500 outline-none uppercase">
                 </div>
-                <input type="text" id="tomador" placeholder="Nome do Tomador" class="w-full bg-slate-900 border border-slate-700 p-4 rounded-xl outline-none focus:border-blue-500 transition-all">
-                <input type="text" id="matricula_val" placeholder="Matrícula" class="w-full bg-slate-900 border border-slate-700 p-4 rounded-xl outline-none focus:border-blue-500 uppercase">
-                <button onclick="nextStep(2)" class="w-full bg-blue-600 hover:bg-blue-700 py-4 rounded-xl font-bold text-lg shadow-lg shadow-blue-900/20 transition-all active:scale-95">Iniciar Vistoria Digital</button>
+                <button onclick="validateStep1()" class="w-full bg-blue-600 hover:bg-blue-700 py-4 rounded-xl font-bold shadow-lg shadow-blue-900/30">Próximo: Capturas</button>
             </section>
 
-            <!-- PASSO 2: CHECKLIST DE CAPTURAS -->
+            <!-- PASSO 2: CHECKLIST -->
             <section id="step2" class="step">
-                <h3 class="text-sm font-bold text-slate-500 uppercase mb-4 tracking-widest">Registos Obrigatórios</h3>
-                <div class="space-y-3" id="checklist">
-                    <!-- Gerado via JS -->
+                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Itens Necessários</h3>
+                <div id="checklistItems" class="space-y-2"></div>
+                
+                <!-- O botão Enviar só aparecerá quando tudo estiver preenchido -->
+                <div id="submitContainer" class="hidden mt-8 animate__animated animate__fadeInUp">
+                    <button onclick="showFinalReview()" class="w-full bg-green-600 py-4 rounded-xl font-black text-lg shadow-xl shadow-green-900/20">REVISAR E ENVIAR</button>
                 </div>
-                <button id="btnReview" onclick="showReview()" class="w-full mt-8 bg-slate-800 border border-slate-700 text-slate-400 py-4 rounded-xl font-bold opacity-50 cursor-not-allowed transition-all">Revisar Envio</button>
             </section>
 
-            <!-- PASSO 3: REVISÃO E ENVIO -->
+            <!-- PASSO 3: REVISÃO FINAL -->
             <section id="step3" class="step">
-                <h3 class="text-lg font-bold mb-4">Confirmar Capturas</h3>
-                <div id="reviewGrid" class="grid grid-cols-2 gap-3 mb-8"></div>
-                <button onclick="finalUpload()" class="w-full bg-green-600 py-4 rounded-xl font-bold text-lg">Submeter para Validação</button>
+                <h3 class="text-xl font-bold mb-4">Revisão Final</h3>
+                <div id="reviewGrid" class="grid grid-cols-2 gap-2 mb-6"></div>
+                <button onclick="finalSubmission()" class="w-full bg-blue-600 py-5 rounded-2xl font-black text-xl mb-4">SUBMETER VISTORIA</button>
+                <button onclick="nextStep(2)" class="w-full text-slate-500 text-sm font-bold">Corrigir algo</button>
             </section>
         </main>
 
-        <!-- CAMERA OVERLAY UI -->
+        <!-- CAMERA & VIDEO OVERLAY -->
         <div id="cameraOverlay" class="fixed inset-0 bg-black z-50 flex flex-col">
-            <div class="absolute top-0 w-full p-6 bg-gradient-to-b from-black/80 to-transparent flex justify-between items-start z-10">
+            <div class="p-6 bg-gradient-to-b from-black to-transparent flex justify-between items-center z-10">
                 <div>
-                    <h4 id="targetTitle" class="font-bold text-white uppercase text-sm tracking-widest">Frente do Veículo</h4>
-                    <p id="targetInstr" class="text-xs text-slate-300">Enquadre a frente inteira de forma nítida</p>
+                    <h4 id="camTitle" class="font-bold uppercase text-xs tracking-widest">Captura</h4>
+                    <p id="camInstr" class="text-[10px] text-slate-400">Posicione o veículo no centro</p>
                 </div>
-                <button onclick="closeCamera()" class="bg-white/10 p-2 rounded-full backdrop-blur-md">✕</button>
+                <button onclick="closeCamera()" class="p-2 text-2xl">✕</button>
             </div>
 
-            <div class="relative flex-grow flex items-center justify-center overflow-hidden bg-slate-900">
+            <div class="relative flex-grow flex items-center justify-center bg-slate-900">
                 <video id="webcam" autoplay playsinline class="w-full h-full object-cover"></video>
                 
-                <!-- Máscaras de enquadramento -->
-                <div id="carMask" class="mask-overlay absolute w-4/5 h-1/2 rounded-3xl pointer-events-none">
-                    <div class="scanner-line absolute w-full h-0.5 bg-blue-400 shadow-[0_0_15px_blue]"></div>
-                </div>
-
-                <div id="aiFeedback" class="absolute bottom-32 bg-black/60 backdrop-blur-md px-6 py-2 rounded-full border border-white/20 text-xs font-mono">
-                    Aguardando visão nítida...
-                </div>
+                <!-- Máscara Guia -->
+                <div id="guide" class="absolute border-2 border-dashed border-white/20 w-4/5 h-1/2 rounded-3xl pointer-events-none"></div>
+                
+                <div id="aiLabel" class="absolute bottom-24 bg-blue-600/80 backdrop-blur px-4 py-1 rounded-full text-[10px] font-mono">Processando IA...</div>
             </div>
 
             <div class="p-10 bg-black flex flex-col items-center gap-4">
-                <button id="captureBtn" disabled class="w-20 h-20 bg-slate-800 rounded-full border-4 border-white flex items-center justify-center disabled:opacity-20 transition-all" onclick="takeSnapshot()">
-                    <div class="w-16 h-16 bg-white rounded-full scale-90 hover:scale-100 transition-transform"></div>
+                <!-- Botão de Captura Duplo (Foto ou Vídeo) -->
+                <button id="mainActionBtn" disabled class="w-20 h-20 bg-slate-800 rounded-full border-4 border-white flex items-center justify-center transition-all disabled:opacity-20" onclick="handleAction()">
+                    <div id="btnIcon" class="w-14 h-14 bg-white rounded-full transition-all"></div>
                 </button>
-                <span class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Captura em tempo real</span>
+                <p id="videoTimer" class="hidden text-red-500 font-mono font-bold">REC 00:00</p>
             </div>
         </div>
     </div>
 
     <script>
-        const tasks = [
-            { id: 'frente', label: 'Frente do Veículo', instr: 'Capture a dianteira completa' },
-            { id: 'traseira', label: 'Traseira', instr: 'Capture a traseira e matrícula' },
-            { id: 'lat_dir', label: 'Lateral Direita', instr: 'Capture todo o lado direito' },
-            { id: 'lat_esq', label: 'Lateral Esquerda', instr: 'Capture todo o lado esquerdo' },
-            { id: 'interior', label: 'Interior (Painel/Bancos)', instr: 'Visão geral da cabine' },
-            { id: 'instrumentos', label: 'Painel Ligado', instr: 'Mostre km e luzes do painel' },
-            { id: 'vin', label: 'Número de Chassis (VIN)', instr: 'Foque na gravação do chassis' },
-            { id: 'matricula', label: 'Matrícula', instr: 'Foto de proximidade da placa' },
-            { id: 'motor', label: 'Compartimento Motor', instr: 'Foto do motor aberto' },
-            { id: 'video_360', label: 'Vídeo 360º', instr: 'Gire ao redor do carro (Vídeo)', isVideo: true }
+        const config = [
+            { id: 'frente', label: 'Frente do Veículo', isVideo: false },
+            { id: 'traseira', label: 'Traseira', isVideo: false },
+            { id: 'lat_dir', label: 'Lateral Direita', isVideo: false },
+            { id: 'lat_esq', label: 'Lateral Esquerda', isVideo: false },
+            { id: 'interior', label: 'Interior (Painel/Bancos)', isVideo: false },
+            { id: 'instrumentos', label: 'Painel Ligado', isVideo: false },
+            { id: 'vin', label: 'Nº Chassis (VIN)', isVideo: false },
+            { id: 'matricula', label: 'Matrícula Visível', isVideo: false },
+            { id: 'motor', label: 'Compartimento Motor', isVideo: false },
+            { id: 'video_360', label: 'Vídeo 360º Exterior', isVideo: true }
         ];
 
         let captures = {};
-        let currentTaskId = null;
+        let currentTask = null;
         let stream = null;
+        let mediaRecorder = null;
+        let chunks = [];
         let net = null;
+        let isRecording = false;
 
         async function init() {
-            renderChecklist();
+            renderList();
             net = await mobilenet.load();
         }
         init();
 
-        function renderChecklist() {
-            const container = document.getElementById('checklist');
-            container.innerHTML = tasks.map(t => `
-                <div id="row-${t.id}" onclick="openCamera('${t.id}')" class="group flex items-center justify-between bg-slate-900 border border-slate-800 p-4 rounded-2xl hover:border-blue-500 transition-all cursor-pointer">
-                    <div class="flex items-center gap-3">
-                        <div class="indicator w-2 h-2 rounded-full bg-slate-700"></div>
-                        <span class="text-sm font-medium text-slate-300 group-hover:text-white">${t.label}</span>
-                    </div>
-                    <span class="status-text text-[10px] font-bold text-slate-600 uppercase">Pendente</span>
+        function renderList() {
+            const list = document.getElementById('checklistItems');
+            list.innerHTML = config.map(t => `
+                <div id="item-${t.id}" onclick="openCam('${t.id}')" class="flex items-center justify-between bg-slate-900 p-4 rounded-xl border border-slate-800 cursor-pointer hover:border-blue-500 transition-all">
+                    <span class="text-sm font-medium text-slate-400">${t.label} ${t.isVideo ? '🎥' : '📸'}</span>
+                    <span id="status-${t.id}" class="text-[10px] font-bold text-slate-700">PENDENTE</span>
                 </div>
             `).join('');
+        }
+
+        function validateStep1() {
+            const t = document.getElementById('input_tomador').value;
+            const m = document.getElementById('input_matricula').value;
+            if (t.length < 3 || m.length < 4) return alert("Preencha o Tomador e a Matrícula corretamente!");
+            nextStep(2);
         }
 
         function nextStep(s) {
@@ -136,14 +141,16 @@
             document.getElementById('step' + s).classList.add('active');
         }
 
-        async function openCamera(id) {
-            const task = tasks.find(t => t.id === id);
-            currentTaskId = id;
-            document.getElementById('targetTitle').innerText = task.label;
-            document.getElementById('targetInstr').innerText = task.instr;
+        async function openCam(id) {
+            currentTask = config.find(t => t.id === id);
+            document.getElementById('camTitle').innerText = currentTask.label;
             document.getElementById('cameraOverlay').style.display = 'flex';
             
-            stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+            // Alterar ícone do botão
+            const btnIcon = document.getElementById('btnIcon');
+            btnIcon.className = currentTask.isVideo ? "w-10 h-10 bg-red-600 rounded-lg" : "w-14 h-14 bg-white rounded-full";
+
+            stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: true });
             document.getElementById('webcam').srcObject = stream;
             
             runAI();
@@ -152,66 +159,85 @@
         async function runAI() {
             if (!stream) return;
             const video = document.getElementById('webcam');
-            const feedback = document.getElementById('aiFeedback');
-            const btn = document.getElementById('captureBtn');
+            const btn = document.getElementById('mainActionBtn');
+            const label = document.getElementById('aiLabel');
 
             try {
                 const predictions = await net.classify(video);
-                const top = predictions[0];
-                feedback.innerText = `ANALISANDO: ${(top.probability * 100).toFixed(0)}% NÍTIDO`;
-                
-                // Lógica de validação: Se a probabilidade for > 15% (Mobilenet é genérico), habilita
-                if (top.probability > 0.15) {
+                if (predictions[0].probability > 0.1) {
                     btn.disabled = false;
-                    btn.classList.add('border-green-400');
+                    label.innerText = "SINAL NÍTIDO: CAPTURA LIBERADA";
+                    label.classList.replace('bg-blue-600/80', 'bg-green-600/80');
                 }
             } catch (e) {}
-
             if (stream) requestAnimationFrame(runAI);
         }
 
-        function takeSnapshot() {
-            const video = document.getElementById('webcam');
-            const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            canvas.getContext('2d').drawImage(video, 0, 0);
-            
-            captures[currentTaskId] = canvas.toDataURL('image/jpeg');
-            updateChecklist(currentTaskId);
-            closeCamera();
-            checkCompletion();
-        }
-
-        function updateChecklist(id) {
-            const row = document.getElementById('row-' + id);
-            row.classList.add('border-green-500/50', 'bg-green-500/5');
-            row.querySelector('.indicator').classList.replace('bg-slate-700', 'bg-green-500');
-            row.querySelector('.status-text').innerText = 'Capturado';
-            row.querySelector('.status-text').classList.replace('text-slate-600', 'text-green-500');
-        }
-
-        function checkCompletion() {
-            const count = Object.keys(captures).length;
-            const total = tasks.length;
-            document.getElementById('progressBar').style.width = (count / total * 100) + '%';
-            document.getElementById('progressText').innerText = `${count}/${total} CONCLUÍDO`;
-            
-            if (count === total) {
-                const btn = document.getElementById('btnReview');
-                btn.classList.remove('opacity-50', 'cursor-not-allowed');
-                btn.classList.add('bg-blue-600', 'text-white', 'opacity-100');
-                btn.disabled = false;
+        function handleAction() {
+            if (currentTask.isVideo) {
+                isRecording ? stopVideo() : startVideo();
+            } else {
+                takeSnapshot();
             }
         }
 
-        function showReview() {
+        function takeSnapshot() {
+            const v = document.getElementById('webcam');
+            const c = document.createElement('canvas');
+            c.width = v.videoWidth; c.height = v.videoHeight;
+            c.getContext('2d').drawImage(v, 0, 0);
+            captures[currentTask.id] = c.toDataURL('image/jpeg');
+            finalizeTask();
+        }
+
+        function startVideo() {
+            isRecording = true;
+            chunks = [];
+            mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder.ondataavailable = e => chunks.push(e.data);
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(chunks, { type: 'video/mp4' });
+                captures[currentTask.id] = URL.createObjectURL(blob);
+                finalizeTask();
+            };
+            mediaRecorder.start();
+            document.getElementById('btnIcon').classList.add('recording-pulse');
+            document.getElementById('videoTimer').classList.remove('hidden');
+        }
+
+        function stopVideo() {
+            isRecording = false;
+            mediaRecorder.stop();
+            document.getElementById('btnIcon').classList.remove('recording-pulse');
+            document.getElementById('videoTimer').classList.add('hidden');
+        }
+
+        function finalizeTask() {
+            const item = document.getElementById('item-' + currentTask.id);
+            item.classList.add('border-green-500', 'bg-green-500/10');
+            document.getElementById('status-' + currentTask.id).innerText = "CONCLUÍDO";
+            document.getElementById('status-' + currentTask.id).classList.replace('text-slate-700', 'text-green-500');
+            closeCamera();
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const count = Object.keys(captures).length;
+            const perc = (count / 10) * 100;
+            document.getElementById('progressBar').style.width = perc + '%';
+            document.getElementById('progressCount').innerText = `${count} / 10`;
+            
+            if (count === 10) {
+                document.getElementById('submitContainer').classList.remove('hidden');
+            }
+        }
+
+        function showFinalReview() {
             const grid = document.getElementById('reviewGrid');
-            grid.innerHTML = tasks.map(t => `
-                <div class="relative group">
-                    <img src="${captures[t.id]}" class="w-full h-32 object-cover rounded-xl border border-slate-700">
-                    <div class="absolute bottom-0 w-full bg-black/60 p-2 rounded-b-xl text-[8px] uppercase font-bold text-white">${t.label}</div>
-                    <button onclick="openCamera('${t.id}')" class="absolute top-1 right-1 bg-blue-600 p-1 rounded-md text-[8px]">Refazer</button>
+            grid.innerHTML = config.map(t => `
+                <div class="bg-slate-900 rounded-lg overflow-hidden border border-slate-800">
+                    ${t.isVideo ? '<div class="h-24 flex items-center justify-center bg-blue-900/20">🎥 VÍDEO</div>' : `<img src="${captures[t.id]}" class="h-24 w-full object-cover">`}
+                    <p class="text-[8px] p-2 font-bold uppercase truncate">${t.label}</p>
                 </div>
             `).join('');
             nextStep(3);
@@ -223,8 +249,8 @@
             document.getElementById('cameraOverlay').style.display = 'none';
         }
 
-        function finalUpload() {
-            alert("Vistoria enviada! O Eng. Sandro Cardoso receberá as capturas nítidas em instantes.");
+        function finalSubmission() {
+            alert("Vistoria enviada com sucesso para os Engenheiros!");
             location.reload();
         }
     </script>
