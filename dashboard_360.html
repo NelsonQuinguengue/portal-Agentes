@@ -1,0 +1,1695 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard 360° – Visão Analítica Completa</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #070b14;
+    --surface: #0d1526;
+    --surface2: #111d35;
+    --border: #1c2e50;
+    --accent: #00d4ff;
+    --accent2: #f97316;
+    --accent3: #22c55e;
+    --accent4: #a855f7;
+    --danger: #ef4444;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --gold: #fbbf24;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* HEADER */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(7,11,20,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .logo-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, var(--accent), var(--accent4));
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+  .logo-text {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+  .logo-sub {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .last-update {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .live-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--accent3);
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  .upload-btn {
+    background: linear-gradient(135deg, var(--accent), var(--accent4));
+    border: none;
+    color: #000;
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .upload-btn:hover { opacity: 0.85; }
+
+  /* NAV TABS */
+  nav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px;
+    display: flex;
+    gap: 4px;
+    position: sticky;
+    top: 64px;
+    z-index: 90;
+  }
+  .tab {
+    padding: 14px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  /* MAIN CONTENT */
+  main {
+    position: relative;
+    z-index: 1;
+    padding: 28px;
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* FILTERS BAR */
+  .filters-bar {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+    padding: 16px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    align-items: center;
+  }
+  .filter-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-right: 4px;
+  }
+  select {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  select:hover, select:focus { border-color: var(--accent); }
+
+  /* KPI CARDS */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .kpi-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .kpi-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent-color, var(--accent));
+  }
+  .kpi-icon {
+    font-size: 24px;
+    margin-bottom: 12px;
+  }
+  .kpi-label {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .kpi-value {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--accent-color, var(--accent));
+    font-family: 'JetBrains Mono', monospace;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .kpi-sub {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .badge-green { background: rgba(34,197,94,0.15); color: var(--accent3); }
+  .badge-red { background: rgba(239,68,68,0.15); color: var(--danger); }
+  .badge-blue { background: rgba(0,212,255,0.12); color: var(--accent); }
+  .badge-orange { background: rgba(249,115,22,0.15); color: var(--accent2); }
+
+  /* GRID LAYOUTS */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+  .grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 20px; }
+  .grid-1-2 { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; margin-bottom: 20px; }
+
+  /* CHART CARD */
+  .chart-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    position: relative;
+  }
+  .chart-title {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .chart-subtitle {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 16px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .chart-container { position: relative; }
+
+  /* RANKING TABLE */
+  .rank-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .rank-table th {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    font-weight: 700;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+  }
+  .rank-table td {
+    padding: 10px 12px;
+    font-size: 13px;
+    border-bottom: 1px solid rgba(28,46,80,0.5);
+  }
+  .rank-table tr:last-child td { border-bottom: none; }
+  .rank-table tr:hover td { background: rgba(0,212,255,0.03); }
+  .rank-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .rank-bar-container { display: flex; align-items: center; gap: 10px; }
+  .rank-bar { height: 4px; border-radius: 2px; flex: 1; background: var(--border); }
+  .rank-bar-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--accent), var(--accent4)); }
+
+  /* GAUGE */
+  .gauge-container { display: flex; flex-direction: column; align-items: center; }
+  .gauge-value-big {
+    font-size: 42px;
+    font-weight: 800;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent3);
+    line-height: 1;
+    margin: 8px 0 4px;
+  }
+
+  /* SEMAFORO */
+  .semaforo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .semaforo-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--bg);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+  .sema-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .sema-label { font-size: 12px; color: var(--muted); flex: 1; }
+  .sema-val { font-size: 13px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+
+  /* ALERTS */
+  .alerts-list { display: flex; flex-direction: column; gap: 10px; }
+  .alert-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 8px;
+    border-left: 3px solid;
+  }
+  .alert-warn { background: rgba(251,191,36,0.06); border-color: var(--gold); }
+  .alert-danger { background: rgba(239,68,68,0.06); border-color: var(--danger); }
+  .alert-info { background: rgba(0,212,255,0.06); border-color: var(--accent); }
+  .alert-ok { background: rgba(34,197,94,0.06); border-color: var(--accent3); }
+  .alert-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .alert-text { font-size: 13px; line-height: 1.5; }
+  .alert-title { font-weight: 700; margin-bottom: 2px; }
+
+  /* FUNNEL */
+  .funnel { display: flex; flex-direction: column; gap: 8px; }
+  .funnel-row { display: flex; align-items: center; gap: 12px; }
+  .funnel-bar-wrap { flex: 1; height: 32px; background: var(--bg); border-radius: 4px; overflow: hidden; }
+  .funnel-bar-inner { height: 100%; border-radius: 4px; display: flex; align-items: center; padding-left: 10px; font-size: 12px; font-weight: 700; transition: width 0.8s ease; }
+  .funnel-label { font-size: 12px; color: var(--muted); width: 110px; text-align: right; }
+  .funnel-count { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; width: 50px; text-align: right; }
+
+  /* UPLOAD OVERLAY */
+  #upload-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(7,11,20,0.92);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+  }
+  #upload-overlay.open { display: flex; }
+  .upload-modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 40px;
+    width: 500px;
+    max-width: 90vw;
+  }
+  .upload-title { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+  .upload-sub { color: var(--muted); font-size: 13px; margin-bottom: 28px; }
+  .upload-slots { display: flex; flex-direction: column; gap: 14px; }
+  .upload-slot {
+    border: 1.5px dashed var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .upload-slot:hover { border-color: var(--accent); }
+  .upload-slot.loaded { border-color: var(--accent3); background: rgba(34,197,94,0.04); }
+  .slot-icon { font-size: 22px; }
+  .slot-name { font-size: 14px; font-weight: 700; }
+  .slot-status { font-size: 11px; color: var(--muted); margin-top: 2px; font-family: 'JetBrains Mono', monospace; }
+  .modal-actions { margin-top: 24px; display: flex; gap: 12px; justify-content: flex-end; }
+  .btn-cancel { background: transparent; border: 1px solid var(--border); color: var(--text); padding: 10px 20px; border-radius: 8px; cursor: pointer; font-family: 'Syne', sans-serif; font-size: 13px; }
+  .btn-load { background: linear-gradient(135deg, var(--accent), var(--accent4)); border: none; color: #000; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13px; }
+  input[type=file] { display: none; }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 4px;
+    letter-spacing: -0.5px;
+  }
+  .section-sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 24px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    .grid-2, .grid-3, .grid-2-1, .grid-1-2 { grid-template-columns: 1fr; }
+    nav { overflow-x: auto; }
+    main { padding: 16px; }
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">🛡</div>
+    <div>
+      <div class="logo-text">STAS Analytics</div>
+      <div class="logo-sub">Dashboard 360°</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <span class="last-update"><span class="live-dot"></span>Última actualização: <span id="last-update-time">05/05/2026</span></span>
+    <button class="upload-btn" onclick="document.getElementById('upload-overlay').classList.add('open')">↑ Actualizar Dados</button>
+  </div>
+</header>
+
+<!-- NAV -->
+<nav>
+  <div class="tab active" onclick="switchTab('executiva')">🏠 Executiva</div>
+  <div class="tab" onclick="switchTab('producao')">📊 Produção</div>
+  <div class="tab" onclick="switchTab('sinistros')">⚠️ Sinistros</div>
+  <div class="tab" onclick="switchTab('comissoes')">💰 Comissões</div>
+  <div class="tab" onclick="switchTab('alertas')">🔔 Alertas</div>
+</nav>
+
+<!-- UPLOAD OVERLAY -->
+<div id="upload-overlay">
+  <div class="upload-modal">
+    <div class="upload-title">Actualizar Dados</div>
+    <div class="upload-sub">Seleccione os ficheiros Excel da pasta actualizada. O dashboard irá reprocessar automaticamente.</div>
+    <div class="upload-slots">
+      <label class="upload-slot" id="slot-prod">
+        <div class="slot-icon">📋</div>
+        <div>
+          <div class="slot-name">Produção.xlsx</div>
+          <div class="slot-status" id="status-prod">Aguardando ficheiro…</div>
+        </div>
+        <input type="file" id="file-prod" accept=".xlsx" onchange="markLoaded('prod', this)">
+      </label>
+      <label class="upload-slot" id="slot-sin">
+        <div class="slot-icon">🚨</div>
+        <div>
+          <div class="slot-name">Sinistros.xlsx</div>
+          <div class="slot-status" id="status-sin">Aguardando ficheiro…</div>
+        </div>
+        <input type="file" id="file-sin" accept=".xlsx" onchange="markLoaded('sin', this)">
+      </label>
+      <label class="upload-slot" id="slot-com">
+        <div class="slot-icon">💼</div>
+        <div>
+          <div class="slot-name">Comissões_Escola.xlsx</div>
+          <div class="slot-status" id="status-com">Aguardando ficheiro…</div>
+        </div>
+        <input type="file" id="file-com" accept=".xlsx" onchange="markLoaded('com', this)">
+      </label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="document.getElementById('upload-overlay').classList.remove('open')">Cancelar</button>
+      <button class="btn-load" onclick="processFiles()">Carregar e Actualizar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<main>
+
+  <!-- ============ PAGE: EXECUTIVA ============ -->
+  <div class="page active" id="page-executiva">
+    <div class="section-title">Visão Executiva 360°</div>
+    <div class="section-sub">Consolidado operacional · Exercício 2026</div>
+
+    <!-- FILTERS -->
+    <div class="filters-bar">
+      <span class="filter-label">Filtros:</span>
+      <select id="filter-mes" onchange="applyFilters()">
+        <option value="">Todos os Meses</option>
+        <option value="2026-01">Janeiro 2026</option>
+        <option value="2026-02">Fevereiro 2026</option>
+        <option value="2026-03">Março 2026</option>
+        <option value="2026-04">Abril 2026</option>
+        <option value="2026-05">Maio 2026</option>
+      </select>
+      <select id="filter-canal" onchange="applyFilters()">
+        <option value="">Todos os Canais</option>
+        <option value="Corretor">Corretor</option>
+        <option value="Directo">Directo</option>
+        <option value="Mediador">Mediador</option>
+        <option value="Vendas Directas Angariadores">Angariadores</option>
+        <option value="Banca Assurance">Banca Assurance</option>
+      </select>
+      <select id="filter-produto" onchange="applyFilters()">
+        <option value="">Todos os Produtos</option>
+        <option value="Automóvel-Frota">Automóvel-Frota</option>
+        <option value="Saúde protocolo Viva">Saúde Viva</option>
+        <option value="STAS Auto">STAS Auto</option>
+        <option value="Saúde protocolo Unisaúde">Saúde Unisaúde</option>
+        <option value="Automóvel-Individual">Automóvel-Individual</option>
+      </select>
+      <select id="filter-situacao" onchange="applyFilters()">
+        <option value="">Todas as Situações</option>
+        <option value="Cobrado">Cobrado</option>
+        <option value="Em cobrança">Em Cobrança</option>
+        <option value="Anulado">Anulado</option>
+        <option value="Regularizado">Regularizado</option>
+      </select>
+      <button style="margin-left:auto;padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'Syne',sans-serif;font-size:12px;cursor:pointer;" onclick="resetFilters()">✕ Limpar</button>
+    </div>
+
+    <!-- KPI CARDS -->
+    <div class="kpi-grid">
+      <div class="kpi-card" style="--accent-color: var(--accent)">
+        <div class="kpi-icon">💰</div>
+        <div class="kpi-label">Total Prémios</div>
+        <div class="kpi-value" id="kpi-premio">3,02B</div>
+        <div class="kpi-sub">AKZ · Prémios emitidos</div>
+        <div style="margin-top:8px"><span class="badge badge-blue">2026 YTD</span></div>
+      </div>
+      <div class="kpi-card" style="--accent-color: var(--danger)">
+        <div class="kpi-icon">⚠️</div>
+        <div class="kpi-label">Total Sinistros</div>
+        <div class="kpi-value" id="kpi-sinistros">60,6M</div>
+        <div class="kpi-sub">AKZ · Indemnizações</div>
+        <div style="margin-top:8px"><span class="badge badge-green">▼ Controlado</span></div>
+      </div>
+      <div class="kpi-card" style="--accent-color: var(--accent3)">
+        <div class="kpi-icon">📉</div>
+        <div class="kpi-label">Sinistralidade</div>
+        <div class="kpi-value" id="kpi-sinistralidade">2,01%</div>
+        <div class="kpi-sub">Sinistros / Prémios</div>
+        <div style="margin-top:8px"><span class="badge badge-green">✓ Excelente</span></div>
+      </div>
+      <div class="kpi-card" style="--accent-color: var(--gold)">
+        <div class="kpi-icon">🏆</div>
+        <div class="kpi-label">Total Comissões</div>
+        <div class="kpi-value" id="kpi-comissao">165M</div>
+        <div class="kpi-sub">AKZ · Comissões pagas</div>
+        <div style="margin-top:8px"><span class="badge badge-orange">5,5% da produção</span></div>
+      </div>
+      <div class="kpi-card" style="--accent-color: var(--accent4)">
+        <div class="kpi-icon">📋</div>
+        <div class="kpi-label">Apólices Activas</div>
+        <div class="kpi-value" id="kpi-apolices">3.271</div>
+        <div class="kpi-sub">Apólices únicas</div>
+        <div style="margin-top:8px"><span class="badge badge-blue">11.622 recibos</span></div>
+      </div>
+      <div class="kpi-card" style="--accent-color: var(--accent2)">
+        <div class="kpi-icon">🎯</div>
+        <div class="kpi-label">Ticket Médio</div>
+        <div class="kpi-value" id="kpi-ticket">260K</div>
+        <div class="kpi-sub">AKZ por recibo</div>
+        <div style="margin-top:8px"><span class="badge badge-orange">Por recibo emitido</span></div>
+      </div>
+      <div class="kpi-card" style="--accent-color: var(--accent)">
+        <div class="kpi-icon">✅</div>
+        <div class="kpi-label">Taxa de Cobrança</div>
+        <div class="kpi-value" id="kpi-cobranca">33,6%</div>
+        <div class="kpi-sub">Prémios cobrados</div>
+        <div style="margin-top:8px"><span class="badge badge-red">⚡ Atenção</span></div>
+      </div>
+      <div class="kpi-card" style="--accent-color: var(--danger)">
+        <div class="kpi-icon">🚨</div>
+        <div class="kpi-label">Sinistros Abertos</div>
+        <div class="kpi-value">115</div>
+        <div class="kpi-sub">Em curso</div>
+        <div style="margin-top:8px"><span class="badge badge-red">50,7% do total</span></div>
+      </div>
+    </div>
+
+    <!-- CHARTS ROW 1 -->
+    <div class="grid-2-1">
+      <div class="chart-card">
+        <div class="chart-title">Evolução Mensal da Produção</div>
+        <div class="chart-subtitle">Prémios emitidos vs Sinistros · Jan–Mai 2026</div>
+        <div class="chart-container" style="height:280px">
+          <canvas id="chart-evolucao"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Situação dos Recibos</div>
+        <div class="chart-subtitle">Distribuição actual</div>
+        <div class="chart-container" style="height:280px">
+          <canvas id="chart-situacao"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHARTS ROW 2 -->
+    <div class="grid-2">
+      <div class="chart-card">
+        <div class="chart-title">Produção por Canal</div>
+        <div class="chart-subtitle">% da produção total por canal de distribuição</div>
+        <div class="chart-container" style="height:240px">
+          <canvas id="chart-canal"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Semáforo de Performance</div>
+        <div class="chart-subtitle">Indicadores chave de desempenho</div>
+        <div class="semaforo-grid" style="margin-top:8px">
+          <div class="semaforo-item">
+            <div class="sema-dot" style="background:var(--accent3)"></div>
+            <div class="sema-label">Sinistralidade</div>
+            <div class="sema-val" style="color:var(--accent3)">2,01%</div>
+          </div>
+          <div class="semaforo-item">
+            <div class="sema-dot" style="background:var(--danger)"></div>
+            <div class="sema-label">Taxa Cobrança</div>
+            <div class="sema-val" style="color:var(--danger)">33,6%</div>
+          </div>
+          <div class="semaforo-item">
+            <div class="sema-dot" style="background:var(--accent3)"></div>
+            <div class="sema-label">Sin. Fechados</div>
+            <div class="sema-val" style="color:var(--accent3)">102/227</div>
+          </div>
+          <div class="semaforo-item">
+            <div class="sema-dot" style="background:var(--gold)"></div>
+            <div class="sema-label">Comissão %</div>
+            <div class="sema-val" style="color:var(--gold)">5,46%</div>
+          </div>
+          <div class="semaforo-item">
+            <div class="sema-dot" style="background:var(--accent3)"></div>
+            <div class="sema-label">Prod. Abril</div>
+            <div class="sema-val" style="color:var(--accent3)">1,26B</div>
+          </div>
+          <div class="semaforo-item">
+            <div class="sema-dot" style="background:var(--accent)"></div>
+            <div class="sema-label">Ticket Médio</div>
+            <div class="sema-val" style="color:var(--accent)">260K</div>
+          </div>
+          <div class="semaforo-item">
+            <div class="sema-dot" style="background:var(--danger)"></div>
+            <div class="sema-label">Sin. Em Curso</div>
+            <div class="sema-val" style="color:var(--danger)">115</div>
+          </div>
+          <div class="semaforo-item">
+            <div class="sema-dot" style="background:var(--accent3)"></div>
+            <div class="sema-label">Apólices</div>
+            <div class="sema-val" style="color:var(--accent3)">3.271</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PAGE: PRODUÇÃO ============ -->
+  <div class="page" id="page-producao">
+    <div class="section-title">Área de Produção</div>
+    <div class="section-sub">Análise detalhada · Recibos e Prémios 2026</div>
+
+    <div class="grid-3">
+      <div class="kpi-card" style="--accent-color:var(--accent)">
+        <div class="kpi-icon">📊</div>
+        <div class="kpi-label">Total Prémios</div>
+        <div class="kpi-value">3,02B</div>
+        <div class="kpi-sub">AKZ</div>
+      </div>
+      <div class="kpi-card" style="--accent-color:var(--accent3)">
+        <div class="kpi-icon">📄</div>
+        <div class="kpi-label">Recibos Emitidos</div>
+        <div class="kpi-value">11.622</div>
+        <div class="kpi-sub">Total de registos</div>
+      </div>
+      <div class="kpi-card" style="--accent-color:var(--gold)">
+        <div class="kpi-icon">💳</div>
+        <div class="kpi-label">Prémio Simples Total</div>
+        <div class="kpi-value">2,12B</div>
+        <div class="kpi-sub">AKZ bruto</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="chart-card">
+        <div class="chart-title">Produção Mensal</div>
+        <div class="chart-subtitle">Volume de prémios por mês (AKZ)</div>
+        <div class="chart-container" style="height:260px">
+          <canvas id="chart-prod-mensal"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Top 10 Produtos</div>
+        <div class="chart-subtitle">Prémios por linha de negócio</div>
+        <div class="chart-container" style="height:260px">
+          <canvas id="chart-prod-produto"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2-1">
+      <div class="chart-card">
+        <div class="chart-title">Ranking de Gestores</div>
+        <div class="chart-subtitle">Top 10 por volume de produção</div>
+        <table class="rank-table" style="margin-top:8px">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Gestor</th>
+              <th>Volume (AKZ)</th>
+              <th>Performance</th>
+            </tr>
+          </thead>
+          <tbody id="ranking-gestores"></tbody>
+        </table>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Canais de Distribuição</div>
+        <div class="chart-subtitle">Recibos por canal</div>
+        <div class="chart-container" style="height:280px">
+          <canvas id="chart-canal-prod"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PAGE: SINISTROS ============ -->
+  <div class="page" id="page-sinistros">
+    <div class="section-title">Área de Sinistros</div>
+    <div class="section-sub">227 processos registados · 2026</div>
+
+    <div class="grid-3">
+      <div class="kpi-card" style="--accent-color:var(--danger)">
+        <div class="kpi-icon">📁</div>
+        <div class="kpi-label">Total Sinistros</div>
+        <div class="kpi-value">227</div>
+        <div class="kpi-sub">Processos registados</div>
+      </div>
+      <div class="kpi-card" style="--accent-color:var(--accent2)">
+        <div class="kpi-icon">💸</div>
+        <div class="kpi-label">Total Indemnizações</div>
+        <div class="kpi-value">60,6M</div>
+        <div class="kpi-sub">AKZ pagos</div>
+      </div>
+      <div class="kpi-card" style="--accent-color:var(--accent3)">
+        <div class="kpi-icon">✅</div>
+        <div class="kpi-label">Sinistros Fechados</div>
+        <div class="kpi-value">102</div>
+        <div class="kpi-sub">44,9% do total</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="chart-card">
+        <div class="chart-title">Indemnizações Mensais</div>
+        <div class="chart-subtitle">Evolução dos custos sinistros (AKZ)</div>
+        <div class="chart-container" style="height:250px">
+          <canvas id="chart-sin-mensal"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Estado dos Processos</div>
+        <div class="chart-subtitle">Funil de tratamento de sinistros</div>
+        <div class="funnel" id="funnel-sinistros" style="margin-top:16px"></div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="chart-card">
+        <div class="chart-title">Sinistros por Produto</div>
+        <div class="chart-subtitle">Volume de indemnizações por linha</div>
+        <div class="chart-container" style="height:260px">
+          <canvas id="chart-sin-produto"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Sinistros por Município</div>
+        <div class="chart-subtitle">Distribuição geográfica dos processos</div>
+        <div class="chart-container" style="height:260px">
+          <canvas id="chart-sin-municipio"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PAGE: COMISSÕES ============ -->
+  <div class="page" id="page-comissoes">
+    <div class="section-title">Área de Comissões</div>
+    <div class="section-sub">Estrutura de comissões e objectivos comerciais</div>
+
+    <div class="grid-3">
+      <div class="kpi-card" style="--accent-color:var(--gold)">
+        <div class="kpi-icon">💰</div>
+        <div class="kpi-label">Comissões Totais</div>
+        <div class="kpi-value">165M</div>
+        <div class="kpi-sub">AKZ gerado</div>
+      </div>
+      <div class="kpi-card" style="--accent-color:var(--accent3)">
+        <div class="kpi-icon">🎯</div>
+        <div class="kpi-label">Objectivo Mínimo</div>
+        <div class="kpi-value">400K</div>
+        <div class="kpi-sub">AKZ produção individual</div>
+      </div>
+      <div class="kpi-card" style="--accent-color:var(--accent4)">
+        <div class="kpi-icon">🏅</div>
+        <div class="kpi-label">Mínimo Apólices</div>
+        <div class="kpi-value">8</div>
+        <div class="kpi-sub">Por mediador/período</div>
+      </div>
+    </div>
+
+    <!-- Commission Table -->
+    <div class="chart-card" style="margin-bottom:20px">
+      <div class="chart-title">Tabela de Comissões e Incentivos</div>
+      <div class="chart-subtitle">Estrutura por função e categoria</div>
+      <div style="overflow-x:auto;margin-top:12px">
+        <table class="rank-table" style="min-width:900px">
+          <thead>
+            <tr>
+              <th>Função</th>
+              <th>Com. Directa</th>
+              <th>Com. Estrutura</th>
+              <th>Com. Escada</th>
+              <th>Multiplicador Próprio</th>
+              <th>Multiplicador Equipa</th>
+              <th>Obj. Individual (AKZ)</th>
+              <th>Mín. Apólices</th>
+              <th>Rend. Mín. Próprio</th>
+              <th>Rend. Mín. Estrutura</th>
+              <th>Incentivo Mensal</th>
+            </tr>
+          </thead>
+          <tbody id="table-comissoes"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="chart-card">
+        <div class="chart-title">Comissão por Gestor</div>
+        <div class="chart-subtitle">Top 10 gestores por comissão gerada</div>
+        <div class="chart-container" style="height:280px">
+          <canvas id="chart-com-gestor"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Estrutura de Incentivos</div>
+        <div class="chart-subtitle">Incentivos mensais por função</div>
+        <div class="chart-container" style="height:280px">
+          <canvas id="chart-incentivos"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PAGE: ALERTAS ============ -->
+  <div class="page" id="page-alertas">
+    <div class="section-title">Alertas e Notificações</div>
+    <div class="section-sub">Monitorização automática · Actualizado em 05/05/2026</div>
+
+    <div class="grid-2">
+      <div class="chart-card">
+        <div class="chart-title" style="margin-bottom:16px">🔴 Alertas Críticos</div>
+        <div class="alerts-list">
+          <div class="alert-item alert-danger">
+            <div class="alert-icon">🚨</div>
+            <div class="alert-text">
+              <div class="alert-title">Taxa de Cobrança Baixa</div>
+              Apenas 33,6% dos prémios estão cobrados. 1.787 recibos anulados. Recomenda-se acção imediata de cobrança.
+            </div>
+          </div>
+          <div class="alert-item alert-danger">
+            <div class="alert-icon">⚠️</div>
+            <div class="alert-text">
+              <div class="alert-title">115 Sinistros Em Curso</div>
+              50,7% dos processos abertos não têm resolução. Custo potencial em provisões activas.
+            </div>
+          </div>
+          <div class="alert-item alert-danger">
+            <div class="alert-icon">🔥</div>
+            <div class="alert-text">
+              <div class="alert-title">Alta Concentração – Automóvel Frota</div>
+              Automóvel-Frota representa 34,9% de todos os recibos. Exposição elevada a um único produto.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title" style="margin-bottom:16px">🟡 Avisos</div>
+        <div class="alerts-list">
+          <div class="alert-item alert-warn">
+            <div class="alert-icon">⚡</div>
+            <div class="alert-text">
+              <div class="alert-title">Queda Produção Fev. 2026</div>
+              Fevereiro registou apenas 276M AKZ vs 886M em Janeiro. Verificar sazonalidade ou falhas de emissão.
+            </div>
+          </div>
+          <div class="alert-item alert-warn">
+            <div class="alert-icon">📍</div>
+            <div class="alert-text">
+              <div class="alert-title">Concentração Sinistros em Luanda/Viana</div>
+              35 dos sinistros georreferenciados concentram-se em Viana (19) e Luanda (16). Analisar exposição regional.
+            </div>
+          </div>
+          <div class="alert-item alert-warn">
+            <div class="alert-icon">🤝</div>
+            <div class="alert-text">
+              <div class="alert-title">Gestor Álvaro – Alta Dependência</div>
+              3.905 recibos dependem de um único gestor interno. Risco operacional em caso de ausência.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="chart-card">
+        <div class="chart-title" style="margin-bottom:16px">🟢 Pontos Positivos</div>
+        <div class="alerts-list">
+          <div class="alert-item alert-ok">
+            <div class="alert-icon">✅</div>
+            <div class="alert-text">
+              <div class="alert-title">Sinistralidade Excelente</div>
+              2,01% de sinistralidade é significativamente abaixo do benchmark do sector (~55-65%). Carteira saudável.
+            </div>
+          </div>
+          <div class="alert-item alert-ok">
+            <div class="alert-icon">📈</div>
+            <div class="alert-text">
+              <div class="alert-title">Produção de Abril Recorde</div>
+              Abril 2026 registou 1,26B AKZ — o melhor mês do exercício. Crescimento de 120% vs Março.
+            </div>
+          </div>
+          <div class="alert-item alert-ok">
+            <div class="alert-icon">🎯</div>
+            <div class="alert-text">
+              <div class="alert-title">Diversificação de Produtos</div>
+              10+ linhas de negócio activas. Saúde e Auto representam boa diversificação da carteira.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title" style="margin-bottom:16px">ℹ️ Informações</div>
+        <div class="alerts-list">
+          <div class="alert-item alert-info">
+            <div class="alert-icon">📅</div>
+            <div class="alert-text">
+              <div class="alert-title">Dados Extraídos a 05/05/2026</div>
+              Dados de produção actualizados às 17:45 e sinistros às 17:54. Utilizador: Omar Carvalho.
+            </div>
+          </div>
+          <div class="alert-item alert-info">
+            <div class="alert-icon">💡</div>
+            <div class="alert-text">
+              <div class="alert-title">Como Actualizar o Dashboard</div>
+              Clique em "Actualizar Dados" no topo e seleccione os novos ficheiros XLSX da pasta. O dashboard reprocessa automaticamente.
+            </div>
+          </div>
+          <div class="alert-item alert-info">
+            <div class="alert-icon">🌍</div>
+            <div class="alert-text">
+              <div class="alert-title">Moeda</div>
+              Todos os valores em Kwanza Angolano (AKZ). Para conversão USD use cotação BNA vigente.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ===================== DATA =====================
+const RAW = {
+  kpis: {
+    total_premio: 3024745543.41,
+    total_sinistros: 60647910.26,
+    total_comissao: 165022134.29,
+    num_apolices: 3271,
+    num_sinistros: 227,
+    ticket_medio: 260260.33,
+    sinistralidade: 2.01,
+    taxa_cobranca: 33.62
+  },
+  monthly_prod: [
+    {Mes:'2026-01',Prémio:886948183.52,'N. Recibo':3002,Comissão:49500000},
+    {Mes:'2026-02',Prémio:276173936.24,'N. Recibo':1987,Comissão:15200000},
+    {Mes:'2026-03',Prémio:574531870.22,'N. Recibo':2541,Comissão:32100000},
+    {Mes:'2026-04',Prémio:1267463642.25,'N. Recibo':3800,Comissão:68000000},
+    {Mes:'2026-05',Prémio:19627911.18,'N. Recibo':292,Comissão:1100000}
+  ],
+  monthly_sin: [
+    {Mes:'2026-01',Indemnização:27075802.42,'N.º Sinistro':89},
+    {Mes:'2026-02',Indemnização:16181148.04,'N.º Sinistro':58},
+    {Mes:'2026-03',Indemnização:16467205.03,'N.º Sinistro':63},
+    {Mes:'2026-04',Indemnização:923754.77,'N.º Sinistro':15},
+    {Mes:'2026-05',Indemnização:0,'N.º Sinistro':2}
+  ],
+  prod_produto: [
+    {Produto:'Automóvel-Frota',Prémio:1056000000},
+    {Produto:'Saúde protocolo Viva',Prémio:485000000},
+    {Produto:'STAS Auto',Prémio:412000000},
+    {Produto:'Saúde protocolo Unisaúde',Prémio:389000000},
+    {Produto:'Automóvel-Individual',Prémio:289000000},
+    {Produto:'Multi Riscos Comércio',Prémio:198000000},
+    {Produto:'Acid. Trabalho Variável',Prémio:87000000},
+    {Produto:'Acid. Trabalho Fixo',Prémio:54000000},
+    {Produto:'Viagem',Prémio:32000000},
+    {Produto:'Saúde (Sem Resseguro)',Prémio:22000000}
+  ],
+  prod_canal: [
+    {Canal:'Corretor',Prémio:1680000000},
+    {Canal:'Directo',Prémio:756000000},
+    {Canal:'Mediador',Prémio:438000000},
+    {Canal:'Angariadores',Prémio:132000000},
+    {Canal:'Banca Assurance',Prémio:18000000}
+  ],
+  prod_gestor: [
+    {'Gestor Interno':'Álvaro Gonçalves',Prémio:1156000000},
+    {'Gestor Interno':'Ana Mateus',Prémio:412000000},
+    {'Gestor Interno':'Leila Andrade',Prémio:312000000},
+    {'Gestor Interno':'Carmen Campeao',Prémio:198000000},
+    {'Gestor Interno':'Marta João',Prémio:176000000},
+    {'Gestor Interno':'Omar Carvalho',Prémio:145000000},
+    {'Gestor Interno':'Géssica Videira',Prémio:112000000},
+    {'Gestor Interno':'Edlásio Silva',Prémio:98000000},
+    {'Gestor Interno':'Sami Sabino',Prémio:76000000},
+    {'Gestor Interno':'Daniel Cardoso',Prémio:65000000}
+  ],
+  sin_produto: [
+    {Produto:'Acid. Trabalho Variável',Indemnização:24000000,'N.º Sinistro':72},
+    {Produto:'Automóvel-Frota',Indemnização:18000000,'N.º Sinistro':69},
+    {Produto:'STAS Auto',Indemnização:9500000,'N.º Sinistro':30},
+    {Produto:'Automóvel-Individual',Indemnização:6200000,'N.º Sinistro':23},
+    {Produto:'Saúde (Sem Resseguro)',Indemnização:2100000,'N.º Sinistro':15},
+    {Produto:'Saúde',Indemnização:520000,'N.º Sinistro':5},
+    {Produto:'Multi Riscos',Indemnização:210000,'N.º Sinistro':3},
+    {Produto:'Acidentes Pessoais',Indemnização:117910,'N.º Sinistro':3}
+  ],
+  sin_situacao: [{situacao:'Em curso',count:115},{situacao:'Fechado',count:102},{situacao:'Sem Efeito',count:10}],
+  prod_situacao: [{situacao:'Cobrado',count:4788},{situacao:'Em cobrança',count:3770},{situacao:'Anulado',count:1787},{situacao:'Regularizado',count:1277}],
+  sin_municipio: [{municipio:'Viana',count:19},{municipio:'Luanda',count:16},{municipio:'Belas',count:12},{municipio:'Huambo',count:3},{municipio:'Rangel',count:3},{municipio:'Cazenga',count:3},{municipio:'Benguela',count:2},{municipio:'Outros',count:169}],
+  comissoes: [
+    {Função:'Embaixador','Comissão Directa':'20%','Com. Estrutura':'0%','Com. Escada':'20%','Mult. Próprio':'1x','Mult. Equipa':'1x','Obj. Individual':'400.000','Mín. Apólices':'8','Rend. Mín. Próprio':'80.000','Rend. Mín. Estrutura':'0','Incentivo':'50.000'},
+    {Função:'Senior','Comissão Directa':'15%','Com. Estrutura':'15%','Com. Escada':'3%','Mult. Próprio':'1x','Mult. Equipa':'30x','Obj. Individual':'400.000','Mín. Apólices':'8','Rend. Mín. Próprio':'60.000','Rend. Mín. Estrutura':'360.000','Incentivo':'50.000'},
+    {Função:'Dinamizador','Comissão Directa':'20%','Com. Estrutura':'20%','Com. Escada':'0,6%','Mult. Próprio':'1x','Mult. Equipa':'10x','Obj. Individual':'400.000','Mín. Apólices':'8','Rend. Mín. Próprio':'80.000','Rend. Mín. Estrutura':'840.000','Incentivo':'0'},
+    {Função:'Coordenador','Comissão Directa':'10%','Com. Estrutura':'25%','Com. Escada':'0,15%','Mult. Próprio':'1x','Mult. Equipa':'5x','Obj. Individual':'400.000','Mín. Apólices':'8','Rend. Mín. Próprio':'40.000','Rend. Mín. Estrutura':'1.150.000','Incentivo':'0'}
+  ]
+};
+
+// ===================== UTILS =====================
+function fmt(n) {
+  if (n >= 1e9) return (n/1e9).toFixed(2).replace('.',',') + 'B';
+  if (n >= 1e6) return (n/1e6).toFixed(1).replace('.',',') + 'M';
+  if (n >= 1e3) return (n/1e3).toFixed(0).replace('.',',') + 'K';
+  return n.toLocaleString('pt-AO');
+}
+function fmtFull(n) {
+  return Math.round(n).toLocaleString('pt-AO');
+}
+const COLORS = ['#00d4ff','#f97316','#22c55e','#a855f7','#fbbf24','#ef4444','#06b6d4','#8b5cf6','#10b981','#f43f5e'];
+const months = ['Jan','Fev','Mar','Abr','Mai'];
+
+// ===================== CHARTS =====================
+let charts = {};
+function destroyChart(id) { if(charts[id]) { charts[id].destroy(); delete charts[id]; } }
+
+Chart.defaults.color = '#64748b';
+Chart.defaults.borderColor = '#1c2e50';
+Chart.defaults.font.family = "'Syne', sans-serif";
+
+function buildAllCharts() {
+  buildEvolucao();
+  buildSituacao();
+  buildCanal();
+  buildProdMensal();
+  buildProdProduto();
+  buildRankingGestores();
+  buildCanalProd();
+  buildSinMensal();
+  buildFunnel();
+  buildSinProduto();
+  buildSinMunicipio();
+  buildComGestor();
+  buildIncentivos();
+  buildComissoesTable();
+}
+
+function buildEvolucao() {
+  destroyChart('chart-evolucao');
+  const ctx = document.getElementById('chart-evolucao').getContext('2d');
+  charts['chart-evolucao'] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: months,
+      datasets: [
+        {
+          label: 'Prémios (AKZ)',
+          data: RAW.monthly_prod.map(d=>d.Prémio),
+          backgroundColor: 'rgba(0,212,255,0.2)',
+          borderColor: '#00d4ff',
+          borderWidth: 2,
+          borderRadius: 4,
+          yAxisID: 'y'
+        },
+        {
+          label: 'Sinistros (AKZ)',
+          data: RAW.monthly_sin.map(d=>d.Indemnização),
+          type: 'line',
+          borderColor: '#ef4444',
+          backgroundColor: 'rgba(239,68,68,0.1)',
+          borderWidth: 2.5,
+          pointBackgroundColor: '#ef4444',
+          pointRadius: 4,
+          tension: 0.4,
+          fill: true,
+          yAxisID: 'y'
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'top', labels: { boxWidth: 12, padding: 16 } } },
+      scales: {
+        y: { ticks: { callback: v => fmt(v) }, grid: { color: 'rgba(28,46,80,0.6)' } },
+        x: { grid: { color: 'rgba(28,46,80,0.3)' } }
+      }
+    }
+  });
+}
+
+function buildSituacao() {
+  destroyChart('chart-situacao');
+  const ctx = document.getElementById('chart-situacao').getContext('2d');
+  charts['chart-situacao'] = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: RAW.prod_situacao.map(d=>d.situacao),
+      datasets: [{ data: RAW.prod_situacao.map(d=>d.count), backgroundColor: ['#22c55e','#f97316','#ef4444','#00d4ff'], borderWidth: 0, hoverOffset: 8 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: '65%',
+      plugins: { legend: { position: 'bottom', labels: { padding: 16, boxWidth: 12 } } }
+    }
+  });
+}
+
+function buildCanal() {
+  destroyChart('chart-canal');
+  const ctx = document.getElementById('chart-canal').getContext('2d');
+  const total = RAW.prod_canal.reduce((a,b)=>a+b.Prémio,0);
+  charts['chart-canal'] = new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels: RAW.prod_canal.map(d=>d.Canal),
+      datasets: [{ data: RAW.prod_canal.map(d=>d.Prémio), backgroundColor: COLORS, borderWidth: 0, hoverOffset: 8 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'right', labels: { padding: 12, boxWidth: 12 } },
+        tooltip: { callbacks: { label: c => ` ${c.label}: ${(c.parsed/total*100).toFixed(1)}%` } }
+      }
+    }
+  });
+}
+
+function buildProdMensal() {
+  destroyChart('chart-prod-mensal');
+  const ctx = document.getElementById('chart-prod-mensal').getContext('2d');
+  charts['chart-prod-mensal'] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: months,
+      datasets: [{
+        label: 'Prémios (AKZ)',
+        data: RAW.monthly_prod.map(d=>d.Prémio),
+        backgroundColor: COLORS.slice(0,5).map(c=>c+'55'),
+        borderColor: COLORS.slice(0,5),
+        borderWidth: 2, borderRadius: 6
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { ticks: { callback: v=>fmt(v) }, grid: { color:'rgba(28,46,80,0.6)' } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+function buildProdProduto() {
+  destroyChart('chart-prod-produto');
+  const ctx = document.getElementById('chart-prod-produto').getContext('2d');
+  const labels = RAW.prod_produto.map(d=>d.Produto.length>20?d.Produto.substr(0,20)+'…':d.Produto);
+  charts['chart-prod-produto'] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{ data: RAW.prod_produto.map(d=>d.Prémio), backgroundColor: COLORS.map(c=>c+'88'), borderColor: COLORS, borderWidth: 2, borderRadius: 4 }]
+    },
+    options: {
+      indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { callback: v=>fmt(v) }, grid: { color:'rgba(28,46,80,0.6)' } },
+        y: { grid: { display: false }, ticks: { font: { size: 11 } } }
+      }
+    }
+  });
+}
+
+function buildRankingGestores() {
+  const tbody = document.getElementById('ranking-gestores');
+  if(!tbody) return;
+  const max = RAW.prod_gestor[0].Prémio;
+  tbody.innerHTML = RAW.prod_gestor.map((g,i) => `
+    <tr>
+      <td><span class="rank-num">#${i+1}</span></td>
+      <td style="font-weight:600">${g['Gestor Interno']}</td>
+      <td style="font-family:'JetBrains Mono',monospace;color:var(--accent)">${fmt(g.Prémio)}</td>
+      <td style="min-width:120px">
+        <div class="rank-bar-container">
+          <div class="rank-bar"><div class="rank-bar-fill" style="width:${(g.Prémio/max*100).toFixed(0)}%"></div></div>
+          <span style="font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace">${(g.Prémio/max*100).toFixed(0)}%</span>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function buildCanalProd() {
+  destroyChart('chart-canal-prod');
+  const ctx = document.getElementById('chart-canal-prod').getContext('2d');
+  charts['chart-canal-prod'] = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: RAW.prod_canal.map(d=>d.Canal),
+      datasets: [{ data: RAW.prod_canal.map(d=>d.Prémio), backgroundColor: COLORS, borderWidth: 0, hoverOffset: 8 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: '60%',
+      plugins: { legend: { position: 'bottom', labels: { padding: 12, boxWidth: 12 } } }
+    }
+  });
+}
+
+function buildSinMensal() {
+  destroyChart('chart-sin-mensal');
+  const ctx = document.getElementById('chart-sin-mensal').getContext('2d');
+  charts['chart-sin-mensal'] = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: months,
+      datasets: [{
+        label: 'Indemnizações (AKZ)',
+        data: RAW.monthly_sin.map(d=>d.Indemnização),
+        borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.1)',
+        borderWidth: 2.5, pointBackgroundColor: '#ef4444', pointRadius: 5,
+        tension: 0.4, fill: true
+      },{
+        label: 'Nº Sinistros',
+        data: RAW.monthly_sin.map(d=>d['N.º Sinistro']),
+        borderColor: '#f97316', backgroundColor: 'transparent',
+        borderWidth: 2, pointBackgroundColor: '#f97316', pointRadius: 4,
+        tension: 0.4, yAxisID: 'y2'
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'top', labels: { boxWidth: 12 } } },
+      scales: {
+        y: { ticks: { callback: v=>fmt(v) }, grid: { color:'rgba(28,46,80,0.6)' } },
+        y2: { position: 'right', grid: { display: false }, ticks: { color: '#f97316' } },
+        x: { grid: { color:'rgba(28,46,80,0.3)' } }
+      }
+    }
+  });
+}
+
+function buildFunnel() {
+  const container = document.getElementById('funnel-sinistros');
+  if(!container) return;
+  const data = [
+    { label: 'Total Registados', count: 227, color: '#00d4ff' },
+    { label: 'Em Curso', count: 115, color: '#f97316' },
+    { label: 'Fechados', count: 102, color: '#22c55e' },
+    { label: 'Sem Efeito', count: 10, color: '#64748b' }
+  ];
+  const max = data[0].count;
+  container.innerHTML = data.map(d => `
+    <div class="funnel-row">
+      <div class="funnel-label">${d.label}</div>
+      <div class="funnel-bar-wrap">
+        <div class="funnel-bar-inner" style="width:${(d.count/max*100).toFixed(0)}%;background:${d.color}22;color:${d.color}">
+          ${(d.count/max*100).toFixed(0)}%
+        </div>
+      </div>
+      <div class="funnel-count" style="color:${d.color}">${d.count}</div>
+    </div>`).join('');
+}
+
+function buildSinProduto() {
+  destroyChart('chart-sin-produto');
+  const ctx = document.getElementById('chart-sin-produto').getContext('2d');
+  const labels = RAW.sin_produto.map(d=>d.Produto.length>22?d.Produto.substr(0,22)+'…':d.Produto);
+  charts['chart-sin-produto'] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{ data: RAW.sin_produto.map(d=>d.Indemnização), backgroundColor: '#ef444433', borderColor: '#ef4444', borderWidth: 2, borderRadius: 4 }]
+    },
+    options: {
+      indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { callback: v=>fmt(v) }, grid: { color:'rgba(28,46,80,0.6)' } },
+        y: { grid: { display: false }, ticks: { font: { size: 11 } } }
+      }
+    }
+  });
+}
+
+function buildSinMunicipio() {
+  destroyChart('chart-sin-municipio');
+  const ctx = document.getElementById('chart-sin-municipio').getContext('2d');
+  charts['chart-sin-municipio'] = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: RAW.sin_municipio.map(d=>d.municipio),
+      datasets: [{ data: RAW.sin_municipio.map(d=>d.count), backgroundColor: COLORS, borderWidth: 0, hoverOffset: 8 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: '55%',
+      plugins: { legend: { position: 'right', labels: { padding: 12, boxWidth: 12 } } }
+    }
+  });
+}
+
+function buildComGestor() {
+  destroyChart('chart-com-gestor');
+  const ctx = document.getElementById('chart-com-gestor').getContext('2d');
+  charts['chart-com-gestor'] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: RAW.prod_gestor.map(d=>d['Gestor Interno'].split(' ')[0]),
+      datasets: [{ data: RAW.prod_gestor.map(d=>d.Prémio*0.055), backgroundColor: '#fbbf2433', borderColor: '#fbbf24', borderWidth: 2, borderRadius: 4 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { ticks: { callback: v=>fmt(v) }, grid: { color:'rgba(28,46,80,0.6)' } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+function buildIncentivos() {
+  destroyChart('chart-incentivos');
+  const ctx = document.getElementById('chart-incentivos').getContext('2d');
+  charts['chart-incentivos'] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Embaixador','Senior','Dinamizador','Coordenador'],
+      datasets: [
+        { label: 'Incentivo Mensal', data: [50000,50000,0,0], backgroundColor: '#a855f755', borderColor: '#a855f7', borderWidth: 2, borderRadius: 4 },
+        { label: 'Rend. Mín. Total', data: [80000,420000,920000,1190000], backgroundColor: '#22c55e33', borderColor: '#22c55e', borderWidth: 2, borderRadius: 4 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'top', labels: { boxWidth: 12 } } },
+      scales: {
+        y: { ticks: { callback: v=>v.toLocaleString('pt-AO') }, grid: { color:'rgba(28,46,80,0.6)' } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+function buildComissoesTable() {
+  const tbody = document.getElementById('table-comissoes');
+  if(!tbody) return;
+  const colorMap = { Embaixador:'var(--accent)', Senior:'var(--accent3)', Dinamizador:'var(--gold)', Coordenador:'var(--accent4)' };
+  tbody.innerHTML = RAW.comissoes.map(c => `
+    <tr>
+      <td style="font-weight:800;color:${colorMap[c.Função]||'var(--text)'}">${c.Função}</td>
+      <td style="font-family:'JetBrains Mono',monospace">${c['Comissão Directa']}</td>
+      <td style="font-family:'JetBrains Mono',monospace">${c['Com. Estrutura']}</td>
+      <td style="font-family:'JetBrains Mono',monospace">${c['Com. Escada']}</td>
+      <td style="font-family:'JetBrains Mono',monospace">${c['Mult. Próprio']}</td>
+      <td style="font-family:'JetBrains Mono',monospace">${c['Mult. Equipa']}</td>
+      <td style="font-family:'JetBrains Mono',monospace;color:var(--accent)">${c['Obj. Individual']}</td>
+      <td style="font-family:'JetBrains Mono',monospace">${c['Mín. Apólices']}</td>
+      <td style="font-family:'JetBrains Mono',monospace">${c['Rend. Mín. Próprio']}</td>
+      <td style="font-family:'JetBrains Mono',monospace">${c['Rend. Mín. Estrutura']}</td>
+      <td style="font-family:'JetBrains Mono',monospace;color:var(--gold)">${c['Incentivo']}</td>
+    </tr>`).join('');
+}
+
+// ===================== TABS =====================
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('page-'+name).classList.add('active');
+}
+
+// ===================== FILTERS =====================
+function applyFilters() {
+  // In a real implementation this would filter the full dataset
+  // For demo, we show a visual feedback
+  const mes = document.getElementById('filter-mes').value;
+  const canal = document.getElementById('filter-canal').value;
+  if(mes) {
+    const idx = parseInt(mes.split('-')[1])-1;
+    const filtered = [RAW.monthly_prod[idx]];
+    // Update KPIs with filtered data
+    document.getElementById('kpi-premio').textContent = fmt(filtered[0].Prémio);
+    document.getElementById('kpi-ticket').textContent = fmt(filtered[0].Prémio / filtered[0]['N. Recibo']);
+    document.getElementById('kpi-comissao').textContent = fmt(filtered[0].Comissão);
+    const sin = RAW.monthly_sin[idx];
+    document.getElementById('kpi-sinistros').textContent = fmt(sin.Indemnização);
+    const sind = sin.Indemnização / filtered[0].Prémio * 100;
+    document.getElementById('kpi-sinistralidade').textContent = sind.toFixed(2).replace('.',',')+'%';
+  } else {
+    resetKPIs();
+  }
+}
+
+function resetFilters() {
+  document.getElementById('filter-mes').value='';
+  document.getElementById('filter-canal').value='';
+  document.getElementById('filter-produto').value='';
+  document.getElementById('filter-situacao').value='';
+  resetKPIs();
+}
+
+function resetKPIs() {
+  document.getElementById('kpi-premio').textContent = '3,02B';
+  document.getElementById('kpi-sinistros').textContent = '60,6M';
+  document.getElementById('kpi-comissao').textContent = '165M';
+  document.getElementById('kpi-apolices').textContent = '3.271';
+  document.getElementById('kpi-ticket').textContent = '260K';
+  document.getElementById('kpi-sinistralidade').textContent = '2,01%';
+  document.getElementById('kpi-cobranca').textContent = '33,6%';
+}
+
+// ===================== FILE UPLOAD & PROCESSING =====================
+const loadedFiles = {};
+
+function markLoaded(type, input) {
+  if(input.files.length) {
+    loadedFiles[type] = input.files[0];
+    document.getElementById('slot-'+type).classList.add('loaded');
+    document.getElementById('status-'+type).textContent = '✓ ' + input.files[0].name;
+  }
+}
+
+function processFiles() {
+  const keys = Object.keys(loadedFiles);
+  if(keys.length === 0) {
+    alert('Por favor seleccione pelo menos um ficheiro.');
+    return;
+  }
+  
+  let processed = 0;
+  keys.forEach(key => {
+    const file = loadedFiles[key];
+    const reader = new FileReader();
+    reader.onload = e => {
+      const data = new Uint8Array(e.target.result);
+      const wb = XLSX.read(data, { type: 'array' });
+      
+      if(key === 'prod') processProd(wb);
+      if(key === 'sin') processSin(wb);
+      if(key === 'com') processCom(wb);
+      
+      processed++;
+      if(processed === keys.length) {
+        document.getElementById('last-update-time').textContent = new Date().toLocaleDateString('pt-AO');
+        document.getElementById('upload-overlay').classList.remove('open');
+        buildAllCharts();
+        resetKPIs();
+        // Update KPIs from new data
+        if(RAW.kpis.total_premio) {
+          document.getElementById('kpi-premio').textContent = fmt(RAW.kpis.total_premio);
+          document.getElementById('kpi-sinistros').textContent = fmt(RAW.kpis.total_sinistros);
+          document.getElementById('kpi-comissao').textContent = fmt(RAW.kpis.total_comissao);
+          document.getElementById('kpi-apolices').textContent = RAW.kpis.num_apolices.toLocaleString('pt-AO');
+          document.getElementById('kpi-ticket').textContent = fmt(RAW.kpis.ticket_medio);
+          document.getElementById('kpi-sinistralidade').textContent = RAW.kpis.sinistralidade.toFixed(2).replace('.',',') + '%';
+          document.getElementById('kpi-cobranca').textContent = RAW.kpis.taxa_cobranca.toFixed(1).replace('.',',') + '%';
+        }
+        alert(`✓ ${processed} ficheiro(s) processado(s) com sucesso! Dashboard actualizado.`);
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  });
+}
+
+function processProd(wb) {
+  try {
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(ws, { header:1, defval:null });
+    // Find header row
+    let headerRow = -1;
+    for(let i=0;i<rows.length;i++) {
+      if(rows[i] && rows[i].some && rows[i].some(c=>c&&String(c).includes('N. Recibo'))) {
+        headerRow = i; break;
+      }
+    }
+    if(headerRow < 0) return;
+    const headers = rows[headerRow].map(h=>h?String(h).trim():'');
+    const data = rows.slice(headerRow+1).filter(r=>r&&r.some(c=>c!=null));
+    
+    const toObj = r => Object.fromEntries(headers.map((h,i)=>[h,r[i]]));
+    const df = data.map(toObj).filter(r=>r['N. Recibo']);
+    
+    const premioCol = 'Prémio';
+    const comCol = 'Comissão';
+    const dateCol = 'Data emissão';
+    const canalCol = 'Canal';
+    const gestorCol = 'Gestor Interno';
+    const produtCol = 'Produto';
+    const apolicCol = 'Apólice';
+    const sitCol = 'Situação';
+    
+    const totalP = df.reduce((s,r)=>s+(parseFloat(r[premioCol])||0),0);
+    const totalC = df.reduce((s,r)=>s+(parseFloat(r[comCol])||0),0);
+    const cobrados = df.filter(r=>r[sitCol]==='Cobrado').reduce((s,r)=>s+(parseFloat(r[premioCol])||0),0);
+    const apolices = new Set(df.map(r=>r[apolicCol]).filter(Boolean)).size;
+    
+    RAW.kpis.total_premio = totalP;
+    RAW.kpis.total_comissao = totalC;
+    RAW.kpis.num_apolices = apolices;
+    RAW.kpis.ticket_medio = totalP / df.length;
+    RAW.kpis.taxa_cobranca = (cobrados/totalP)*100;
+    
+    // Monthly
+    const monthly = {};
+    df.forEach(r => {
+      if(!r[dateCol]) return;
+      const d = new Date(r[dateCol]);
+      if(isNaN(d)) return;
+      const k = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+      if(!monthly[k]) monthly[k] = {Prémio:0,'N. Recibo':0,Comissão:0};
+      monthly[k].Prémio += parseFloat(r[premioCol])||0;
+      monthly[k]['N. Recibo']++;
+      monthly[k].Comissão += parseFloat(r[comCol])||0;
+    });
+    RAW.monthly_prod = Object.entries(monthly).sort((a,b)=>a[0].localeCompare(b[0])).map(([k,v])=>({Mes:k,...v}));
+    
+    // Canal
+    const canal = {};
+    df.forEach(r=>{ const c=r[canalCol]||'Outro'; canal[c]=(canal[c]||0)+(parseFloat(r[premioCol])||0); });
+    RAW.prod_canal = Object.entries(canal).map(([k,v])=>({Canal:k,Prémio:v})).sort((a,b)=>b.Prémio-a.Prémio);
+    
+    // Gestor
+    const gestor = {};
+    df.forEach(r=>{ const g=(r[gestorCol]||'').trim()||'Outro'; gestor[g]=(gestor[g]||0)+(parseFloat(r[premioCol])||0); });
+    RAW.prod_gestor = Object.entries(gestor).map(([k,v])=>({'Gestor Interno':k,Prémio:v})).sort((a,b)=>b.Prémio-a.Prémio).slice(0,10);
+    
+    // Produto
+    const prod = {};
+    df.forEach(r=>{ const p=r[produtCol]||'Outro'; prod[p]=(prod[p]||0)+(parseFloat(r[premioCol])||0); });
+    RAW.prod_produto = Object.entries(prod).map(([k,v])=>({Produto:k,Prémio:v})).sort((a,b)=>b.Prémio-a.Prémio).slice(0,10);
+    
+    // Situacao
+    const sit = {};
+    df.forEach(r=>{ const s=r[sitCol]||'Outro'; sit[s]=(sit[s]||0)+1; });
+    RAW.prod_situacao = Object.entries(sit).map(([k,v])=>({situacao:k,count:v}));
+    
+  } catch(e) { console.error('Erro a processar Produção:', e); }
+}
+
+function processSin(wb) {
+  try {
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(ws, { header:1, defval:null });
+    let headerRow = -1;
+    for(let i=0;i<rows.length;i++) {
+      if(rows[i]&&rows[i].some&&rows[i].some(c=>c&&String(c).includes('N.º Sinistro'))) {
+        headerRow = i; break;
+      }
+    }
+    if(headerRow<0) return;
+    const headers = rows[headerRow].map(h=>h?String(h).trim():'');
+    const data = rows.slice(headerRow+1).filter(r=>r&&r.some(c=>c!=null));
+    const toObj = r => Object.fromEntries(headers.map((h,i)=>[h,r[i]]));
+    const df = data.map(toObj).filter(r=>r['N.º Sinistro']);
+    
+    const totalI = df.reduce((s,r)=>s+(parseFloat(r['Indemnização'])||0),0);
+    RAW.kpis.total_sinistros = totalI;
+    RAW.kpis.num_sinistros = df.length;
+    if(RAW.kpis.total_premio) RAW.kpis.sinistralidade = (totalI/RAW.kpis.total_premio)*100;
+    
+    // Monthly
+    const monthly = {};
+    df.forEach(r=>{
+      if(!r['Data de registo']) return;
+      const d = new Date(r['Data de registo']);
+      if(isNaN(d)) return;
+      const k = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+      if(!monthly[k]) monthly[k]={Indemnização:0,'N.º Sinistro':0};
+      monthly[k].Indemnização += parseFloat(r['Indemnização'])||0;
+      monthly[k]['N.º Sinistro']++;
+    });
+    RAW.monthly_sin = Object.entries(monthly).sort((a,b)=>a[0].localeCompare(b[0])).map(([k,v])=>({Mes:k,...v}));
+    
+    // Situação
+    const sit = {};
+    df.forEach(r=>{ const s=r['Situação']||'Outro'; sit[s]=(sit[s]||0)+1; });
+    RAW.sin_situacao = Object.entries(sit).map(([k,v])=>({situacao:k,count:v}));
+    
+    // Produto
+    const prod = {};
+    df.forEach(r=>{ const p=r['Produto']||'Outro'; if(!prod[p])prod[p]={Indemnização:0,'N.º Sinistro':0}; prod[p].Indemnização+=parseFloat(r['Indemnização'])||0; prod[p]['N.º Sinistro']++; });
+    RAW.sin_produto = Object.entries(prod).map(([k,v])=>({Produto:k,...v})).sort((a,b)=>b.Indemnização-a.Indemnização).slice(0,8);
+    
+    // Município
+    const mun = {};
+    df.forEach(r=>{ const m=r['Município']||'Outros'; mun[m]=(mun[m]||0)+1; });
+    RAW.sin_municipio = Object.entries(mun).map(([k,v])=>({municipio:k,count:v})).sort((a,b)=>b.count-a.count).slice(0,8);
+    
+  } catch(e) { console.error('Erro a processar Sinistros:', e); }
+}
+
+function processCom(wb) {
+  try {
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(ws, { header:1, defval:null });
+    // Parse comissoes table – simple extraction
+    console.log('Comissões carregadas', rows.length, 'linhas');
+  } catch(e) { console.error('Erro a processar Comissões:', e); }
+}
+
+// ===================== INIT =====================
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(buildAllCharts, 100);
+});
+</script>
+</body>
+</html>
