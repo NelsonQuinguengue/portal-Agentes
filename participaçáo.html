@@ -35,9 +35,28 @@
             <section id="step1" class="step active space-y-6">
                 <div class="space-y-4">
                     <h2 class="text-xl font-bold">Dados do Veículo</h2>
-                    <input type="text" id="tomador" placeholder="Nome do Tomador" class="w-full bg-slate-900 border border-slate-700 p-4 rounded-xl focus:border-blue-500 outline-none">
-                    <input type="text" id="matricula" placeholder="Matrícula" class="w-full bg-slate-900 border border-slate-700 p-4 rounded-xl focus:border-blue-500 outline-none uppercase">
-                </div>
+                <!-- PASSO 1: DADOS -->
+                <section id="step1" class="step active space-y-6">
+                    <div class="space-y-4">
+                        <h2 class="text-xl font-bold">Dados do Veículo</h2>
+                        
+                        <!-- Nome do Tomador (Apenas letras) -->
+                        <input type="text" id="tomador" placeholder="Nome do Tomador" 
+                               oninput="validateName(this)"
+                               class="w-full bg-slate-900 border border-slate-700 p-4 rounded-xl focus:border-blue-500 outline-none">
+                        
+                        <!-- Telefone (Apenas números, formato 9xx xxx xxx) -->
+                        <input type="tel" id="telefone" placeholder="Telefone (Ex: 923 000 000)" maxlength="11"
+                               oninput="validatePhone(this)"
+                               class="w-full bg-slate-900 border border-slate-700 p-4 rounded-xl focus:border-blue-500 outline-none">
+                        
+                        <!-- Matrícula (Padrão Automóvel Angola) -->
+                        <input type="text" id="matricula" placeholder="Matrícula (Ex: LD-12-34-AB)" maxlength="11"
+                               oninput="validateMatricula(this)"
+                               class="w-full bg-slate-900 border border-slate-700 p-4 rounded-xl focus:border-blue-500 outline-none uppercase">
+                    </div>
+                    <button onclick="checkStep1()" class="w-full bg-blue-600 py-4 rounded-xl font-bold text-lg">Próximo</button>
+                </section>
                 <button onclick="checkStep1()" class="w-full bg-blue-600 py-4 rounded-xl font-bold text-lg">Próximo</button>
             </section>
 
@@ -343,6 +362,63 @@
             `).join('');
             nextStep(3);
         }
+
+        // Restringe o nome para aceitar apenas letras e espaços
+function validateName(input) {
+    input.value = input.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, "");
+}
+
+// Formata o telefone no padrão Angolano (9XX XXX XXX)
+function validatePhone(input) {
+    // Remove tudo o que não for número
+    let num = input.value.replace(/\D/g, "");
+    
+    // Garante que começa com o dígito 9 (opcional, remova se não quiser forçar)
+    if (num.length > 0 && num[0] !== '9') {
+        num = "";
+    }
+
+    // Aplica o espaçamento dinâmico
+    if (num.length > 6) {
+        input.value = `${num.slice(0, 3)} ${num.slice(3, 6)} ${num.slice(6, 9)}`;
+    } else if (num.length > 3) {
+        input.value = `${num.slice(0, 3)} ${num.slice(3, 6)}`;
+    } else {
+        input.value = num;
+    }
+}
+
+// Formata e mascara a Matrícula automaticamente
+function validateMatricula(input) {
+    // Transforma tudo em maiúsculas e remove caracteres inválidos (aceita apenas letras e números)
+    let val = input.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+    
+    // Máscara para padrão clássico de Angola (Ex: LD-12-34-AB)
+    // Se o utilizador digitar "LD1234AB", vira "LD-12-34-AB"
+    if (val.length > 2 && val.length <= 4) {
+        val = val.slice(0, 2) + "-" + val.slice(2);
+    } else if (val.length > 4 && val.length <= 6) {
+        val = val.slice(0, 2) + "-" + val.slice(2, 4) + "-" + val.slice(4);
+    } else if (val.length > 6) {
+        val = val.slice(0, 2) + "-" + val.slice(2, 4) + "-" + val.slice(4, 6) + "-" + val.slice(6, 8);
+    }
+    
+    input.value = val;
+}
+
+// Atualização da sua função de checagem do Passo 1 para incluir o telefone
+function checkStep1() {
+    const t = document.getElementById('tomador').value.trim();
+    const tel = document.getElementById('telefone').value.replace(/\s/g, ""); // remove espaços para validar
+    const m = document.getElementById('matricula').value.trim();
+
+    if (t.length < 3) return alert("Por favor, introduza o nome completo do Tomador.");
+    if (tel.length !== 9) return alert("O número de telefone deve conter exatamente 9 dígitos (Padrão AO).");
+    if (m.length < 8) return alert("Por favor, introduza uma matrícula válida.");
+    
+    nextStep(2);
+}
+        
     </script>
 </body>
 </html>
