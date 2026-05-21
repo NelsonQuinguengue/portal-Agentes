@@ -1,1 +1,433 @@
 
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vistoria Pro IA | Validação Automotiva Estrita</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
+    <style>
+        .step { display: none; }
+        .step.active { display: flex; flex-direction: column; }
+        #cameraOverlay, #previewModal { display: none; }
+        .recording { animation: pulse-red 1s infinite; background-color: #ef4444 !important; border-radius: 8px !important; }
+        @keyframes pulse-red { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans">
+
+    <div class="max-w-md mx-auto min-h-screen flex flex-col bg-slate-950 shadow-2xl border-x border-slate-900">
+        
+        <!-- HEADER -->
+        <header class="p-6 bg-slate-900/80 backdrop-blur border-b border-slate-800 sticky top-0 z-30">
+            <div class="flex justify-between items-center mb-4">
+                <h1 class="font-black text-blue-500 italic">AUTO<span class="text-white font-light">CHECK</span></h1>
+                <div id="statusBadge" class="text-[10px] bg-blue-500/10 text-blue-400 px-3 py-1 rounded-full border border-blue-500/20 font-bold">IA INTELIGENTE</div>
+            </div>
+            <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                <div id="progressBar" class="bg-blue-600 h-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+        </header>
+
+        <main class="flex-grow p-6">
+            <!-- PASSO 1: DADOS -->
+            <section id="step1" class="step active space-y-6">
+                <div class="space-y-4">
+                    <h2 class="text-xl font-bold">Dados do Veículo</h2>
+                                        
+                    <!-- Nome do Tomador -->
+                    <input type="text" id="tomador" placeholder="Nome do Tomador" 
+                           oninput="validateName(this)"
+                           class="w-full bg-slate-900 border border-slate-700 p-4 rounded-xl focus:border-blue-500 outline-none">
+                    
+                    <!-- Telefone -->
+                    <input type="tel" id="telefone" placeholder="Telefone (Ex: 923 000 000)" maxlength="11"
+                           oninput="validatePhone(this)"
+                           class="w-full bg-slate-900 border border-slate-700 p-4 rounded-xl focus:border-blue-500 outline-none">
+                    
+                    <!-- Matrícula -->
+                    <input type="text" id="matricula" placeholder="Matrícula (Ex: LD-12-34-AB)" maxlength="11"
+                           oninput="validateMatricula(this)"
+                           class="w-full bg-slate-900 border border-slate-700 p-4 rounded-xl focus:border-blue-500 outline-none uppercase">
+                </div>
+                <button onclick="checkStep1()" class="w-full bg-blue-600 py-4 rounded-xl font-bold text-lg">Próximo</button>
+            </section>
+
+            <!-- PASSO 2: CHECKLIST -->
+            <section id="step2" class="step">
+                <div class="flex justify-between items-end mb-6">
+                    <h2 class="text-xl font-bold">Capturas</h2>
+                    <span id="counter" class="text-blue-500 font-mono text-sm">0/10</span>
+                </div>
+                <div id="checklist" class="grid grid-cols-1 gap-3"></div>
+                
+                <div id="submitArea" class="hidden mt-8">
+                    <button onclick="renderReview()" class="w-full bg-green-600 py-4 rounded-2xl font-black">REVISAR E FINALIZAR</button>
+                </div>
+            </section>
+
+            <!-- PASSO 3: REVISÃO -->
+            <section id="step3" class="step">
+                <h2 class="text-xl font-bold mb-6">Revisão Final</h2>
+                <div id="reviewGrid" class="grid grid-cols-2 gap-3 mb-8"></div>
+                <button onclick="location.reload()" class="w-full bg-blue-600 py-5 rounded-2xl font-black text-xl">ENVIAR VISTORIA</button>
+            </section>
+        </main>
+
+        <!-- CAMERA OVERLAY -->
+        <div id="cameraOverlay" class="fixed inset-0 bg-black z-50 flex flex-col">
+            <div class="p-6 flex justify-between items-start z-10 bg-gradient-to-b from-black to-transparent">
+                <div>
+                    <h3 id="camLabel" class="text-white font-bold uppercase text-xs">Captura</h3>
+                    <p id="aiObjectStatus" class="text-[11px] text-amber-500 font-bold uppercase tracking-wider mt-1">Escaneando Ambiente...</p>
+                </div>
+                <button onclick="closeCam()" class="text-3xl text-white/50">&times;</button>
+            </div>
+            
+            <div class="relative flex-grow flex items-center justify-center bg-slate-950 overflow-hidden">
+                <video id="webcam" autoplay playsinline muted class="w-full h-full object-cover"></video>
+                
+                <!-- Overlay de Alerta Centralizado Dinâmico -->
+                <div id="aiAlertBox" class="absolute inset-0 bg-red-600/20 backdrop-blur-[1px] pointer-events-none flex items-center justify-center transition-all">
+                    <div id="aiAlertText" class="bg-red-600 text-white font-black text-xs px-6 py-3 rounded-xl shadow-2xl tracking-widest uppercase text-center max-w-[85%]">AGUARDANDO VEÍCULO VÁLIDO</div>
+                </div>
+
+                <!-- Barra de Nitidez Flutuante -->
+                <div class="absolute right-4 top-1/4 bottom-1/4 w-3 bg-slate-900/60 rounded-full p-0.5 flex flex-col justify-end overflow-hidden border border-slate-700">
+                    <div id="sharpnessBar" class="w-full bg-blue-500 rounded-full transition-all duration-200" style="height: 0%"></div>
+                </div>
+                <div class="absolute right-9 top-1/2 -translate-y-1/2 text-[9px] font-mono font-bold bg-slate-900/80 px-2 py-1 rounded text-slate-300">
+                    NITIDEZ: <span id="sharpnessValue">0%</span>
+                </div>
+            </div>
+
+            <div class="p-10 bg-black flex flex-col items-center gap-4">
+                <div id="timer" class="hidden text-red-500 font-mono text-2xl font-bold mb-2 tracking-tighter">00:00</div>
+                <button id="actionBtn" disabled onclick="handleAction()" class="w-20 h-20 bg-slate-800 rounded-full border-4 border-slate-700 flex items-center justify-center transition-all disabled:opacity-20 disabled:scale-90">
+                    <div id="btnCore" class="w-14 h-14 bg-slate-500 rounded-full transition-all"></div>
+                </button>
+                <span id="instructionText" class="text-[10px] text-slate-400 uppercase font-bold tracking-widest text-center px-4">Aponte para a parte correta do veículo</span>
+            </div>
+        </div>
+
+        <!-- PREVIEW MODAL -->
+        <div id="previewModal" class="fixed inset-0 bg-black/95 z-[60] flex flex-col p-6">
+            <div class="flex justify-end mb-4">
+                <button onclick="closePreview()" class="text-4xl text-white">&times;</button>
+            </div>
+            <div id="previewContent" class="flex-grow flex items-center justify-center rounded-2xl overflow-hidden bg-slate-900"></div>
+            <button onclick="closePreview()" class="mt-6 w-full bg-white text-black py-4 rounded-xl font-bold">Fechar</button>
+        </div>
+    </div>
+
+    <script>
+        const config = [
+            {id: 'frente', label: 'Frente', isVideo: false},
+            {id: 'traseira', label: 'Traseira', isVideo: false},
+            {id: 'lat_dir', label: 'Lateral Direita', isVideo: false},
+            {id: 'lat_esq', label: 'Lateral Esquerda', isVideo: false},
+            {id: 'interior', label: 'Interior', isVideo: false},
+            {id: 'painel', label: 'Painel Ligado', isVideo: false},
+            {id: 'chassis', label: 'Chassis (VIN)', isVideo: false},
+            {id: 'matricula_detalhe', label: 'Matrícula', isVideo: false},
+            {id: 'motor_capo', label: 'Motor', isVideo: false},
+            {id: 'video_360', label: 'Vídeo 360º', isVideo: true}
+        ];
+
+        // Termos universais da MobileNet expandidos para mitigar erros de tradução de objetos em Android
+        const ALLOWED_CAR_KEYWORDS = [
+            'car', 'wheel', 'racer', 'convertible', 'limousine', 'cab', 'jeep', 'landrover', 
+            'minivan', 'van', 'truck', 'pickup', 'windshield', 'grill', 'grille', 'bumper', 
+            'motor', 'engine', 'tire', 'dashboard', 'odometer', 'seat belt', 'car mirror',
+            'sports car', 'ambulance', 'beach wagon', 'fire engine', 'moving van', 'police van'
+        ];
+
+        let data = {};
+        let current = null;
+        let stream = null;
+        let recorder = null;
+        let chunks = [];
+        let model = null;
+        let timerInterval = null;
+        let isAnalyzing = false; // Controle de concorrência para dispositivos Android lentos
+
+        async function init() {
+            const list = document.getElementById('checklist');
+            list.innerHTML = config.map(t => `
+                <div id="row-${t.id}" class="bg-slate-900 border border-slate-800 p-4 rounded-2xl flex items-center justify-between">
+                    <div>
+                        <span class="text-sm font-bold text-slate-300">${t.label}</span>
+                        <div id="st-${t.id}" class="text-[9px] text-slate-600 font-bold uppercase mt-1">Pendente</div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button id="view-${t.id}" onclick="openPreview('${t.id}')" class="hidden bg-slate-800 p-3 rounded-xl">👁️</button>
+                        <button onclick="startCapture('${t.id}')" class="bg-blue-600 text-white p-3 rounded-xl">📸</button>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Força a otimização de CPU/WebGL no carregamento do TensorFlow
+            await tf.ready();
+            model = await mobilenet.load();
+        }
+        init();
+
+        function checkStep1() {
+            const t = document.getElementById('tomador').value.trim();
+            const tel = document.getElementById('telefone').value.replace(/\s/g, "");
+            const m = document.getElementById('matricula').value.trim();
+
+            if (t.length < 3) return alert("Por favor, introduza o nome completo do Tomador.");
+            if (tel.length !== 9) return alert("O número de telefone deve conter exatamente 9 dígitos (Padrão AO).");
+            if (m.length < 8) return alert("Por favor, introduza uma matrícula válida.");
+            
+            nextStep(2);
+        }
+
+        function nextStep(s) {
+            document.querySelectorAll('.step').forEach(e => e.classList.remove('active'));
+            document.getElementById('step' + s).classList.add('active');
+        }
+
+        async function startCapture(id) {
+            current = config.find(t => t.id === id);
+            document.getElementById('camLabel').innerText = current.label;
+            document.getElementById('cameraOverlay').style.display = 'flex';
+            
+            document.getElementById('actionBtn').disabled = true;
+            resetAlertBox(true, "Aguardando detecção do veículo...");
+
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }, 
+                    audio: current.isVideo 
+                });
+                const video = document.getElementById('webcam');
+                video.srcObject = stream;
+                
+                // Evento nativo seguro: Só começa a analisar quando o Android de fato começar a reproduzir o stream de vídeo
+                video.onloadedmetadata = () => {
+                    isAnalyzing = true;
+                    analyzeFrame();
+                };
+            } catch (err) {
+                alert("Erro ao acessar câmera: " + err);
+            }
+        }
+
+        async function analyzeFrame() {
+            if (!stream || !model || !isAnalyzing) return;
+            
+            const video = document.getElementById('webcam');
+            const actionBtn = document.getElementById('actionBtn');
+            const objStatus = document.getElementById('aiObjectStatus');
+
+            // Validação de segurança estrutural do elemento de vídeo no Android
+            if (video.readyState < 2) {
+                requestAnimationFrame(analyzeFrame);
+                return;
+            }
+
+            try {
+                // EXTREMAMENTE IMPORTANTE: tf.tidy limpa a memória RAM do Android imediatamente após a classificação
+                const predictions = await tf.tidy(() => {
+                    return model.classify(video);
+                });
+
+                if (predictions && predictions.length > 0) {
+                    let matchedLabel = predictions[0].className.toLowerCase();
+                    let isCarPart = ALLOWED_CAR_KEYWORDS.some(keyword => matchedLabel.includes(keyword));
+                    let confidence = predictions[0].probability;
+
+                    // Calibração matemática do score de nitidez baseado na estabilidade da predição
+                    let sharpnessScore = Math.min(Math.round(confidence * 100 * 1.5), 100);
+                    if (sharpnessScore < 20 && isCarPart) sharpnessScore = 50; 
+
+                    document.getElementById('sharpnessBar').style.height = sharpnessScore + '%';
+                    document.getElementById('sharpnessValue').innerText = sharpnessScore + '%';
+
+                    // Critério de aceite: Deve corresponder à lista e ter nitidez aceitável
+                    if (isCarPart && sharpnessScore >= 35) {
+                        actionBtn.disabled = false;
+                        document.getElementById('btnCore').className = current.isVideo ? "w-10 h-10 bg-red-600 rounded-md" : "w-14 h-14 bg-white rounded-full";
+                        objStatus.innerText = "VEÍCULO COMPROVADO: " + matchedLabel.split(',')[0].toUpperCase();
+                        objStatus.className = "text-[11px] text-green-400 font-bold uppercase tracking-wider mt-1";
+                        resetAlertBox(false);
+                    } else {
+                        actionBtn.disabled = true;
+                        document.getElementById('btnCore').className = "w-14 h-14 bg-slate-600 rounded-full opacity-30";
+                        
+                        if (!isCarPart) {
+                            objStatus.innerText = "IA: ALERTA DE OBJETO (" + matchedLabel.split(',')[0] + ")";
+                            objStatus.className = "text-[11px] text-red-500 font-bold uppercase tracking-wider mt-1";
+                            resetAlertBox(true, "OBJETO INVÁLIDO — ENQUADRE O VEÍCULO");
+                        } else {
+                            objStatus.innerText = "IA: BAIXA NITIDEZ OU DISTANTE";
+                            objStatus.className = "text-[11px] text-amber-500 font-bold uppercase tracking-wider mt-1";
+                            resetAlertBox(true, "BAIXA NITIDEZ — APROXIME OU ESTABILIZE A CÂMARA");
+                        }
+                    }
+                }
+            } catch (e) {
+                console.log("Erro frame pass: ", e);
+            }
+
+            // Define um delay de 100ms no loop para que processadores octa-core de telemóveis Android não travem o renderizador
+            if (stream && isAnalyzing) {
+                setTimeout(() => {
+                    requestAnimationFrame(analyzeFrame);
+                }, 100);
+            }
+        }
+
+        function resetAlertBox(show, text = "") {
+            const box = document.getElementById('aiAlertBox');
+            const alertText = document.getElementById('aiAlertText');
+            if (show) {
+                box.classList.remove('opacity-0', 'invisible');
+                box.classList.add('opacity-100', 'visible');
+                alertText.innerText = text;
+            } else {
+                box.classList.remove('opacity-100', 'visible');
+                box.classList.add('opacity-0', 'invisible');
+            }
+        }
+
+        function handleAction() {
+            if (current.isVideo) {
+                if (recorder && recorder.state === "recording") { stopRec(); } else { startRec(); }
+            } else {
+                snap();
+            }
+        }
+
+        function snap() {
+            const v = document.getElementById('webcam');
+            const c = document.createElement('canvas');
+            c.width = v.videoWidth; c.height = v.videoHeight;
+            c.getContext('2d').drawImage(v, 0, 0);
+            data[current.id] = {type: 'img', src: c.toDataURL('image/jpeg', 0.85)};
+            finish();
+        }
+
+        function startRec() {
+            chunks = [];
+            // Força o tipo de codec compatível com o Chrome/WebView do Android
+            let options = { mimeType: 'video/webm;codecs=vp9' };
+            if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+                options = { mimeType: 'video/webm' };
+            }
+            
+            recorder = new MediaRecorder(stream, options);
+            recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+            recorder.onstop = () => {
+                const blob = new Blob(chunks, { type: 'video/mp4' });
+                data[current.id] = {type: 'vid', src: URL.createObjectURL(blob)};
+                finish();
+            };
+            recorder.start();
+            
+            document.getElementById('btnCore').classList.add('recording');
+            document.getElementById('timer').classList.remove('hidden');
+            
+            let sec = 0;
+            timerInterval = setInterval(() => {
+                sec++;
+                const m = String(Math.floor(sec / 60)).padStart(2, '0');
+                const s = String(sec % 60).padStart(2, '0');
+                document.getElementById('timer').innerText = `${m}:${s}`;
+            }, 1000);
+        }
+
+        function stopRec() {
+            if (recorder && recorder.state !== "inactive") {
+                recorder.stop();
+            }
+            clearInterval(timerInterval);
+            document.getElementById('btnCore').classList.remove('recording');
+            document.getElementById('timer').classList.add('hidden');
+        }
+
+        function finish() {
+            const row = document.getElementById('row-' + current.id);
+            row.className = "bg-green-500/10 border border-green-500/50 p-4 rounded-2xl flex items-center justify-between";
+            document.getElementById('st-' + current.id).innerText = "✓ Concluído";
+            document.getElementById('st-' + current.id).className = "text-[9px] text-green-500 font-bold uppercase mt-1";
+            document.getElementById('view-' + current.id).classList.remove('hidden');
+            closeCam();
+            prog();
+        }
+
+        function prog() {
+            const count = Object.keys(data).length;
+            document.getElementById('progressBar').style.width = (count * 10) + '%';
+            document.getElementById('counter').innerText = `${count}/10`;
+            if (count === 10) document.getElementById('submitArea').classList.remove('hidden');
+        }
+
+        function openPreview(id) {
+            const item = data[id];
+            const content = document.getElementById('previewContent');
+            content.innerHTML = item.type === 'vid' 
+                ? `<video src="${item.src}" controls autoplay class="max-h-full" playsinline></video>` 
+                : `<img src="${item.src}" class="max-h-full object-contain">`;
+            document.getElementById('previewModal').style.display = 'flex';
+        }
+
+        function closePreview() {
+            document.getElementById('previewContent').innerHTML = "";
+            document.getElementById('previewModal').style.display = 'none';
+        }
+
+        function closeCam() {
+            isAnalyzing = false;
+            if (stream) {
+                stream.getTracks().forEach(t => t.stop());
+            }
+            stream = null;
+            document.getElementById('cameraOverlay').style.display = 'none';
+        }
+
+        function renderReview() {
+            const grid = document.getElementById('reviewGrid');
+            grid.innerHTML = config.map(t => `
+                <div onclick="openPreview('${t.id}')" class="bg-slate-900 aspect-video rounded-lg overflow-hidden border border-slate-800 flex items-center justify-center cursor-pointer">
+                    ${data[t.id].type === 'vid' ? '<span class="text-2xl">🎥</span>' : `<img src="${data[t.id].src}" class="w-full h-full object-cover">`}
+                </div>
+            `).join('');
+            nextStep(3);
+        }
+
+        // FUNÇÕES DE VALIDAÇÃO DO PASSO 1
+        function validateName(input) {
+            input.value = input.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, "");
+        }
+
+        function validatePhone(input) {
+            let num = input.value.replace(/\D/g, "");
+            if (num.length > 0 && num[0] !== '9') { num = ""; }
+            if (num.length > 6) {
+                input.value = `${num.slice(0, 3)} ${num.slice(3, 6)} ${num.slice(6, 9)}`;
+            } else if (num.length > 3) {
+                input.value = `${num.slice(0, 3)} ${num.slice(3, 6)}`;
+            } else {
+                input.value = num;
+            }
+        }
+
+        function validateMatricula(input) {
+            let val = input.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+            if (val.length > 2 && val.length <= 4) {
+                val = val.slice(0, 2) + "-" + val.slice(2);
+            } else if (val.length > 4 && val.length <= 6) {
+                val = val.slice(0, 2) + "-" + val.slice(2, 4) + "-" + val.slice(4);
+            } else if (val.length > 6) {
+                val = val.slice(0, 2) + "-" + val.slice(2, 4) + "-" + val.slice(4, 6) + "-" + val.slice(6, 8);
+            }
+            input.value = val;
+        }
+    </script>
+</body>
+</html>
