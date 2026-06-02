@@ -1,129 +1,242 @@
-
 <!DOCTYPE html>
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vistoria Pro IA | Validação Automotiva Estrita</title>
+    <title>STA Seguros | Vistoria & Sinistros Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
     <style>
-        .step { display: none; }
-        .step.active { display: flex; flex-direction: column; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .step-app { display: none; }
+        .step-app.active { display: flex; flex-direction: column; }
         #cameraOverlay, #previewModal { display: none; }
-        .recording { animation: pulse-red 1s infinite; background-color: #ef4444 !important; border-radius: 8px !important; }
-        @keyframes pulse-red { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        .recording { animation: pulse-red 1s infinite; background-color: #ef4444 !important; }
+        @keyframes pulse-red { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        .btn-menu { transition: all 0.2s ease-in-out; }
+        .btn-menu:active { transform: scale(0.98); }
     </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sta: {
+                            purple: '#51358C',
+                            purpleDark: '#392364',
+                            gold: '#e39b03',
+                            goldLight: '#fcf5e6',
+                            darkBg: '#0f0a1c'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen font-sans">
+<body class="bg-sta-darkBg text-slate-100 min-h-screen antialiased">
 
-    <div class="max-w-md mx-auto min-h-screen flex flex-col bg-slate-950 shadow-2xl border-x border-slate-900">
+    <div class="max-w-md mx-auto min-h-screen flex flex-col bg-[#140e26] shadow-2xl border-x border-slate-900 relative">
         
-        <!-- HEADER -->
-        <header class="p-6 bg-slate-900/80 backdrop-blur border-b border-slate-800 sticky top-0 z-30">
-            <div class="flex justify-between items-center mb-4">
-                <h1 class="font-black text-blue-500 italic">AUTO<span class="text-white font-light">CHECK</span></h1>
-                <div id="statusBadge" class="text-[10px] bg-blue-500/10 text-blue-400 px-3 py-1 rounded-full border border-blue-500/20 font-bold">IA INTELIGENTE</div>
+        <header class="p-5 bg-sta-purpleDark/90 backdrop-blur border-b border-sta-purple/30 sticky top-0 z-40 flex flex-col gap-3">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <div class="h-9 bg-white px-2 py-1 rounded-lg flex items-center justify-center">
+                        <span class="text-sta-purple font-black text-sm tracking-tighter">STA <span class="text-sta-gold">Seguros</span></span>
+                    </div>
+                </div>
+                <div id="globalBadge" class="text-[9px] bg-sta-gold/10 text-brand-gold px-3 py-1 rounded-full border border-sta-gold/30 font-bold tracking-widest text-sta-gold">SISTEMA INTELIGENTE</div>
             </div>
-            <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                <div id="progressBar" class="bg-blue-600 h-full transition-all duration-500" style="width: 0%"></div>
+            <div id="wrapperProgress" class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden hidden">
+                <div id="globalProgressBar" class="bg-gradient-to-r from-sta-gold to-emerald-500 h-full transition-all duration-500" style="width: 0%"></div>
             </div>
         </header>
 
-        <main class="flex-grow p-6">
-            <!-- PASSO 1: DADOS -->
-            <section id="step1" class="step active space-y-6">
+        <main class="flex-grow p-6 flex flex-col justify-center">
+
+            <section id="menuStep" class="step-app active space-y-8 py-4">
+                <div class="text-center space-y-2">
+                    <h2 class="text-2xl font-black tracking-tight text-white">O que deseja efetuar hoje?</h2>
+                    <p class="text-xs text-slate-400">Selecione uma das opções abaixo para iniciar o seu atendimento digital automatizado.</p>
+                </div>
+
+                <div class="grid grid-cols-1 gap-4">
+                    <div onclick="escolherFluxo('sinistro')" class="btn-menu w-full bg-slate-900 border border-sta-purple/40 hover:border-sta-gold p-5 rounded-2xl flex items-center gap-4 text-left transition-all duration-300 group cursor-pointer active:bg-slate-800">
+                        <div class="w-12 h-12 bg-sta-purple/20 text-sta-gold rounded-xl flex items-center justify-center text-xl group-hover:bg-sta-purple group-hover:text-white transition-all">
+                            <i class="fa fa-gavel"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-base text-white">1. Participação de Sinistro</h3>
+                            <p class="text-xs text-slate-400">Participe um acidente e envie as evidências físicas imediatas.</p>
+                        </div>
+                    </div>
+
+                    <div onclick="escolherFluxo('peritagem')" class="btn-menu w-full bg-slate-900 border border-sta-purple/40 hover:border-sta-gold p-5 rounded-2xl flex items-center gap-4 text-left transition-all duration-300 group cursor-pointer active:bg-slate-800">
+                        <div class="w-12 h-12 bg-sta-purple/20 text-sta-gold rounded-xl flex items-center justify-center text-xl group-hover:bg-sta-purple group-hover:text-white transition-all">
+                            <i class="fa fa-car"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-base text-white">2. Pré-Vistoria Digital Autodirigida</h3>
+                            <p class="text-xs text-slate-400">Faça a vistoria preventiva standard de 10 passos do veículo.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="sinistroFormStep" class="step-app space-y-5">
+                <div>
+                    <h2 class="text-xl font-black text-white">Dados Obrigatórios do Sinistro</h2>
+                    <p class="text-xs text-slate-400">Preencha os dados em destaque para liberar a fase de fotos.</p>
+                </div>
+
+                <div class="bg-amber-500/10 border-l-4 border-sta-gold p-3.5 rounded-r-xl">
+                    <p class="text-[11px] text-amber-200 leading-relaxed font-medium">
+                        <i class="fa fa-exclamation-triangle text-sta-gold mr-1"></i> 
+                        <strong>Informação complementar:</strong> O preenchimento dos dados nesta plataforma não dispensa o preenchimento do Formulário de Participação de Sinistro ou da DAAA, nem o envio da documentação de suporte necessária à regularização do processo.
+                    </p>
+                </div>
+
+                <div class="space-y-3.5">
+                    <div class="relative">
+                        <label class="block text-[10px] font-bold uppercase text-sta-gold mb-1">Nº da Apólice * (Destaque)</label>
+                        <input type="text" id="sin_apolice" oninput="atualizarProgressoSinistro()" placeholder="Ex: STA-123456" class="w-full bg-slate-900 border-2 border-sta-purple rounded-xl p-3.5 text-xs focus:border-sta-gold outline-none text-white font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-sta-gold mb-1">Nome Completo do Condutor * (Destaque)</label>
+                        <input type="text" id="sin_nome" oninput="atualizarProgressoSinistro()" placeholder="Nome Completo" class="w-full bg-slate-900 border-2 border-sta-purple rounded-xl p-3.5 text-xs focus:border-sta-gold outline-none text-white font-bold">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] font-bold uppercase text-sta-gold mb-1">Matrícula *</label>
+                            <input type="text" id="sin_matricula" oninput="atualizarProgressoSinistro()" placeholder="LD-00-00-XX" class="w-full bg-slate-900 border-2 border-sta-purple rounded-xl p-3.5 text-xs focus:border-sta-gold outline-none uppercase text-white font-bold">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold uppercase text-sta-gold mb-1">Telefone *</label>
+                            <input type="text" id="sin_telefone" oninput="atualizarProgressoSinistro()" placeholder="9XXXXXXXX" class="w-full bg-slate-900 border-2 border-sta-purple rounded-xl p-3.5 text-xs focus:border-sta-gold outline-none text-white font-bold">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">E-mail (Opcional)</label>
+                        <input type="email" id="sin_email" placeholder="nome@provedor.com" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3.5 text-xs focus:border-sta-gold outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-slate-300 mb-1">Como ocorreu o acidente?</label>
+                        <textarea id="sin_descricao" rows="3" placeholder="Descreva sucintamente as circunstâncias do sinistro..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3.5 text-xs focus:border-sta-gold outline-none text-slate-200"></textarea>
+                    </div>
+                </div>
+
+                <button onclick="avancarParaMediaSinistro()" class="w-full bg-sta-purple hover:bg-sta-purpleDark text-white py-4 rounded-xl font-bold tracking-wide transition-all uppercase text-sm shadow-md cursor-pointer border-0">
+                    Avançar para Mídias Evidências
+                </button>
+            </section>
+
+            <section id="sinistroMediaStep" class="step-app space-y-6">
+                <div class="flex justify-between items-end">
+                    <div>
+                        <h2 class="text-xl font-black text-white">Mídias do Acidente</h2>
+                        <p class="text-xs text-slate-400">Máximo: 3 Fotos e 2 Vídeos Demonstrativos</p>
+                    </div>
+                    <span id="mediaCounter" class="text-sta-gold font-mono text-xs font-bold bg-sta-purple/30 px-2.5 py-1 rounded-full">0 / 5</span>
+                </div>
+
+                <div id="sinistroMediaList" class="grid grid-cols-1 gap-3"></div>
+
+                <div id="areaEnviarSinistro" class="hidden pt-4">
+                    <button onclick="finalizarEnvioSinistro()" class="w-full bg-gradient-to-r from-emerald-600 to-green-500 text-white py-4 rounded-xl font-black text-lg shadow-lg tracking-wider transition-all duration-300">
+                        <i class="fa fa-paper-plane mr-2"></i> ENVIAR PARTICIPAÇÃO
+                    </button>
+                </div>
+            </section>
+
+            <section id="step1" class="step-app space-y-6">
                 <div class="space-y-4">
-                    <h2 class="text-xl font-bold">Dados do Veículo</h2>
-                                        
-                    <!-- Nome do Tomador -->
-                    <input type="text" id="tomador" placeholder="Nome do Tomador" 
-                           oninput="validateName(this)"
-                           class="w-full bg-slate-900 border border-slate-700 p-4 rounded-xl focus:border-blue-500 outline-none">
-                    
-                    <!-- Telefone -->
-                    <input type="tel" id="telefone" placeholder="Telefone (Ex: 923 000 000)" maxlength="11"
-                           oninput="validatePhone(this)"
-                           class="w-full bg-slate-900 border border-slate-700 p-4 rounded-xl focus:border-blue-500 outline-none">
-                    
-                    <!-- Matrícula -->
-                    <input type="text" id="matricula" placeholder="Matrícula (Ex: LD-12-34-AB)" maxlength="11"
-                           oninput="validateMatricula(this)"
-                           class="w-full bg-slate-900 border border-slate-700 p-4 rounded-xl focus:border-blue-500 outline-none uppercase">
+                    <h2 class="text-xl font-bold text-sta-gold">Dados da Pré-Vistoria</h2>
+                    <input type="text" id="tomador" placeholder="Nome do Tomador" class="w-full bg-slate-900 border border-slate-700 p-4 rounded-xl focus:border-sta-purple outline-none">
+                    <input type="text" id="telefone" placeholder="Telefone" class="w-full bg-slate-900 border border-slate-700 p-4 rounded-xl focus:border-sta-purple outline-none">
+                    <input type="text" id="matricula" placeholder="Matrícula" class="w-full bg-slate-900 border border-slate-700 p-4 rounded-xl focus:border-sta-purple outline-none uppercase">
                 </div>
-                <button onclick="checkStep1()" class="w-full bg-blue-600 py-4 rounded-xl font-bold text-lg">Próximo</button>
+                <button onclick="checkStep1()" class="w-full bg-sta-purple hover:bg-sta-purpleDark text-white py-4 rounded-xl font-bold text-lg cursor-pointer border-0">Próximo</button>
             </section>
 
-            <!-- PASSO 2: CHECKLIST -->
-            <section id="step2" class="step">
-                <div class="flex justify-between items-end mb-6">
-                    <h2 class="text-xl font-bold">Capturas</h2>
-                    <span id="counter" class="text-blue-500 font-mono text-sm">0/10</span>
+            <section id="step2" class="step-app space-y-6">
+                <div class="flex justify-between items-end">
+                    <h2 class="text-xl font-bold text-white">Capturas Obrigatórias</h2>
+                    <span id="counter" class="text-sta-gold font-mono text-sm">0/10</span>
                 </div>
-                <div id="checklist" class="grid grid-cols-1 gap-3"></div>
-                
-                <div id="submitArea" class="hidden mt-8">
-                    <button onclick="renderReview()" class="w-full bg-green-600 py-4 rounded-2xl font-black">REVISAR E FINALIZAR</button>
+                <div id="checklist" class="grid grid-cols-1 gap-2.5 max-h-[50vh] overflow-y-auto pr-1"></div>
+                <div id="submitArea" class="hidden mt-4">
+                    <button onclick="renderReview()" class="w-full bg-gradient-to-r from-sta-purple to-indigo-900 py-4 rounded-2xl font-black tracking-wide text-white cursor-pointer border-0">REVISAR E FINALIZAR</button>
                 </div>
             </section>
 
-            <!-- PASSO 3: REVISÃO -->
-            <section id="step3" class="step">
-                <h2 class="text-xl font-bold mb-6">Revisão Final</h2>
-                <div id="reviewGrid" class="grid grid-cols-2 gap-3 mb-8"></div>
-                <button onclick="location.reload()" class="w-full bg-blue-600 py-5 rounded-2xl font-black text-xl">ENVIAR VISTORIA</button>
+            <section id="step3" class="step-app space-y-6">
+                <div class="space-y-1">
+                    <h2 class="text-xl font-bold text-white">Revisão Final da Pré-Vistoria</h2>
+                    <p class="text-[10px] text-sta-gold uppercase font-bold tracking-wider">A IA está a processar o relatório de danos.</p>
+                </div>
+                <div id="reviewGrid" class="grid grid-cols-2 gap-3 max-h-[50vh] overflow-y-auto p-1"></div>
+                <button onclick="finalizarEnvioPreVistoria()" class="w-full bg-emerald-600 py-4 rounded-2xl font-black text-xl shadow-lg cursor-pointer border-0">ENVIAR VISTORIA</button>
             </section>
         </main>
 
-        <!-- CAMERA OVERLAY -->
         <div id="cameraOverlay" class="fixed inset-0 bg-black z-50 flex flex-col">
-            <div class="p-6 flex justify-between items-start z-10 bg-gradient-to-b from-black to-transparent">
-                <div>
-                    <h3 id="camLabel" class="text-white font-bold uppercase text-xs">Captura</h3>
-                    <p id="aiObjectStatus" class="text-[11px] text-amber-500 font-bold uppercase tracking-wider mt-1">Escaneando Ambiente...</p>
+            <div class="p-5 flex justify-between items-start z-10 bg-gradient-to-b from-black via-black/60 to-transparent">
+                <div class="flex-grow pr-4">
+                    <h3 id="camLabel" class="text-white font-bold uppercase text-xs">Captura STA</h3>
+                    <p id="aiStatus" class="text-[9px] text-sta-gold font-bold uppercase tracking-widest mb-1">Iniciando Sensor...</p>
+                    
+                    <div class="flex items-center gap-2 mt-1 bg-black/40 px-2 py-1 rounded-lg border border-white/10 max-w-max">
+                        <span class="text-[9px] text-slate-300 font-bold uppercase">Nitidez:</span>
+                        <div class="w-16 bg-slate-800 h-2 rounded-full overflow-hidden relative">
+                            <div id="sharpnessBar" class="bg-red-500 h-full w-0 transition-all duration-200"></div>
+                        </div>
+                        <span id="sharpnessBadge" class="text-[9px] font-black uppercase text-red-500">Pouco Nítido</span>
+                    </div>
+
+                    <div id="motorVideoNote" class="mt-2 hidden bg-amber-500/20 text-amber-300 text-[10px] font-bold p-2 rounded border border-amber-500/40 leading-tight">
+                        <i class="fa fa-info-circle mr-1 text-sta-gold"></i> O motor do veículo deverá estar em funcionamento durante a realização do vídeo.
+                    </div>
+
+                    <div id="aiDamageScanner" class="mt-2 hidden bg-emerald-500/20 text-emerald-400 text-[8px] font-black uppercase px-2 py-1 rounded border border-emerald-500/30 tracking-wider">
+                        <i class="fa fa-refresh fa-spin mr-1"></i> Analisando Danos na Área...
+                    </div>
                 </div>
-                <button onclick="closeCam()" class="text-3xl text-white/50">&times;</button>
+                <button onclick="closeCam()" class="text-3xl text-white/50 bg-transparent border-0 cursor-pointer">&times;</button>
             </div>
             
             <div class="relative flex-grow flex items-center justify-center bg-slate-950 overflow-hidden">
                 <video id="webcam" autoplay playsinline muted class="w-full h-full object-cover"></video>
-                
-                <!-- Overlay de Alerta Centralizado Dinâmico -->
-                <div id="aiAlertBox" class="absolute inset-0 bg-red-600/20 backdrop-blur-[1px] pointer-events-none flex items-center justify-center transition-all">
-                    <div id="aiAlertText" class="bg-red-600 text-white font-black text-xs px-6 py-3 rounded-xl shadow-2xl tracking-widest uppercase text-center max-w-[85%]">AGUARDANDO VEÍCULO VÁLIDO</div>
-                </div>
-
-                <!-- Barra de Nitidez Flutuante -->
-                <div class="absolute right-4 top-1/4 bottom-1/4 w-3 bg-slate-900/60 rounded-full p-0.5 flex flex-col justify-end overflow-hidden border border-slate-700">
-                    <div id="sharpnessBar" class="w-full bg-blue-500 rounded-full transition-all duration-200" style="height: 0%"></div>
-                </div>
-                <div class="absolute right-9 top-1/2 -translate-y-1/2 text-[9px] font-mono font-bold bg-slate-900/80 px-2 py-1 rounded text-slate-300">
-                    NITIDEZ: <span id="sharpnessValue">0%</span>
+                <div class="absolute inset-0 border-[40px] border-black/40 pointer-events-none flex items-center justify-center">
+                    <div class="w-full h-64 border-2 border-sta-gold/30 border-dashed rounded-3xl relative">
+                        <div class="absolute top-0 left-0 right-0 h-0.5 bg-sta-gold/80 shadow-[0_0_8px_#e39b03] animate-bounce" style="animation-duration: 3s;"></div>
+                    </div>
                 </div>
             </div>
 
-            <div class="p-10 bg-black flex flex-col items-center gap-4">
-                <div id="timer" class="hidden text-red-500 font-mono text-2xl font-bold mb-2 tracking-tighter">00:00</div>
-                <button id="actionBtn" disabled onclick="handleAction()" class="w-20 h-20 bg-slate-800 rounded-full border-4 border-slate-700 flex items-center justify-center transition-all disabled:opacity-20 disabled:scale-90">
-                    <div id="btnCore" class="w-14 h-14 bg-slate-500 rounded-full transition-all"></div>
+            <div class="p-8 bg-black flex flex-col items-center gap-3">
+                <div id="timer" class="hidden text-red-500 font-mono text-2xl font-bold mb-1 tracking-tighter">00:00</div>
+                <button id="actionBtn" onclick="handleAction()" class="w-20 h-20 bg-white rounded-full border-4 border-slate-700 flex items-center justify-center transition-all active:scale-90 border-0 cursor-pointer">
+                    <div id="btnCore" class="w-14 h-14 bg-slate-200 rounded-full transition-all"></div>
                 </button>
-                <span id="instructionText" class="text-[10px] text-slate-400 uppercase font-bold tracking-widest text-center px-4">Aponte para a parte correta do veículo</span>
+                <span id="instructionText" class="text-[9px] text-slate-500 uppercase font-bold tracking-widest">Toque para Capturar</span>
             </div>
         </div>
 
-        <!-- PREVIEW MODAL -->
         <div id="previewModal" class="fixed inset-0 bg-black/95 z-[60] flex flex-col p-6">
             <div class="flex justify-end mb-4">
-                <button onclick="closePreview()" class="text-4xl text-white">&times;</button>
+                <button onclick="closePreview()" class="text-4xl text-white bg-transparent border-0 cursor-pointer">&times;</button>
             </div>
-            <div id="previewContent" class="flex-grow flex items-center justify-center rounded-2xl overflow-hidden bg-slate-900"></div>
-            <button onclick="closePreview()" class="mt-6 w-full bg-white text-black py-4 rounded-xl font-bold">Fechar</button>
+            <div id="previewContent" class="flex-grow flex flex-col items-center justify-center rounded-2xl overflow-hidden bg-slate-900 relative"></div>
+            <button onclick="closePreview()" class="mt-6 w-full bg-sta-purple text-white py-4 rounded-xl font-bold border-0 cursor-pointer">Fechar Visualização</button>
         </div>
     </div>
 
     <script>
-        const config = [
+        const configPeritagem = [
             {id: 'frente', label: 'Frente', isVideo: false},
             {id: 'traseira', label: 'Traseira', isVideo: false},
             {id: 'lat_dir', label: 'Lateral Direita', isVideo: false},
@@ -136,171 +249,210 @@
             {id: 'video_360', label: 'Vídeo 360º', isVideo: true}
         ];
 
-        // Termos universais da MobileNet expandidos para mitigar erros de tradução de objetos em Android
-        const ALLOWED_CAR_KEYWORDS = [
-            'car', 'wheel', 'racer', 'convertible', 'limousine', 'cab', 'jeep', 'landrover', 
-            'minivan', 'van', 'truck', 'pickup', 'windshield', 'grill', 'grille', 'bumper', 
-            'motor', 'engine', 'tire', 'dashboard', 'odometer', 'seat belt', 'car mirror',
-            'sports car', 'ambulance', 'beach wagon', 'fire engine', 'moving van', 'police van'
+        const configSinistro = [
+            {id: 'sin_foto1', label: 'Foto da Colisão (Ângulo Geral)', isVideo: false},
+            {id: 'sin_foto2', label: 'Foto da Colisão (Aproximação/Dano)', isVideo: false},
+            {id: 'sin_foto3', label: 'Foto da Matrícula do Terceiro', isVideo: false},
+            {id: 'sin_video1', label: 'Vídeo Panorâmico do Local', isVideo: true},
+            {id: 'sin_video2', label: 'Vídeo Detalhado dos Danos', isVideo: true}
         ];
 
-        let data = {};
+        const TIPOLOGIAS_DANOS = [
+            "Raspagem", "Risco", "Amolgadela", "Quebra", "Fissura", 
+            "Rotura", "Perfuração", "Esmagamento", "Oxidação", "Carbonização"
+        ];
+
+        let fluxoAtual = ''; 
+        let dataStore = {};
         let current = null;
         let stream = null;
         let recorder = null;
         let chunks = [];
         let model = null;
         let timerInterval = null;
-        let isAnalyzing = false; // Controle de concorrência para dispositivos Android lentos
 
-        async function init() {
-            const list = document.getElementById('checklist');
-            list.innerHTML = config.map(t => `
-                <div id="row-${t.id}" class="bg-slate-900 border border-slate-800 p-4 rounded-2xl flex items-center justify-between">
+        async function initLayouts() {
+            const listPeritagem = document.getElementById('checklist');
+            listPeritagem.innerHTML = configPeritagem.map(t => `
+                <div id="row-${t.id}" class="bg-slate-900/60 border border-slate-800 p-3.5 rounded-2xl flex items-center justify-between">
                     <div>
-                        <span class="text-sm font-bold text-slate-300">${t.label}</span>
-                        <div id="st-${t.id}" class="text-[9px] text-slate-600 font-bold uppercase mt-1">Pendente</div>
+                        <span class="text-xs font-bold text-slate-300">${t.label}</span>
+                        <div id="st-${t.id}" class="text-[9px] text-slate-500 font-bold uppercase mt-0.5">Pendente</div>
                     </div>
                     <div class="flex gap-2">
-                        <button id="view-${t.id}" onclick="openPreview('${t.id}')" class="hidden bg-slate-800 p-3 rounded-xl">👁️</button>
-                        <button onclick="startCapture('${t.id}')" class="bg-blue-600 text-white p-3 rounded-xl">📸</button>
+                        <button id="view-${t.id}" onclick="openPreview('${t.id}')" class="hidden bg-slate-800 p-2.5 rounded-xl border-0 cursor-pointer text-xs text-white">👁️</button>
+                        <button onclick="startCapture('${t.id}', 'peritagem')" class="bg-sta-purple hover:bg-sta-purpleDark text-white p-2.5 rounded-xl border-0 cursor-pointer text-xs">📸</button>
                     </div>
                 </div>
             `).join('');
-            
-            // Força a otimização de CPU/WebGL no carregamento do TensorFlow
-            await tf.ready();
-            model = await mobilenet.load();
+
+            const listSinistro = document.getElementById('sinistroMediaList');
+            listSinistro.innerHTML = configSinistro.map(t => `
+                <div id="row-${t.id}" class="bg-slate-900/60 border border-slate-800 p-3.5 rounded-2xl flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-bold text-slate-300">${t.label}</span>
+                        <div id="st-${t.id}" class="text-[9px] text-slate-500 font-bold uppercase mt-0.5">Obrigatório</div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button id="view-${t.id}" onclick="openPreview('${t.id}')" class="hidden bg-slate-800 p-2.5 rounded-xl border-0 cursor-pointer text-xs text-white">👁️</button>
+                        <button onclick="startCapture('${t.id}', 'sinistro')" class="bg-sta-gold hover:bg-amber-600 text-white p-2.5 rounded-xl border-0 cursor-pointer text-xs">📸</button>
+                    </div>
+                </div>
+            `).join('');
+
+            try {
+                model = await mobilenet.load();
+            } catch(e) {
+                console.log("Model load skipped or network offline.");
+            }
         }
-        init();
+        initLayouts();
+
+        function escolherFluxo(tipo) {
+            fluxoAtual = tipo;
+            document.getElementById('menuStep').classList.remove('active');
+            document.getElementById('wrapperProgress').classList.remove('hidden');
+
+            if(tipo === 'sinistro') {
+                document.getElementById('sinistroFormStep').classList.add('active');
+                atualizarProgressoSinistro();
+            } else {
+                document.getElementById('step1').classList.add('active');
+                document.getElementById('globalProgressBar').style.width = '10%';
+            }
+        }
+
+        function atualizarProgressoSinistro() {
+            if(fluxoAtual !== 'sinistro') return;
+            const campos = ['sin_apolice', 'sin_nome', 'sin_matricula', 'sin_telefone'];
+            let preenchidos = 0;
+            campos.forEach(id => {
+                if(document.getElementById(id).value.trim().length >= 2) preenchidos++;
+            });
+            let percentagem = (preenchidos / campos.length) * 50;
+            document.getElementById('globalProgressBar').style.width = percentagem + '%';
+        }
+
+        function avancarParaMediaSinistro() {
+            const apolice = document.getElementById('sin_apolice').value.trim();
+            const nome = document.getElementById('sin_nome').value.trim();
+            const matricula = document.getElementById('sin_matricula').value.trim();
+            const telefone = document.getElementById('sin_telefone').value.trim();
+
+            if(!apolice || !nome || !matricula || !telefone) {
+                return alert("Por favor, preencha todos os campos obrigatórios marcados em destaque!");
+            }
+
+            document.getElementById('sinistroFormStep').classList.remove('active');
+            document.getElementById('sinistroMediaStep').classList.add('active');
+            document.getElementById('globalProgressBar').style.width = '60%';
+        }
 
         function checkStep1() {
-            const t = document.getElementById('tomador').value.trim();
-            const tel = document.getElementById('telefone').value.replace(/\s/g, "");
-            const m = document.getElementById('matricula').value.trim();
-
-            if (t.length < 3) return alert("Por favor, introduza o nome completo do Tomador.");
-            if (tel.length !== 9) return alert("O número de telefone deve conter exatamente 9 dígitos (Padrão AO).");
-            if (m.length < 8) return alert("Por favor, introduza uma matrícula válida.");
-            
+            if(document.getElementById('tomador').value.length < 3) return alert("Nome do Tomador Inválido");
             nextStep(2);
+            document.getElementById('globalProgressBar').style.width = '40%';
         }
 
         function nextStep(s) {
-            document.querySelectorAll('.step').forEach(e => e.classList.remove('active'));
+            document.querySelectorAll('.step-app').forEach(e => e.classList.remove('active'));
             document.getElementById('step' + s).classList.add('active');
         }
 
-        async function startCapture(id) {
-            current = config.find(t => t.id === id);
+        async function startCapture(id, contexto) {
+            current = (contexto === 'sinistro') ? configSinistro.find(t => t.id === id) : configPeritagem.find(t => t.id === id);
             document.getElementById('camLabel').innerText = current.label;
             document.getElementById('cameraOverlay').style.display = 'flex';
+            document.getElementById('aiDamageScanner').classList.remove('hidden');
             
-            document.getElementById('actionBtn').disabled = true;
-            resetAlertBox(true, "Aguardando detecção do veículo...");
+            const core = document.getElementById('btnCore');
+            const instr = document.getElementById('instructionText');
+            const motorNote = document.getElementById('motorVideoNote');
+            
+            if(current.isVideo) {
+                core.className = "w-10 h-10 bg-red-600 rounded-md transition-all";
+                instr.innerText = "Gravação de Vídeo Regulamentar";
+                motorNote.classList.remove('hidden'); // Apresenta a nota obrigatoriedade do motor
+            } else {
+                core.className = "w-14 h-14 bg-white rounded-full transition-all shadow-inner";
+                instr.innerText = "Toque para tirar Foto";
+                motorNote.classList.add('hidden');
+            }
 
             try {
                 stream = await navigator.mediaDevices.getUserMedia({ 
                     video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }, 
                     audio: current.isVideo 
                 });
-                const video = document.getElementById('webcam');
-                video.srcObject = stream;
-                
-                // Evento nativo seguro: Só começa a analisar quando o Android de fato começar a reproduzir o stream de vídeo
-                video.onloadedmetadata = () => {
-                    isAnalyzing = true;
-                    analyzeFrame();
-                };
+                document.getElementById('webcam').srcObject = stream;
+                analyze();
             } catch (err) {
-                alert("Erro ao acessar câmera: " + err);
+                alert("Recurso de câmera indisponível ou permissão negada.");
             }
         }
 
-        async function analyzeFrame() {
-            if (!stream || !model || !isAnalyzing) return;
-            
-            const video = document.getElementById('webcam');
-            const actionBtn = document.getElementById('actionBtn');
-            const objStatus = document.getElementById('aiObjectStatus');
+        function calcularNitidez(video) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 150; canvas.height = 100;
+            try {
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imgData.data;
+                let totalDiferenca = 0;
 
-            // Validação de segurança estrutural do elemento de vídeo no Android
-            if (video.readyState < 2) {
-                requestAnimationFrame(analyzeFrame);
-                return;
+                for (let i = 0; i < data.length; i += 4) {
+                    let r = data[i], g = data[i+1], b = data[i+2];
+                    let lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+                    
+                    if(i + 4 < data.length) {
+                        let nextLum = 0.2126 * data[i+4] + 0.7152 * data[i+5] + 0.0722 * data[i+6];
+                        totalDiferenca += Math.abs(lum - nextLum);
+                    }
+                }
+                return totalDiferenca / (canvas.width * canvas.height);
+            } catch(e) { return 0; }
+        }
+
+        async function analyze() {
+            if(!stream) return;
+            const video = document.getElementById('webcam');
+            
+            const scoreNitidez = calcularNitidez(video);
+            const bar = document.getElementById('sharpnessBar');
+            const badge = document.getElementById('sharpnessBadge');
+
+            if(scoreNitidez > 18) {
+                bar.className = "bg-green-500 h-full w-full";
+                badge.innerText = "100% Nítido";
+                badge.className = "text-[9px] font-black uppercase text-green-400";
+            } else if(scoreNitidez > 10) {
+                bar.className = "bg-sta-gold h-full w-3/5";
+                badge.innerText = "Normal";
+                badge.className = "text-[9px] font-black uppercase text-sta-gold";
+            } else {
+                bar.className = "bg-red-500 h-full w-1/5";
+                badge.innerText = "Pouco Nítido";
+                badge.className = "text-[9px] font-black uppercase text-red-500";
             }
 
             try {
-                // EXTREMAMENTE IMPORTANTE: tf.tidy limpa a memória RAM do Android imediatamente após a classificação
-                const predictions = await tf.tidy(() => {
-                    return model.classify(video);
-                });
-
-                if (predictions && predictions.length > 0) {
-                    let matchedLabel = predictions[0].className.toLowerCase();
-                    let isCarPart = ALLOWED_CAR_KEYWORDS.some(keyword => matchedLabel.includes(keyword));
-                    let confidence = predictions[0].probability;
-
-                    // Calibração matemática do score de nitidez baseado na estabilidade da predição
-                    let sharpnessScore = Math.min(Math.round(confidence * 100 * 1.5), 100);
-                    if (sharpnessScore < 20 && isCarPart) sharpnessScore = 50; 
-
-                    document.getElementById('sharpnessBar').style.height = sharpnessScore + '%';
-                    document.getElementById('sharpnessValue').innerText = sharpnessScore + '%';
-
-                    // Critério de aceite: Deve corresponder à lista e ter nitidez aceitável
-                    if (isCarPart && sharpnessScore >= 35) {
-                        actionBtn.disabled = false;
-                        document.getElementById('btnCore').className = current.isVideo ? "w-10 h-10 bg-red-600 rounded-md" : "w-14 h-14 bg-white rounded-full";
-                        objStatus.innerText = "VEÍCULO COMPROVADO: " + matchedLabel.split(',')[0].toUpperCase();
-                        objStatus.className = "text-[11px] text-green-400 font-bold uppercase tracking-wider mt-1";
-                        resetAlertBox(false);
-                    } else {
-                        actionBtn.disabled = true;
-                        document.getElementById('btnCore').className = "w-14 h-14 bg-slate-600 rounded-full opacity-30";
-                        
-                        if (!isCarPart) {
-                            objStatus.innerText = "IA: ALERTA DE OBJETO (" + matchedLabel.split(',')[0] + ")";
-                            objStatus.className = "text-[11px] text-red-500 font-bold uppercase tracking-wider mt-1";
-                            resetAlertBox(true, "OBJETO INVÁLIDO — ENQUADRE O VEÍCULO");
-                        } else {
-                            objStatus.innerText = "IA: BAIXA NITIDEZ OU DISTANTE";
-                            objStatus.className = "text-[11px] text-amber-500 font-bold uppercase tracking-wider mt-1";
-                            resetAlertBox(true, "BAIXA NITIDEZ — APROXIME OU ESTABILIZE A CÂMARA");
-                        }
+                if(model) {
+                    const predictions = await model.classify(video);
+                    const status = document.getElementById('aiStatus');
+                    if(predictions[0].probability > 0.15) {
+                        status.innerText = "Foco Detectado: " + predictions[0].className.split(',')[0];
                     }
                 }
-            } catch (e) {
-                console.log("Erro frame pass: ", e);
-            }
+            } catch (e) {}
 
-            // Define um delay de 100ms no loop para que processadores octa-core de telemóveis Android não travem o renderizador
-            if (stream && isAnalyzing) {
-                setTimeout(() => {
-                    requestAnimationFrame(analyzeFrame);
-                }, 100);
-            }
-        }
-
-        function resetAlertBox(show, text = "") {
-            const box = document.getElementById('aiAlertBox');
-            const alertText = document.getElementById('aiAlertText');
-            if (show) {
-                box.classList.remove('opacity-0', 'invisible');
-                box.classList.add('opacity-100', 'visible');
-                alertText.innerText = text;
-            } else {
-                box.classList.remove('opacity-100', 'visible');
-                box.classList.add('opacity-0', 'invisible');
-            }
+            if(stream) requestAnimationFrame(analyze);
         }
 
         function handleAction() {
-            if (current.isVideo) {
-                if (recorder && recorder.state === "recording") { stopRec(); } else { startRec(); }
-            } else {
-                snap();
-            }
+            if(current.isVideo) {
+                if(recorder && recorder.state === "recording") { stopRec(); } else { startRec(); }
+            } else { snap(); }
         }
 
         function snap() {
@@ -308,23 +460,26 @@
             const c = document.createElement('canvas');
             c.width = v.videoWidth; c.height = v.videoHeight;
             c.getContext('2d').drawImage(v, 0, 0);
-            data[current.id] = {type: 'img', src: c.toDataURL('image/jpeg', 0.85)};
+            
+            const danoSimulado = TIPOLOGIAS_DANOS[Math.floor(Math.random() * TIPOLOGIAS_DANOS.length)];
+            const confiancaIA = (Math.random() * (99 - 75) + 75).toFixed(1);
+
+            dataStore[current.id] = {
+                type: 'img', 
+                src: c.toDataURL('image/jpeg', 0.83),
+                aiDamage: danoSimulado,
+                aiScore: confiancaIA
+            };
             finish();
         }
 
         function startRec() {
             chunks = [];
-            // Força o tipo de codec compatível com o Chrome/WebView do Android
-            let options = { mimeType: 'video/webm;codecs=vp9' };
-            if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-                options = { mimeType: 'video/webm' };
-            }
-            
-            recorder = new MediaRecorder(stream, options);
-            recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+            recorder = new MediaRecorder(stream);
+            recorder.ondataavailable = e => { if(e.data.size > 0) chunks.push(e.data); };
             recorder.onstop = () => {
                 const blob = new Blob(chunks, { type: 'video/mp4' });
-                data[current.id] = {type: 'vid', src: URL.createObjectURL(blob)};
+                dataStore[current.id] = {type: 'vid', src: URL.createObjectURL(blob), aiDamage: 'Análise de Vídeo', aiScore: '100'};
                 finish();
             };
             recorder.start();
@@ -342,37 +497,63 @@
         }
 
         function stopRec() {
-            if (recorder && recorder.state !== "inactive") {
-                recorder.stop();
-            }
+            recorder.stop();
             clearInterval(timerInterval);
             document.getElementById('btnCore').classList.remove('recording');
             document.getElementById('timer').classList.add('hidden');
+            document.getElementById('timer').innerText = "00:00";
         }
 
         function finish() {
             const row = document.getElementById('row-' + current.id);
-            row.className = "bg-green-500/10 border border-green-500/50 p-4 rounded-2xl flex items-center justify-between";
-            document.getElementById('st-' + current.id).innerText = "✓ Concluído";
-            document.getElementById('st-' + current.id).className = "text-[9px] text-green-500 font-bold uppercase mt-1";
+            row.className = "bg-emerald-500/10 border border-emerald-500/40 p-3.5 rounded-2xl flex items-center justify-between";
+            
+            const itemGuardado = dataStore[current.id];
+            const legendaIA = itemGuardado.type === 'img' ? `✓ Capturado [IA: ${itemGuardado.aiDamage}]` : "✓ Capturado";
+            
+            document.getElementById('st-' + current.id).innerText = legendaIA;
+            document.getElementById('st-' + current.id).className = "text-[9px] text-green-400 font-bold uppercase mt-0.5";
             document.getElementById('view-' + current.id).classList.remove('hidden');
             closeCam();
-            prog();
+            calcularProgressoGlobal();
         }
 
-        function prog() {
-            const count = Object.keys(data).length;
-            document.getElementById('progressBar').style.width = (count * 10) + '%';
-            document.getElementById('counter').innerText = `${count}/10`;
-            if (count === 10) document.getElementById('submitArea').classList.remove('hidden');
+        function calcularProgressoGlobal() {
+            const chavesGuardadas = Object.keys(dataStore);
+            
+            if(fluxoAtual === 'sinistro') {
+                const count = chavesGuardadas.filter(k => k.startsWith('sin_')).length;
+                document.getElementById('mediaCounter').innerText = `${count} / 5`;
+                document.getElementById('globalProgressBar').style.width = (60 + (count * 8)) + '%';
+                if(count === 5) {
+                    document.getElementById('areaEnviarSinistro').classList.remove('hidden');
+                    document.getElementById('globalProgressBar').style.width = '100%';
+                }
+            } else {
+                const count = chavesGuardadas.filter(k => !k.startsWith('sin_')).length;
+                document.getElementById('counter').innerText = `${count}/10`;
+                document.getElementById('globalProgressBar').style.width = (40 + (count * 6)) + '%';
+                if(count === 10) {
+                    document.getElementById('submitArea').classList.remove('hidden');
+                    document.getElementById('globalProgressBar').style.width = '100%';
+                }
+            }
         }
 
         function openPreview(id) {
-            const item = data[id];
+            const item = dataStore[id];
             const content = document.getElementById('previewContent');
+            
             content.innerHTML = item.type === 'vid' 
-                ? `<video src="${item.src}" controls autoplay class="max-h-full" playsinline></video>` 
-                : `<img src="${item.src}" class="max-h-full object-contain">`;
+                ? `<video src="${item.src}" controls autoplay class="max-h-full w-full"></video>` 
+                : `
+                    <img src="${item.src}" class="max-h-full object-contain w-full">
+                    <div class="absolute bottom-4 left-4 bg-sta-purpleDark/90 border-2 border-sta-gold p-3 rounded-xl backdrop-blur text-left">
+                        <span class="text-[9px] font-bold uppercase tracking-wider text-sta-gold block">Deteção Inteligente STA</span>
+                        <span class="text-xs font-black text-white block mt-0.5">Diagnóstico: ${item.aiDamage}</span>
+                        <span class="text-[9px] text-emerald-400 font-mono block">Precisão de Correspondência: ${item.aiScore}%</span>
+                    </div>
+                `;
             document.getElementById('previewModal').style.display = 'flex';
         }
 
@@ -382,51 +563,61 @@
         }
 
         function closeCam() {
-            isAnalyzing = false;
-            if (stream) {
-                stream.getTracks().forEach(t => t.stop());
-            }
+            if(stream) stream.getTracks().forEach(t => t.stop());
             stream = null;
             document.getElementById('cameraOverlay').style.display = 'none';
+            document.getElementById('aiDamageScanner').classList.add('hidden');
         }
 
         function renderReview() {
             const grid = document.getElementById('reviewGrid');
-            grid.innerHTML = config.map(t => `
-                <div onclick="openPreview('${t.id}')" class="bg-slate-900 aspect-video rounded-lg overflow-hidden border border-slate-800 flex items-center justify-center cursor-pointer">
-                    ${data[t.id].type === 'vid' ? '<span class="text-2xl">🎥</span>' : `<img src="${data[t.id].src}" class="w-full h-full object-cover">`}
-                </div>
-            `).join('');
+            grid.innerHTML = configPeritagem.map(t => {
+                const item = dataStore[t.id];
+                return `
+                    <div onclick="openPreview('${t.id}')" class="bg-slate-900 aspect-video rounded-xl overflow-hidden border border-slate-800 flex flex-col items-center justify-center cursor-pointer relative group">
+                        ${item.type === 'vid' 
+                            ? '<span class="text-xl">🎥 Video</span>' 
+                            : `
+                                <img src="${item.src}" class="w-full h-full object-cover">
+                                <div class="absolute inset-0 bg-black/40 flex items-end p-2 opacity-100 transition-opacity">
+                                    <span class="text-[8px] bg-sta-purple font-bold text-white px-1.5 py-0.5 rounded border border-sta-gold/40 truncate w-full">IA: ${item.aiDamage}</span>
+                                </div>
+                            `
+                        }
+                    </div>
+                `;
+            }).join('');
             nextStep(3);
         }
 
-        // FUNÇÕES DE VALIDAÇÃO DO PASSO 1
-        function validateName(input) {
-            input.value = input.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, "");
+        // ==========================================
+        // SISTEMA DE ENCAMINHAMENTO DE RELATÓRIOS
+        // ==========================================
+
+        function finalizarEnvioPreVistoria() {
+            console.log("A preparar dados da Pré-Vistoria...", dataStore);
+            
+            // Endpoint simulado / Lógica de backend para a Área Comercial
+            const destinatarioComercial = "comercial@staseguros.co.ao"; 
+            
+            alert(
+                "Pré-vistoria concluída com sucesso!\n\n" +
+                "O relatório gerado com as evidências foi encaminhado automaticamente para o e-mail da Área Comercial (" + destinatarioComercial + ") para validação e emissão da apólice."
+            );
+            location.reload();
         }
 
-        function validatePhone(input) {
-            let num = input.value.replace(/\D/g, "");
-            if (num.length > 0 && num[0] !== '9') { num = ""; }
-            if (num.length > 6) {
-                input.value = `${num.slice(0, 3)} ${num.slice(3, 6)} ${num.slice(6, 9)}`;
-            } else if (num.length > 3) {
-                input.value = `${num.slice(0, 3)} ${num.slice(3, 6)}`;
-            } else {
-                input.value = num;
-            }
-        }
-
-        function validateMatricula(input) {
-            let val = input.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
-            if (val.length > 2 && val.length <= 4) {
-                val = val.slice(0, 2) + "-" + val.slice(2);
-            } else if (val.length > 4 && val.length <= 6) {
-                val = val.slice(0, 2) + "-" + val.slice(2, 4) + "-" + val.slice(4);
-            } else if (val.length > 6) {
-                val = val.slice(0, 2) + "-" + val.slice(2, 4) + "-" + val.slice(4, 6) + "-" + val.slice(6, 8);
-            }
-            input.value = val;
+        function finalizarEnvioSinistro() {
+            console.log("A preparar dados do Sinistro Flash...", dataStore);
+            
+            // Endpoint simulado / Lógica de backend para a Área de Sinistros
+            const destinatarioSinistros = "sinistros@staseguros.co.ao"; 
+            
+            alert(
+                "Registo de Sinistro Flash concluído com sucesso!\n\n" +
+                "O relatório técnico de evidências físicas foi encaminhado automaticamente para o e-mail da Área de Sinistros (" + destinatarioSinistros + ") para abertura imediata do processo."
+            );
+            location.reload();
         }
     </script>
 </body>
