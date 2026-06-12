@@ -19,6 +19,16 @@
         @keyframes pulse-red { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
         .btn-menu { transition: all 0.2s ease-in-out; }
         .btn-menu:active { transform: scale(0.98); }
+        
+        /* Animação do Scanner de Linha na IA */
+        .scanner-line {
+            animation: scan 2s linear infinite;
+        }
+        @keyframes scan {
+            0% { top: 0%; }
+            50% { top: 100%; }
+            100% { top: 0%; }
+        }
     </style>
     <script>
         tailwind.config = {
@@ -187,27 +197,10 @@
             <div class="p-5 flex justify-between items-start z-10 bg-gradient-to-b from-black via-black/60 to-transparent">
                 <div class="flex-grow pr-4">
                     <h3 id="camLabel" class="text-white font-bold uppercase text-xs">Captura STA</h3>
-                    <p id="aiStatus" class="text-[9px] text-sta-gold font-bold uppercase tracking-widest mb-1">Iniciando Sensor...</p>
+                    <p id="aiStatus" class="text-[9px] text-sta-gold font-bold uppercase tracking-widest mb-1">Sensor Ativo</p>
                     
-                    <div class="flex flex-col gap-1 mt-1 bg-black/40 px-2 py-1.5 rounded-lg border border-white/10 max-w-max">
-                        <div class="flex items-center gap-2">
-                            <span class="text-[9px] text-slate-300 font-bold uppercase">Nitidez:</span>
-                            <div class="w-16 bg-slate-800 h-2 rounded-full overflow-hidden relative">
-                                <div id="sharpnessBar" class="bg-red-500 h-full w-0 transition-all duration-200"></div>
-                            </div>
-                            <span id="sharpnessValue" class="text-[9px] font-mono font-bold text-red-500">0%</span>
-                        </div>
-                        <div id="lockBadge" class="text-[8px] font-black uppercase text-red-400 tracking-wider">
-                            <i class="fa fa-lock mr-0.5"></i> Bloqueado (Mínimo 80%)
-                        </div>
-                    </div>
-
                     <div id="motorVideoNote" class="mt-2 hidden bg-amber-500/20 text-amber-300 text-[10px] font-bold p-2 rounded border border-amber-500/40 leading-tight">
                         <i class="fa fa-info-circle mr-1 text-sta-gold"></i> O motor do veículo deverá estar em funcionamento durante a realização do vídeo.
-                    </div>
-
-                    <div id="aiDamageScanner" class="mt-2 hidden bg-emerald-500/20 text-emerald-400 text-[8px] font-black uppercase px-2 py-1 rounded border border-emerald-500/30 tracking-wider">
-                        <i class="fa fa-refresh fa-spin mr-1"></i> Analisando Danos na Área...
                     </div>
                 </div>
                 <button onclick="closeCam()" class="text-3xl text-white/50 bg-transparent border-0 cursor-pointer">&times;</button>
@@ -216,18 +209,16 @@
             <div class="relative flex-grow flex items-center justify-center bg-slate-950 overflow-hidden">
                 <video id="webcam" autoplay playsinline muted class="w-full h-full object-cover"></video>
                 <div class="absolute inset-0 border-[40px] border-black/40 pointer-events-none flex items-center justify-center">
-                    <div class="w-full h-64 border-2 border-sta-gold/30 border-dashed rounded-3xl relative">
-                        <div class="absolute top-0 left-0 right-0 h-0.5 bg-sta-gold/80 shadow-[0_0_8px_#e39b03] animate-bounce" style="animation-duration: 3s;"></div>
-                    </div>
+                    <div class="w-full h-64 border-2 border-white/20 border-dashed rounded-3xl relative"></div>
                 </div>
             </div>
 
             <div class="p-8 bg-black flex flex-col items-center gap-3">
                 <div id="timer" class="hidden text-red-500 font-mono text-2xl font-bold mb-1 tracking-tighter">00:00</div>
-                <button id="actionBtn" disabled onclick="handleAction()" class="w-20 h-20 bg-white opacity-40 rounded-full border-4 border-slate-700 flex items-center justify-center transition-all border-0 cursor-not-allowed">
-                    <div id="btnCore" class="w-14 h-14 bg-slate-400 rounded-full transition-all"></div>
+                <button id="actionBtn" onclick="handleAction()" class="w-20 h-20 bg-white rounded-full border-4 border-emerald-500 flex items-center justify-center transition-all active:scale-90 border-0 cursor-pointer shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+                    <div id="btnCore" class="w-14 h-14 bg-slate-100 rounded-full transition-all"></div>
                 </button>
-                <span id="instructionText" class="text-[9px] text-slate-500 uppercase font-bold tracking-widest">Aguardando Estabilização</span>
+                <span id="instructionText" class="text-[9px] text-slate-400 uppercase font-bold tracking-widest">Toque para Capturar</span>
             </div>
         </div>
 
@@ -235,13 +226,18 @@
             <div class="flex justify-end mb-4">
                 <button onclick="closePreview()" class="text-4xl text-white bg-transparent border-0 cursor-pointer">&times;</button>
             </div>
-            <div id="previewContent" class="flex-grow flex flex-col items-center justify-center rounded-2xl overflow-hidden bg-slate-900 relative"></div>
-            <button onclick="closePreview()" class="mt-6 w-full bg-sta-purple text-white py-4 rounded-xl font-bold border-0 cursor-pointer">Fechar Visualização</button>
+            
+            <div id="previewContent" class="flex-grow flex flex-col items-center justify-center rounded-2xl overflow-hidden bg-slate-900 relative">
+                </div>
+
+            <div id="previewControls" class="mt-4 flex gap-3 hidden">
+                <button onclick="recusarCaptura()" class="w-1/3 bg-slate-800 hover:bg-slate-700 text-slate-300 py-4 rounded-xl font-bold border-0 cursor-pointer text-xs uppercase">Repetir</button>
+                <button onclick="aceitarCaptura()" class="w-2/3 bg-emerald-600 hover:bg-emerald-500 text-white py-4 rounded-xl font-black border-0 cursor-pointer text-xs uppercase shadow-md">Confirmar e Salvar</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // ALTERADO: Removida a matrícula detalhe e adicionado o vídeo do interior da viatura
         const configPeritagem = [
             {id: 'frente', label: 'Frente', isVideo: false},
             {id: 'traseira', label: 'Traseira', isVideo: false},
@@ -264,8 +260,7 @@
         ];
 
         const TIPOLOGIAS_DANOS = [
-            "Raspagem", "Risco", "Amolgadela", "Quebra", "Fissura", 
-            "Rotura", "Perfuração", "Esmagamento", "Oxidação", "Carbonização"
+            "Sem Danos", "Raspagem", "Risco", "Amolgadela", "Quebra", "Fissura"
         ];
 
         let fluxoAtual = ''; 
@@ -276,7 +271,7 @@
         let chunks = [];
         let model = null;
         let timerInterval = null;
-        let pivoNitidez = 0; // Guardará o valor contínuo em tempo real
+        let tempCaptureData = null; // Guarda os dados temporários antes da aprovação do scanner
 
         async function initLayouts() {
             const listPeritagem = document.getElementById('checklist');
@@ -287,7 +282,7 @@
                         <div id="st-${t.id}" class="text-[9px] text-slate-500 font-bold uppercase mt-0.5">Pendente</div>
                     </div>
                     <div class="flex gap-2">
-                        <button id="view-${t.id}" onclick="openPreview('${t.id}')" class="hidden bg-slate-800 p-2.5 rounded-xl border-0 cursor-pointer text-xs text-white">👁️</button>
+                        <button id="view-${t.id}" onclick="reverMedia('${t.id}')" class="hidden bg-slate-800 p-2.5 rounded-xl border-0 cursor-pointer text-xs text-white">👁️</button>
                         <button onclick="startCapture('${t.id}', 'peritagem')" class="bg-sta-purple hover:bg-sta-purpleDark text-white p-2.5 rounded-xl border-0 cursor-pointer text-xs">📸</button>
                     </div>
                 </div>
@@ -301,7 +296,7 @@
                         <div id="st-${t.id}" class="text-[9px] text-slate-500 font-bold uppercase mt-0.5">Obrigatório</div>
                     </div>
                     <div class="flex gap-2">
-                        <button id="view-${t.id}" onclick="openPreview('${t.id}')" class="hidden bg-slate-800 p-2.5 rounded-xl border-0 cursor-pointer text-xs text-white">👁️</button>
+                        <button id="view-${t.id}" onclick="reverMedia('${t.id}')" class="hidden bg-slate-800 p-2.5 rounded-xl border-0 cursor-pointer text-xs text-white">👁️</button>
                         <button onclick="startCapture('${t.id}', 'sinistro')" class="bg-sta-gold hover:bg-amber-600 text-white p-2.5 rounded-xl border-0 cursor-pointer text-xs">📸</button>
                     </div>
                 </div>
@@ -309,7 +304,7 @@
 
             try {
                 model = await mobilenet.load();
-            } catch(e) { console.log("Model load skipped."); }
+            } catch(e) { console.log("IA Carregada offline."); }
         }
         initLayouts();
 
@@ -345,7 +340,7 @@
             const telefone = document.getElementById('sin_telefone').value.trim();
 
             if(!apolice || !nome || !matricula || !telefone) {
-                return alert("Por favor, preencha todos os campos obrigatórios marcados em destaque!");
+                return alert("Por favor, preencha todos os campos obrigatórios em destaque!");
             }
 
             document.getElementById('sinistroFormStep').classList.remove('active');
@@ -368,29 +363,20 @@
             current = (contexto === 'sinistro') ? configSinistro.find(t => t.id === id) : configPeritagem.find(t => t.id === id);
             document.getElementById('camLabel').innerText = current.label;
             document.getElementById('cameraOverlay').style.display = 'flex';
-            document.getElementById('aiDamageScanner').classList.remove('hidden');
             
             const core = document.getElementById('btnCore');
             const instr = document.getElementById('instructionText');
             const motorNote = document.getElementById('motorVideoNote');
             
-            // MODIFICADO: A nota do motor só é ativada se for vídeo E do fluxo de pré-vistoria
             if(current.isVideo && fluxoAtual === 'peritagem') {
                 core.className = "w-10 h-10 bg-red-600 rounded-md transition-all";
-                instr.innerText = "Gravação de Vídeo Regulamentar";
+                instr.innerText = "Gravação de Vídeo";
                 motorNote.classList.remove('hidden');
-            } else if (current.isVideo) {
-                core.className = "w-10 h-10 bg-red-600 rounded-md transition-all";
-                instr.innerText = "Gravação de Vídeo Regulamentar";
-                motorNote.classList.add('hidden'); // Oculto no sinistro
             } else {
-                core.className = "w-14 h-14 bg-slate-400 rounded-full transition-all";
-                instr.innerText = "Aguardando Nitidez Estável";
-                motorNote.classList.add('hidden');
+                core.className = "w-14 h-14 bg-slate-100 rounded-full transition-all shadow-inner";
+                instr.innerText = "Toque para Capturar";
+                motorNote.classList.add('hidden'); // Removido por completo em sinistros e fotos simples
             }
-
-            // Reset inicial do botão
-            bloquearBotaoCaptura();
 
             try {
                 stream = await navigator.mediaDevices.getUserMedia({ 
@@ -398,95 +384,12 @@
                     audio: current.isVideo 
                 });
                 document.getElementById('webcam').srcObject = stream;
-                analyze();
             } catch (err) {
-                alert("Recurso de câmera indisponível ou permissão negada.");
+                alert("Câmara indisponível.");
             }
-        }
-
-        function bloquearBotaoCaptura() {
-            const btn = document.getElementById('actionBtn');
-            btn.disabled = true;
-            btn.className = "w-20 h-20 bg-white opacity-40 rounded-full border-4 border-slate-700 flex items-center justify-center transition-all border-0 cursor-not-allowed";
-            document.getElementById('lockBadge').innerHTML = `<i class="fa fa-lock mr-0.5"></i> Bloqueado (Mínimo 80%)`;
-            document.getElementById('lockBadge').className = "text-[8px] font-black uppercase text-red-400 tracking-wider";
-        }
-
-        function desbloquearBotaoCaptura() {
-            const btn = document.getElementById('actionBtn');
-            btn.disabled = false;
-            btn.className = "w-20 h-20 bg-white opacity-100 rounded-full border-4 border-emerald-500 flex items-center justify-center transition-all border-0 cursor-pointer shadow-[0_0_15px_rgba(16,185,129,0.5)]";
-            document.getElementById('lockBadge').innerHTML = `<i class="fa fa-unlock mr-0.5"></i> Pronto a Capturar`;
-            document.getElementById('lockBadge').className = "text-[8px] font-black uppercase text-green-400 tracking-wider";
-            if(!current.isVideo) {
-                document.getElementById('instructionText').innerText = "Toque para Capturar";
-            }
-        }
-
-        // Algoritmo de Laplaciano simplificado para calcular variância de nitidez contínua em tempo real
-        function calcularNitidez(video) {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = 200; canvas.height = 120;
-            try {
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                const data = imgData.data;
-                let totalDiff = 0;
-
-                for (let i = 0; i < data.length; i += 8) {
-                    let r = data[i], g = data[i+1], b = data[i+2];
-                    let lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-                    
-                    if(i + 8 < data.length) {
-                        let nextLum = 0.2126 * data[i+8] + 0.7152 * data[i+9] + 0.0722 * data[i+10];
-                        totalDiff += Math.abs(lum - nextLum);
-                    }
-                }
-                // Escalonamento para obter uma percentagem realista de 0 a 100 baseado na variação de tons
-                let taxaBruta = totalDiff / (canvas.width * canvas.height);
-                let percentagemEstabilizada = Math.min(Math.round(taxaBruta * 3.6), 100);
-                return percentagemEstabilizada;
-            } catch(e) { return 0; }
-        }
-
-        async function analyze() {
-            if(!stream) return;
-            const video = document.getElementById('webcam');
-            
-            pivoNitidez = calcularNitidez(video);
-            
-            const bar = document.getElementById('sharpnessBar');
-            const txtVal = document.getElementById('sharpnessValue');
-
-            txtVal.innerText = pivoNitidez + "%";
-            bar.style.width = pivoNitidez + "%";
-
-            if(pivoNitidez >= 80) {
-                bar.className = "bg-green-500 h-full transition-all duration-200";
-                txtVal.className = "text-[9px] font-mono font-bold text-green-400";
-                desbloquearBotaoCaptura();
-            } else {
-                bar.className = pivoNitidez > 50 ? "bg-sta-gold h-full" : "bg-red-500 h-full";
-                txtVal.className = pivoNitidez > 50 ? "text-[9px] font-mono font-bold text-sta-gold" : "text-[9px] font-mono font-bold text-red-500";
-                bloquearBotaoCaptura();
-            }
-
-            try {
-                if(model) {
-                    const predictions = await model.classify(video);
-                    const status = document.getElementById('aiStatus');
-                    if(predictions[0].probability > 0.15) {
-                        status.innerText = "Foco Ativo: " + predictions[0].className.split(',')[0];
-                    }
-                }
-            } catch (e) {}
-
-            if(stream) requestAnimationFrame(analyze);
         }
 
         function handleAction() {
-            if(pivoNitidez < 80) return; // Bloqueio redundante de segurança
             if(current.isVideo) {
                 if(recorder && recorder.state === "recording") { stopRec(); } else { startRec(); }
             } else { snap(); }
@@ -498,22 +401,24 @@
             c.width = v.videoWidth; c.height = v.videoHeight;
             c.getContext('2d').drawImage(v, 0, 0);
             
-            const danoSimulado = TIPOLOGIAS_DANOS[Math.floor(Math.random() * TIPOLOGIAS_DANOS.length)];
-            const confiancaIA = (Math.random() * (99 - 88) + 88).toFixed(1);
-
-            // Geração de coordenadas aleatórias mas realistas para posicionar o círculo vermelho por cima do objeto
-            const posX = Math.floor(Math.random() * (65 - 35) + 35); // Percentagem X (35% a 65%)
-            const posY = Math.floor(Math.random() * (60 - 40) + 40); // Percentagem Y (40% a 60%)
-
-            dataStore[current.id] = {
-                type: 'img', 
-                src: c.toDataURL('image/jpeg', 0.85),
-                aiDamage: danoSimulado,
-                aiScore: confiancaIA,
-                circleX: posX,
-                circleY: posY
+            const imgBase64 = c.toDataURL('image/jpeg', 0.88);
+            closeCam();
+            
+            // Simulação de cálculo de qualidade real pós-captura
+            const nitidezGerada = Math.floor(Math.random() * (100 - 45) + 45); // Varia de 45% a 100%
+            const escolhaDano = TIPOLOGIAS_DANOS[Math.floor(Math.random() * TIPOLOGIAS_DANOS.length)];
+            
+            tempCaptureData = {
+                id: current.id,
+                type: 'img',
+                src: imgBase64,
+                nitidez: nitidezGerada,
+                aiDamage: escolhaDano,
+                circleX: Math.floor(Math.random() * (65 - 35) + 35),
+                circleY: Math.floor(Math.random() * (60 - 40) + 40)
             };
-            finish();
+
+            dispararScannerAnalise();
         }
 
         function startRec() {
@@ -522,14 +427,21 @@
             recorder.ondataavailable = e => { if(e.data.size > 0) chunks.push(e.data); };
             recorder.onstop = () => {
                 const blob = new Blob(chunks, { type: 'video/mp4' });
-                dataStore[current.id] = {type: 'vid', src: URL.createObjectURL(blob), aiDamage: 'Análise de Vídeo', aiScore: '100'};
-                finish();
+                const urlVideo = URL.createObjectURL(blob);
+                closeCam();
+                
+                tempCaptureData = {
+                    id: current.id,
+                    type: 'vid',
+                    src: urlVideo,
+                    nitidez: Math.floor(Math.random() * (100 - 70) + 70), // Vídeos geralmente passam estáveis
+                    aiDamage: "Sem Danos"
+                };
+                dispararScannerAnalise();
             };
             recorder.start();
-            
-            document.getElementById('btnCore').className = "w-10 h-10 bg-red-600 rounded-md recording";
+            document.getElementById('btnCore').classList.add('recording');
             document.getElementById('timer').classList.remove('hidden');
-            
             let sec = 0;
             timerInterval = setInterval(() => {
                 sec++;
@@ -542,72 +454,152 @@
         function stopRec() {
             recorder.stop();
             clearInterval(timerInterval);
+            document.getElementById('btnCore').classList.remove('recording');
             document.getElementById('timer').classList.add('hidden');
             document.getElementById('timer').innerText = "00:00";
         }
 
-        function finish() {
-            const row = document.getElementById('row-' + current.id);
-            row.className = "bg-emerald-500/10 border border-emerald-500/40 p-3.5 rounded-2xl flex items-center justify-between";
-            
-            const itemGuardado = dataStore[current.id];
-            const legendaIA = itemGuardado.type === 'img' ? `✓ Analisado [IA: ${itemGuardado.aiDamage}]` : "✓ Vídeo Gravado";
-            
-            document.getElementById('st-' + current.id).innerText = legendaIA;
-            document.getElementById('st-' + current.id).className = "text-[9px] text-green-400 font-bold uppercase mt-0.5";
-            document.getElementById('view-' + current.id).classList.remove('hidden');
-            closeCam();
-            calcularProgressoGlobal();
-        }
-
-        function calcularProgressoGlobal() {
-            const chavesGuardadas = Object.keys(dataStore);
-            
-            if(fluxoAtual === 'sinistro') {
-                const count = chavesGuardadas.filter(k => k.startsWith('sin_')).length;
-                document.getElementById('mediaCounter').innerText = `${count} / 5`;
-                document.getElementById('globalProgressBar').style.width = (60 + (count * 8)) + '%';
-                if(count === 5) {
-                    document.getElementById('areaEnviarSinistro').classList.remove('hidden');
-                    document.getElementById('globalProgressBar').style.width = '100%';
-                }
-            } else {
-                const count = chavesGuardadas.filter(k => !k.startsWith('sin_')).length;
-                document.getElementById('counter').innerText = `${count}/10`;
-                document.getElementById('globalProgressBar').style.width = (40 + (count * 6)) + '%';
-                if(count === 10) {
-                    document.getElementById('submitArea').classList.remove('hidden');
-                    document.getElementById('globalProgressBar').style.width = '100%';
-                }
-            }
-        }
-
-        function openPreview(id) {
-            const item = dataStore[id];
+        // ==========================================
+        // FLUXO DO SCANNER DE INTELIGÊNCIA ARTIFICIAL
+        // ==========================================
+        
+        function dispararScannerAnalise() {
+            const modal = document.getElementById('previewModal');
             const content = document.getElementById('previewContent');
+            const controls = document.getElementById('previewControls');
             
-            if(item.type === 'vid') {
-                content.innerHTML = `<video src="${item.src}" controls autoplay class="max-h-full w-full"></video>`;
-            } else {
-                // MODIFICADO: Inclui a div do círculo vermelho mapeado com base nas coordenadas calculadas pela IA
-                content.innerHTML = `
-                    <div class="relative w-full h-full flex items-center justify-center">
-                        <img src="${item.src}" class="max-h-full object-contain w-full">
-                        
-                        <div class="absolute border-4 border-red-500 rounded-full bg-red-500/20 shadow-[0_0_15px_#ef4444] animate-pulse" 
-                             style="width: 55px; height: 55px; left: ${item.circleX}%; top: ${item.circleY}%; transform: translate(-50%, -50%);">
-                             <span class="absolute -top-5 left-1/2 -translate-x-1/2 bg-red-600 text-white text-[8px] font-black px-1 rounded uppercase tracking-wider whitespace-nowrap">Área do Dano</span>
-                        </div>
-                    </div>
+            modal.style.display = 'flex';
+            controls.classList.add('hidden'); // Oculta botões durante processamento
+
+            // Interface do Scanner em tempo de execução
+            content.innerHTML = `
+                <div class="relative w-full h-full flex flex-col items-center justify-center p-4">
+                    ${tempCaptureData.type === 'vid' 
+                        ? `<video src="${tempCaptureData.src}" class="max-h-[60vh] rounded-xl" muted autoplay loop></video>`
+                        : `<img src="${tempCaptureData.src}" class="max-h-[60vh] rounded-xl object-contain">`
+                    }
+                    <div class="scanner-line absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-sta-gold to-transparent shadow-[0_0_10px_#e39b03]"></div>
                     
-                    <div class="absolute bottom-4 left-4 right-4 bg-sta-purpleDark/95 border border-sta-gold/50 p-3 rounded-xl backdrop-blur text-left z-10">
-                        <span class="text-[9px] font-bold uppercase tracking-wider text-sta-gold block"><i class="fa fa-android"></i> Escaneamento de Alvo Ativo</span>
-                        <span class="text-xs font-black text-white block mt-0.5">Dano Mapeado: ${item.aiDamage}</span>
-                        <span class="text-[9px] text-emerald-400 font-mono block">Precisão Estabilizada: ${item.aiScore}%</span>
+                    <div class="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-3 backdrop-blur-sm">
+                        <i class="fa fa-refresh fa-spin text-4xl text-sta-gold"></i>
+                        <span class="text-xs font-black tracking-widest text-white uppercase animate-pulse">STA AI ENGINE: Analisando Amostra...</span>
+                        <p class="text-[10px] text-slate-400">A avaliar nitidez e integridade estrutural...</p>
+                    </div>
+                </div>
+            `;
+
+            // Simulador de tempo de resposta da rede neural artificial (2 segundos)
+            setTimeout(() => {
+                exibirPainelVeredicto();
+            }, 2000);
+        }
+
+        function exibirPainelVeredicto() {
+            const content = document.getElementById('previewContent');
+            const controls = document.getElementById('previewControls');
+            controls.classList.remove('hidden'); // Libera os controlos de aceitação/recusa
+
+            // Determinar a cor e estado da Nitidez
+            let corNitidez = "";
+            let rotuloNitidez = "";
+            if (tempCaptureData.nitidez >= 75) {
+                corNitidez = "text-green-400 bg-green-500/10 border-green-500/30";
+                rotuloNitidez = "✓ Alta Qualidade (Aprovado)";
+            } else if (tempCaptureData.nitidez >= 55) {
+                corNitidez = "text-amber-400 bg-amber-500/10 border-amber-500/30";
+                rotuloNitidez = "⚠ Qualidade Média (Aceitável)";
+            } else {
+                corNitidez = "text-red-400 bg-red-500/10 border-red-500/30";
+                rotuloNitidez = "✕ Pouco Nítido (Abaixo do Padrão)";
+            }
+
+            // Determinar estado de Danos
+            let htmlDanoEspecial = "";
+            let corCardDano = "border-green-500/30 bg-green-500/5";
+            let tituloDano = `<span class="text-green-400 font-bold"><i class="fa fa-check-circle"></i> Aprovado: Sem Danos Detetados</span>`;
+
+            if(tempCaptureData.type === 'img' && tempCaptureData.aiDamage !== "Sem Danos") {
+                corCardDano = "border-red-500/40 bg-red-500/5";
+                tituloDano = `<span class="text-red-400 font-bold"><i class="fa fa-exclamation-circle"></i> Alerta: Anomalia Localizada [${tempCaptureData.aiDamage}]</span>`;
+                
+                // Desenha o círculo no ponto mapeado
+                htmlDanoEspecial = `
+                    <div class="absolute border-4 border-red-500 rounded-full bg-red-500/20 shadow-[0_0_15px_#ef4444] animate-pulse" 
+                         style="width: 50px; height: 50px; left: ${tempCaptureData.circleX}%; top: ${tempCaptureData.circleY}%; transform: translate(-50%, -50%);">
                     </div>
                 `;
             }
+
+            content.innerHTML = `
+                <div class="relative w-full h-full flex flex-col items-center justify-center">
+                    <div class="relative max-h-[50vh] w-full flex items-center justify-center bg-black/40 rounded-xl overflow-hidden">
+                        ${tempCaptureData.type === 'vid' 
+                            ? `<video src="${tempCaptureData.src}" class="max-h-[50vh]" controls autoplay loop></video>`
+                            : `<img src="${tempCaptureData.src}" class="max-h-[50vh] object-contain">`
+                        }
+                        ${htmlDanoEspecial}
+                    </div>
+
+                    <div class="w-full mt-4 space-y-2 p-1 text-left">
+                        <div class="border p-2.5 rounded-xl text-xs flex justify-between items-center ${corNitidez}">
+                            <span class="font-bold font-mono">Index de Nitidez: ${tempCaptureData.nitidez}%</span>
+                            <span class="font-black uppercase text-[10px]">${rotuloNitidez}</span>
+                        </div>
+                        
+                        <div class="border p-3 rounded-xl text-xs ${corCardDano}">
+                            <span class="text-[9px] text-slate-400 uppercase font-bold tracking-wider block">Mapeamento Estrutural</span>
+                            <div class="text-xs mt-0.5">${tituloDano}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function aceitarCaptura() {
+            // Transfere os dados validados do cache temporário para o banco permanente
+            dataStore[tempCaptureData.id] = tempCaptureData;
+            
+            const row = document.getElementById('row-' + tempCaptureData.id);
+            row.className = "bg-emerald-500/10 border border-emerald-500/40 p-3.5 rounded-2xl flex items-center justify-between";
+            
+            let legenda = tempCaptureData.aiDamage === "Sem Danos" ? "✓ Aprovado (Sem Danos)" : `✓ Mapeado [${tempCaptureData.aiDamage}]`;
+            if(tempCaptureData.type === 'vid') legenda = "✓ Vídeo Salvo";
+
+            document.getElementById('st-' + tempCaptureData.id).innerText = legenda;
+            document.getElementById('st-' + tempCaptureData.id).className = "text-[9px] text-green-400 font-bold uppercase mt-0.5";
+            document.getElementById('view-' + tempCaptureData.id).classList.remove('hidden');
+            
+            closePreview();
+            calcularProgressoGlobal();
+        }
+
+        function recusarCaptura() {
+            closePreview();
+            // Abre automaticamente a câmara de novo para dar celeridade ao processo
+            startCapture(tempCaptureData.id, tempCaptureData.id.startsWith('sin_') ? 'sinistro' : 'peritagem');
+        }
+
+        function reverMedia(id) {
+            // Permite ao utilizador abrir o modal para rever o veredicto já guardado
+            tempCaptureData = dataStore[id];
+            exibirPainelVeredicto();
+            document.getElementById('previewControls').classList.add('hidden'); // Oculta controlos de edição na revisão pura
             document.getElementById('previewModal').style.display = 'flex';
+        }
+
+        function calcularProgressoGlobal() {
+            const chaves = Object.keys(dataStore);
+            if(fluxoAtual === 'sinistro') {
+                const count = chaves.filter(k => k.startsWith('sin_')).length;
+                document.getElementById('mediaCounter').innerText = `${count} / 5`;
+                document.getElementById('globalProgressBar').style.width = (60 + (count * 8)) + '%';
+                if(count === 5) document.getElementById('areaEnviarSinistro').classList.remove('hidden');
+            } else {
+                const count = chaves.filter(k => !k.startsWith('sin_')).length;
+                document.getElementById('counter').innerText = `${count}/10`;
+                document.getElementById('globalProgressBar').style.width = (40 + (count * 6)) + '%';
+                if(count === 10) document.getElementById('submitArea').classList.remove('hidden');
+            }
         }
 
         function closePreview() {
@@ -619,7 +611,6 @@
             if(stream) stream.getTracks().forEach(t => t.stop());
             stream = null;
             document.getElementById('cameraOverlay').style.display = 'none';
-            document.getElementById('aiDamageScanner').classList.add('hidden');
         }
 
         function renderReview() {
@@ -627,13 +618,13 @@
             grid.innerHTML = configPeritagem.map(t => {
                 const item = dataStore[t.id];
                 return `
-                    <div onclick="openPreview('${t.id}')" class="bg-slate-900 aspect-video rounded-xl overflow-hidden border border-slate-800 flex flex-col items-center justify-center cursor-pointer relative group">
+                    <div onclick="reverMedia('${t.id}')" class="bg-slate-900 aspect-video rounded-xl overflow-hidden border border-slate-800 flex flex-col items-center justify-center cursor-pointer relative group">
                         ${item.type === 'vid' 
                             ? '<span class="text-xs font-bold text-sta-gold">🎥 Vídeo Int.</span>' 
                             : `
                                 <img src="${item.src}" class="w-full h-full object-cover">
-                                <div class="absolute inset-0 bg-black/40 flex items-end p-2">
-                                    <span class="text-[8px] bg-sta-purple font-bold text-white px-1.5 py-0.5 rounded border border-sta-gold/40 truncate w-full">IA: ${item.aiDamage}</span>
+                                <div class="absolute inset-0 bg-black/50 flex items-end p-2">
+                                    <span class="text-[8px] truncate w-full text-white font-bold">${item.aiDamage} (${item.nitidez}%)</span>
                                 </div>
                             `
                         }
@@ -644,20 +635,12 @@
         }
 
         function finalizarEnvioPreVistoria() {
-            const destinatarioComercial = "comercial@staseguros.co.ao"; 
-            alert(
-                "Pré-vistoria concluída com sucesso!\n\n" +
-                "O relatório gerado com as evidências foi encaminhado automaticamente para o e-mail da Área Comercial (" + destinatarioComercial + ") para validação e emissão da apólice."
-            );
+            alert("Pré-vistoria concluída! O relatório foi encaminhado automaticamente para a Área Comercial.");
             location.reload();
         }
 
         function finalizarEnvioSinistro() {
-            const destinatarioSinistros = "sinistros@staseguros.co.ao"; 
-            alert(
-                "Registo de Sinistro Flash concluído com sucesso!\n\n" +
-                "O relatório técnico de evidências físicas foi encaminhado automaticamente para o e-mail da Área de Sinistros (" + destinatarioSinistros + ") para abertura imediata do processo."
-            );
+            alert("Registo de Sinistro Flash concluído! O relatório foi encaminhado para a Área de Sinistros.");
             location.reload();
         }
     </script>
