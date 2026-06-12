@@ -348,77 +348,74 @@ const EMAILJS_TEMPLATE_ID = "template_8ya79al";  // Aqui vai o ID do Template
         // DISPARO AUTOMÁTICO REAL-TIME COM JAVASCRIPT SEGURO
         // ========================================================
 
-        function finalizarEnvioPreVistoria() {
-            const btn = document.getElementById('btnFinalizarVistoria');
-            btn.innerText = "A TRANSMITIR SIMULAÇÃO...";
-            btn.disabled = true;
+       function finalizarEnvioPreVistoria() {
+    const btn = document.getElementById('btnFinalizarVistoria');
+    btn.innerText = "A TRANSMITIR SIMULAÇÃO...";
+    btn.disabled = true;
 
-            // 1. Montar a string do relatório dinâmico
-            let sumarioIA = "";
-            configPeritagem.forEach(item => {
-                const dados = dataStore[item.id];
-                if(dados) sumarioIA += `[${item.label}] Nitidez: ${dados.nitidez}% | Estado: ${dados.aiDamage}\n`;
-            });
-
-            // 2. Parâmetros que batem exatamente com as {{chavetas}} criadas no EmailJS
-            const templateParams = {
-                tomador: document.getElementById('tomador').value,
-                telefone: document.getElementById('telefone').value,
-                matricula: document.getElementById('matricula').value,
-                relatorio: sumarioIA
-            };
-
-            if(EMAILJS_PUBLIC_KEY === "qAzcLds1DcmHMDHyO") {
-                alert("Simulação Estruturada!\n\nConfigura as chaves do EmailJS no código para o envio automático direto funcionar.");
-                location.reload();
-                return;
-            }
-
-            // 3. Envio direto via API JavaScript
-            emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
-                .then(function(response) {
-                    alert("⚡ Sucesso! A simulação automática deu entrada nas caixas de correio da STA Seguros.");
-                    location.reload();
-                }, function(error) {
-                    alert("Falha no disparo em tempo real: " + JSON.stringify(error));
-                    btn.innerText = "TRANSMITIR SIMULAÇÃO";
-                    btn.disabled = false;
-                });
+    let sumarioIA = "";
+    configPeritagem.forEach(item => {
+        const dados = dataStore[item.id];
+        if(dados) {
+            sumarioIA += `${item.label}: Qualidade ${dados.nitidez}% - Estado: ${dados.aiDamage}\n`;
+        } else {
+            sumarioIA += `${item.label}: Não capturado\n`;
         }
+    });
 
-        function finalizarEnvioSinistro() {
-            const btn = document.getElementById('btnFinalizarSinistro');
-            btn.innerText = "A ENVIAR PARTICIPAÇÃO...";
-            btn.disabled = true;
+    // Certifica que nenhum campo vai vazio ou null para evitar o erro 422
+    const templateParams = {
+        tomador: document.getElementById('tomador').value || "Não Especificado",
+        telefone: document.getElementById('telefone').value || "Não Especificado",
+        matricula: (document.getElementById('matricula').value || "Sem Matrícula").toUpperCase(),
+        relatorio: sumarioIA
+    };
 
-            let sumarioIA = "";
-            configSinistro.forEach(item => {
-                const dados = dataStore[item.id];
-                if(dados) sumarioIA += `[${item.label}] Qualidade: ${dados.nitidez}% | IA Dano: ${dados.aiDamage}\n`;
-            });
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
+        .then(function(response) {
+            alert("⚡ Sucesso! A simulação automática deu entrada nas caixas de correio da STA Seguros.");
+            location.reload();
+        }, function(error) {
+            alert("Falha no disparo em tempo real: " + (error.text || JSON.stringify(error)));
+            btn.innerText = "TRANSMITIR SIMULAÇÃO";
+            btn.disabled = false;
+        });
+}
 
-            const templateParams = {
-                tomador: document.getElementById('sin_nome').value + " (Apólice: " + document.getElementById('sin_apolice').value + ")",
-                telefone: document.getElementById('sin_telefone').value,
-                matricula: document.getElementById('sin_matricula').value,
-                relatorio: "Circunstâncias:\n" + document.getElementById('sin_descricao').value + "\n\nEvidências:\n" + sumarioIA
-            };
+function finalizarEnvioSinistro() {
+    const btn = document.getElementById('btnFinalizarSinistro');
+    btn.innerText = "A ENVIAR PARTICIPAÇÃO...";
+    btn.disabled = true;
 
-            if(EMAILJS_PUBLIC_KEY === "SUA_PUBLIC_KEY_AQUI") {
-                alert("Sinistro Estruturado com Sucesso no Dispositivo!");
-                location.reload();
-                return;
-            }
+    let sumarioIA = "";
+    configSinistro.forEach(item => {
+        const dados = dataStore[item.id];
+        if(dados) {
+            sumarioIA += `${item.label}: Qualidade ${dados.nitidez}% - Diagnóstico IA: ${dados.aiDamage}\n`;
+        }
+    });
 
-            emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
-                .then(function() {
-                    alert("⚡ Participação de Sinistro Flash registada e disparada para os e-mails com sucesso!");
-                    location.reload();
-                }, function(error) {
-                    alert("Erro ao reportar: " + JSON.stringify(error));
-                    btn.innerText = "ENVIAR AGORA (REAL-TIME)";
-                    btn.disabled = false;
-                });
+    const apolice = document.getElementById('sin_apolice').value || "N/A";
+    const nomeCondutor = document.getElementById('sin_nome').value || "Não Especificado";
+    const desc = document.getElementById('sin_descricao').value || "Sem descrição das circunstâncias.";
+
+    const templateParams = {
+        tomador: `${nomeCondutor} (Apólice: ${apolice})`,
+        telefone: document.getElementById('sin_telefone').value || "Não Especificado",
+        matricula: (document.getElementById('sin_matricula').value || "N/A").toUpperCase(),
+        relatorio: `CIRCUNSTÂNCIAS DO ACIDENTE:\n"${desc}"\n\nANÁLISE DE EVIDÊNCIAS FÍSICAS:\n${sumarioIA}`
+    };
+
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
+        .then(function() {
+            alert("⚡ Participação de Sinistro Flash registada e disparada com sucesso!");
+            location.reload();
+        }, function(error) {
+            alert("Erro ao reportar: " + (error.text || JSON.stringify(error)));
+            btn.innerText = "ENVIAR AGORA (REAL-TIME)";
+            btn.disabled = false;
+        });
+}
         }
     </script>
 </body>
