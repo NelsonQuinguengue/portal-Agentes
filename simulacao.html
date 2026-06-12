@@ -216,20 +216,18 @@
     </div>
 
     <script>
-        // ===================================================
-        // CONFIGURAÇÃO DO EMAILJS (SUBSTITUI PELOS TEUS DADOS)
-        // ===================================================
-        const EMAILJS_PUBLIC_KEY = "qAzcLds1DcmHMDHyO"; 
-        const EMAILJS_SERVICE_ID = "service_4j0s33o";
-        const EMAILJS_TEMPLATE_ID = "template_8ya79al";
+  // ===================================================
+// CONFIGURAÇÃO CONFIGURADA COM AS TUAS CHAVES REAIS
+// ===================================================
+const EMAILJS_PUBLIC_KEY = "qAzcLds1DcmHMDHyO"; 
+const EMAILJS_SERVICE_ID = "service_4j0s33o";   // Aqui vai o ID do Serviço
+const EMAILJS_TEMPLATE_ID = "template_8ya79al";  // Aqui vai o ID do Template
 
-        // Inicializa o SDK do EmailJS
-        (function() {
-            if(EMAILJS_PUBLIC_KEY !== "qAzcLds1DcmHMDHyO") {
-                emailjs.init(EMAILJS_PUBLIC_KEY);
-            }
-        })();
-
+// Inicializa o SDK do EmailJS automaticamente com a tua chave pública
+(function() {
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+    console.log("🚀 MySTA Mailer: EmailJS inicializado com sucesso!");
+})();
         const configPeritagem = [
             {id: 'frente', label: 'Frente', isVideo: false}, {id: 'traseira', label: 'Traseira', isVideo: false},
             {id: 'lat_dir', label: 'Lateral Direita', isVideo: false}, {id: 'lat_esq', label: 'Lateral Esquerda', isVideo: false},
