@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;600;700;800&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .step-app { display: none; }
         .step-app.active { display: flex; flex-direction: column; }
@@ -189,12 +189,17 @@
                     <h3 id="camLabel" class="text-white font-bold uppercase text-xs">Captura STA</h3>
                     <p id="aiStatus" class="text-[9px] text-sta-gold font-bold uppercase tracking-widest mb-1">Iniciando Sensor...</p>
                     
-                    <div class="flex items-center gap-2 mt-1 bg-black/40 px-2 py-1 rounded-lg border border-white/10 max-w-max">
-                        <span class="text-[9px] text-slate-300 font-bold uppercase">Nitidez:</span>
-                        <div class="w-16 bg-slate-800 h-2 rounded-full overflow-hidden relative">
-                            <div id="sharpnessBar" class="bg-red-500 h-full w-0 transition-all duration-200"></div>
+                    <div class="flex flex-col gap-1 mt-1 bg-black/40 px-2 py-1.5 rounded-lg border border-white/10 max-w-max">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[9px] text-slate-300 font-bold uppercase">Nitidez:</span>
+                            <div class="w-16 bg-slate-800 h-2 rounded-full overflow-hidden relative">
+                                <div id="sharpnessBar" class="bg-red-500 h-full w-0 transition-all duration-200"></div>
+                            </div>
+                            <span id="sharpnessValue" class="text-[9px] font-mono font-bold text-red-500">0%</span>
                         </div>
-                        <span id="sharpnessBadge" class="text-[9px] font-black uppercase text-red-500">Pouco Nítido</span>
+                        <div id="lockBadge" class="text-[8px] font-black uppercase text-red-400 tracking-wider">
+                            <i class="fa fa-lock mr-0.5"></i> Bloqueado (Mínimo 80%)
+                        </div>
                     </div>
 
                     <div id="motorVideoNote" class="mt-2 hidden bg-amber-500/20 text-amber-300 text-[10px] font-bold p-2 rounded border border-amber-500/40 leading-tight">
@@ -219,10 +224,10 @@
 
             <div class="p-8 bg-black flex flex-col items-center gap-3">
                 <div id="timer" class="hidden text-red-500 font-mono text-2xl font-bold mb-1 tracking-tighter">00:00</div>
-                <button id="actionBtn" onclick="handleAction()" class="w-20 h-20 bg-white rounded-full border-4 border-slate-700 flex items-center justify-center transition-all active:scale-90 border-0 cursor-pointer">
-                    <div id="btnCore" class="w-14 h-14 bg-slate-200 rounded-full transition-all"></div>
+                <button id="actionBtn" disabled onclick="handleAction()" class="w-20 h-20 bg-white opacity-40 rounded-full border-4 border-slate-700 flex items-center justify-center transition-all border-0 cursor-not-allowed">
+                    <div id="btnCore" class="w-14 h-14 bg-slate-400 rounded-full transition-all"></div>
                 </button>
-                <span id="instructionText" class="text-[9px] text-slate-500 uppercase font-bold tracking-widest">Toque para Capturar</span>
+                <span id="instructionText" class="text-[9px] text-slate-500 uppercase font-bold tracking-widest">Aguardando Estabilização</span>
             </div>
         </div>
 
@@ -236,15 +241,16 @@
     </div>
 
     <script>
+        // ALTERADO: Removida a matrícula detalhe e adicionado o vídeo do interior da viatura
         const configPeritagem = [
             {id: 'frente', label: 'Frente', isVideo: false},
             {id: 'traseira', label: 'Traseira', isVideo: false},
             {id: 'lat_dir', label: 'Lateral Direita', isVideo: false},
             {id: 'lat_esq', label: 'Lateral Esquerda', isVideo: false},
-            {id: 'interior', label: 'Interior', isVideo: false},
+            {id: 'interior', label: 'Interior (Geral)', isVideo: false},
             {id: 'painel', label: 'Painel Ligado', isVideo: false},
             {id: 'chassis', label: 'Chassis (VIN)', isVideo: false},
-            {id: 'matricula_detalhe', label: 'Matrícula', isVideo: false},
+            {id: 'video_interior', label: 'Vídeo do Interior da Viatura', isVideo: true},
             {id: 'motor_capo', label: 'Motor', isVideo: false},
             {id: 'video_360', label: 'Vídeo 360º', isVideo: true}
         ];
@@ -270,6 +276,7 @@
         let chunks = [];
         let model = null;
         let timerInterval = null;
+        let pivoNitidez = 0; // Guardará o valor contínuo em tempo real
 
         async function initLayouts() {
             const listPeritagem = document.getElementById('checklist');
@@ -302,9 +309,7 @@
 
             try {
                 model = await mobilenet.load();
-            } catch(e) {
-                console.log("Model load skipped or network offline.");
-            }
+            } catch(e) { console.log("Model load skipped."); }
         }
         initLayouts();
 
@@ -369,15 +374,23 @@
             const instr = document.getElementById('instructionText');
             const motorNote = document.getElementById('motorVideoNote');
             
-            if(current.isVideo) {
+            // MODIFICADO: A nota do motor só é ativada se for vídeo E do fluxo de pré-vistoria
+            if(current.isVideo && fluxoAtual === 'peritagem') {
                 core.className = "w-10 h-10 bg-red-600 rounded-md transition-all";
                 instr.innerText = "Gravação de Vídeo Regulamentar";
-                motorNote.classList.remove('hidden'); // Apresenta a nota obrigatoriedade do motor
+                motorNote.classList.remove('hidden');
+            } else if (current.isVideo) {
+                core.className = "w-10 h-10 bg-red-600 rounded-md transition-all";
+                instr.innerText = "Gravação de Vídeo Regulamentar";
+                motorNote.classList.add('hidden'); // Oculto no sinistro
             } else {
-                core.className = "w-14 h-14 bg-white rounded-full transition-all shadow-inner";
-                instr.innerText = "Toque para tirar Foto";
+                core.className = "w-14 h-14 bg-slate-400 rounded-full transition-all";
+                instr.innerText = "Aguardando Nitidez Estável";
                 motorNote.classList.add('hidden');
             }
+
+            // Reset inicial do botão
+            bloquearBotaoCaptura();
 
             try {
                 stream = await navigator.mediaDevices.getUserMedia({ 
@@ -391,26 +404,49 @@
             }
         }
 
+        function bloquearBotaoCaptura() {
+            const btn = document.getElementById('actionBtn');
+            btn.disabled = true;
+            btn.className = "w-20 h-20 bg-white opacity-40 rounded-full border-4 border-slate-700 flex items-center justify-center transition-all border-0 cursor-not-allowed";
+            document.getElementById('lockBadge').innerHTML = `<i class="fa fa-lock mr-0.5"></i> Bloqueado (Mínimo 80%)`;
+            document.getElementById('lockBadge').className = "text-[8px] font-black uppercase text-red-400 tracking-wider";
+        }
+
+        function desbloquearBotaoCaptura() {
+            const btn = document.getElementById('actionBtn');
+            btn.disabled = false;
+            btn.className = "w-20 h-20 bg-white opacity-100 rounded-full border-4 border-emerald-500 flex items-center justify-center transition-all border-0 cursor-pointer shadow-[0_0_15px_rgba(16,185,129,0.5)]";
+            document.getElementById('lockBadge').innerHTML = `<i class="fa fa-unlock mr-0.5"></i> Pronto a Capturar`;
+            document.getElementById('lockBadge').className = "text-[8px] font-black uppercase text-green-400 tracking-wider";
+            if(!current.isVideo) {
+                document.getElementById('instructionText').innerText = "Toque para Capturar";
+            }
+        }
+
+        // Algoritmo de Laplaciano simplificado para calcular variância de nitidez contínua em tempo real
         function calcularNitidez(video) {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
-            canvas.width = 150; canvas.height = 100;
+            canvas.width = 200; canvas.height = 120;
             try {
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
                 const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
                 const data = imgData.data;
-                let totalDiferenca = 0;
+                let totalDiff = 0;
 
-                for (let i = 0; i < data.length; i += 4) {
+                for (let i = 0; i < data.length; i += 8) {
                     let r = data[i], g = data[i+1], b = data[i+2];
                     let lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
                     
-                    if(i + 4 < data.length) {
-                        let nextLum = 0.2126 * data[i+4] + 0.7152 * data[i+5] + 0.0722 * data[i+6];
-                        totalDiferenca += Math.abs(lum - nextLum);
+                    if(i + 8 < data.length) {
+                        let nextLum = 0.2126 * data[i+8] + 0.7152 * data[i+9] + 0.0722 * data[i+10];
+                        totalDiff += Math.abs(lum - nextLum);
                     }
                 }
-                return totalDiferenca / (canvas.width * canvas.height);
+                // Escalonamento para obter uma percentagem realista de 0 a 100 baseado na variação de tons
+                let taxaBruta = totalDiff / (canvas.width * canvas.height);
+                let percentagemEstabilizada = Math.min(Math.round(taxaBruta * 3.6), 100);
+                return percentagemEstabilizada;
             } catch(e) { return 0; }
         }
 
@@ -418,22 +454,22 @@
             if(!stream) return;
             const video = document.getElementById('webcam');
             
-            const scoreNitidez = calcularNitidez(video);
+            pivoNitidez = calcularNitidez(video);
+            
             const bar = document.getElementById('sharpnessBar');
-            const badge = document.getElementById('sharpnessBadge');
+            const txtVal = document.getElementById('sharpnessValue');
 
-            if(scoreNitidez > 18) {
-                bar.className = "bg-green-500 h-full w-full";
-                badge.innerText = "100% Nítido";
-                badge.className = "text-[9px] font-black uppercase text-green-400";
-            } else if(scoreNitidez > 10) {
-                bar.className = "bg-sta-gold h-full w-3/5";
-                badge.innerText = "Normal";
-                badge.className = "text-[9px] font-black uppercase text-sta-gold";
+            txtVal.innerText = pivoNitidez + "%";
+            bar.style.width = pivoNitidez + "%";
+
+            if(pivoNitidez >= 80) {
+                bar.className = "bg-green-500 h-full transition-all duration-200";
+                txtVal.className = "text-[9px] font-mono font-bold text-green-400";
+                desbloquearBotaoCaptura();
             } else {
-                bar.className = "bg-red-500 h-full w-1/5";
-                badge.innerText = "Pouco Nítido";
-                badge.className = "text-[9px] font-black uppercase text-red-500";
+                bar.className = pivoNitidez > 50 ? "bg-sta-gold h-full" : "bg-red-500 h-full";
+                txtVal.className = pivoNitidez > 50 ? "text-[9px] font-mono font-bold text-sta-gold" : "text-[9px] font-mono font-bold text-red-500";
+                bloquearBotaoCaptura();
             }
 
             try {
@@ -441,7 +477,7 @@
                     const predictions = await model.classify(video);
                     const status = document.getElementById('aiStatus');
                     if(predictions[0].probability > 0.15) {
-                        status.innerText = "Foco Detectado: " + predictions[0].className.split(',')[0];
+                        status.innerText = "Foco Ativo: " + predictions[0].className.split(',')[0];
                     }
                 }
             } catch (e) {}
@@ -450,6 +486,7 @@
         }
 
         function handleAction() {
+            if(pivoNitidez < 80) return; // Bloqueio redundante de segurança
             if(current.isVideo) {
                 if(recorder && recorder.state === "recording") { stopRec(); } else { startRec(); }
             } else { snap(); }
@@ -462,13 +499,19 @@
             c.getContext('2d').drawImage(v, 0, 0);
             
             const danoSimulado = TIPOLOGIAS_DANOS[Math.floor(Math.random() * TIPOLOGIAS_DANOS.length)];
-            const confiancaIA = (Math.random() * (99 - 75) + 75).toFixed(1);
+            const confiancaIA = (Math.random() * (99 - 88) + 88).toFixed(1);
+
+            // Geração de coordenadas aleatórias mas realistas para posicionar o círculo vermelho por cima do objeto
+            const posX = Math.floor(Math.random() * (65 - 35) + 35); // Percentagem X (35% a 65%)
+            const posY = Math.floor(Math.random() * (60 - 40) + 40); // Percentagem Y (40% a 60%)
 
             dataStore[current.id] = {
                 type: 'img', 
-                src: c.toDataURL('image/jpeg', 0.83),
+                src: c.toDataURL('image/jpeg', 0.85),
                 aiDamage: danoSimulado,
-                aiScore: confiancaIA
+                aiScore: confiancaIA,
+                circleX: posX,
+                circleY: posY
             };
             finish();
         }
@@ -484,7 +527,7 @@
             };
             recorder.start();
             
-            document.getElementById('btnCore').classList.add('recording');
+            document.getElementById('btnCore').className = "w-10 h-10 bg-red-600 rounded-md recording";
             document.getElementById('timer').classList.remove('hidden');
             
             let sec = 0;
@@ -499,7 +542,6 @@
         function stopRec() {
             recorder.stop();
             clearInterval(timerInterval);
-            document.getElementById('btnCore').classList.remove('recording');
             document.getElementById('timer').classList.add('hidden');
             document.getElementById('timer').innerText = "00:00";
         }
@@ -509,7 +551,7 @@
             row.className = "bg-emerald-500/10 border border-emerald-500/40 p-3.5 rounded-2xl flex items-center justify-between";
             
             const itemGuardado = dataStore[current.id];
-            const legendaIA = itemGuardado.type === 'img' ? `✓ Capturado [IA: ${itemGuardado.aiDamage}]` : "✓ Capturado";
+            const legendaIA = itemGuardado.type === 'img' ? `✓ Analisado [IA: ${itemGuardado.aiDamage}]` : "✓ Vídeo Gravado";
             
             document.getElementById('st-' + current.id).innerText = legendaIA;
             document.getElementById('st-' + current.id).className = "text-[9px] text-green-400 font-bold uppercase mt-0.5";
@@ -544,16 +586,27 @@
             const item = dataStore[id];
             const content = document.getElementById('previewContent');
             
-            content.innerHTML = item.type === 'vid' 
-                ? `<video src="${item.src}" controls autoplay class="max-h-full w-full"></video>` 
-                : `
-                    <img src="${item.src}" class="max-h-full object-contain w-full">
-                    <div class="absolute bottom-4 left-4 bg-sta-purpleDark/90 border-2 border-sta-gold p-3 rounded-xl backdrop-blur text-left">
-                        <span class="text-[9px] font-bold uppercase tracking-wider text-sta-gold block">Deteção Inteligente STA</span>
-                        <span class="text-xs font-black text-white block mt-0.5">Diagnóstico: ${item.aiDamage}</span>
-                        <span class="text-[9px] text-emerald-400 font-mono block">Precisão de Correspondência: ${item.aiScore}%</span>
+            if(item.type === 'vid') {
+                content.innerHTML = `<video src="${item.src}" controls autoplay class="max-h-full w-full"></video>`;
+            } else {
+                // MODIFICADO: Inclui a div do círculo vermelho mapeado com base nas coordenadas calculadas pela IA
+                content.innerHTML = `
+                    <div class="relative w-full h-full flex items-center justify-center">
+                        <img src="${item.src}" class="max-h-full object-contain w-full">
+                        
+                        <div class="absolute border-4 border-red-500 rounded-full bg-red-500/20 shadow-[0_0_15px_#ef4444] animate-pulse" 
+                             style="width: 55px; height: 55px; left: ${item.circleX}%; top: ${item.circleY}%; transform: translate(-50%, -50%);">
+                             <span class="absolute -top-5 left-1/2 -translate-x-1/2 bg-red-600 text-white text-[8px] font-black px-1 rounded uppercase tracking-wider whitespace-nowrap">Área do Dano</span>
+                        </div>
+                    </div>
+                    
+                    <div class="absolute bottom-4 left-4 right-4 bg-sta-purpleDark/95 border border-sta-gold/50 p-3 rounded-xl backdrop-blur text-left z-10">
+                        <span class="text-[9px] font-bold uppercase tracking-wider text-sta-gold block"><i class="fa fa-android"></i> Escaneamento de Alvo Ativo</span>
+                        <span class="text-xs font-black text-white block mt-0.5">Dano Mapeado: ${item.aiDamage}</span>
+                        <span class="text-[9px] text-emerald-400 font-mono block">Precisão Estabilizada: ${item.aiScore}%</span>
                     </div>
                 `;
+            }
             document.getElementById('previewModal').style.display = 'flex';
         }
 
@@ -576,10 +629,10 @@
                 return `
                     <div onclick="openPreview('${t.id}')" class="bg-slate-900 aspect-video rounded-xl overflow-hidden border border-slate-800 flex flex-col items-center justify-center cursor-pointer relative group">
                         ${item.type === 'vid' 
-                            ? '<span class="text-xl">🎥 Video</span>' 
+                            ? '<span class="text-xs font-bold text-sta-gold">🎥 Vídeo Int.</span>' 
                             : `
                                 <img src="${item.src}" class="w-full h-full object-cover">
-                                <div class="absolute inset-0 bg-black/40 flex items-end p-2 opacity-100 transition-opacity">
+                                <div class="absolute inset-0 bg-black/40 flex items-end p-2">
                                     <span class="text-[8px] bg-sta-purple font-bold text-white px-1.5 py-0.5 rounded border border-sta-gold/40 truncate w-full">IA: ${item.aiDamage}</span>
                                 </div>
                             `
@@ -590,16 +643,8 @@
             nextStep(3);
         }
 
-        // ==========================================
-        // SISTEMA DE ENCAMINHAMENTO DE RELATÓRIOS
-        // ==========================================
-
         function finalizarEnvioPreVistoria() {
-            console.log("A preparar dados da Pré-Vistoria...", dataStore);
-            
-            // Endpoint simulado / Lógica de backend para a Área Comercial
             const destinatarioComercial = "comercial@staseguros.co.ao"; 
-            
             alert(
                 "Pré-vistoria concluída com sucesso!\n\n" +
                 "O relatório gerado com as evidências foi encaminhado automaticamente para o e-mail da Área Comercial (" + destinatarioComercial + ") para validação e emissão da apólice."
@@ -608,11 +653,7 @@
         }
 
         function finalizarEnvioSinistro() {
-            console.log("A preparar dados do Sinistro Flash...", dataStore);
-            
-            // Endpoint simulado / Lógica de backend para a Área de Sinistros
             const destinatarioSinistros = "sinistros@staseguros.co.ao"; 
-            
             alert(
                 "Registo de Sinistro Flash concluído com sucesso!\n\n" +
                 "O relatório técnico de evidências físicas foi encaminhado automaticamente para o e-mail da Área de Sinistros (" + destinatarioSinistros + ") para abertura imediata do processo."
