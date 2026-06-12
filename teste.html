@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;600;700;800&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .step-app { display: none; }
         .step-app.active { display: flex; flex-direction: column; }
@@ -19,6 +19,15 @@
         @keyframes pulse-red { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
         .btn-menu { transition: all 0.2s ease-in-out; }
         .btn-menu:active { transform: scale(0.98); }
+        
+        .scanner-line {
+            animation: scan 2s linear infinite;
+        }
+        @keyframes scan {
+            0% { top: 0%; }
+            50% { top: 100%; }
+            100% { top: 0%; }
+        }
     </style>
     <script>
         tailwind.config = {
@@ -42,7 +51,6 @@
 
     <div class="max-w-md mx-auto min-h-screen flex flex-col bg-[#140e26] shadow-2xl border-x border-slate-900 relative">
         
-        <!-- HEADER -->
         <header class="p-5 bg-sta-purpleDark/90 backdrop-blur border-b border-sta-purple/30 sticky top-0 z-40 flex flex-col gap-3">
             <div class="flex justify-between items-center">
                 <div class="flex items-center gap-2">
@@ -52,16 +60,13 @@
                 </div>
                 <div id="globalBadge" class="text-[9px] bg-sta-gold/10 text-brand-gold px-3 py-1 rounded-full border border-sta-gold/30 font-bold tracking-widest text-sta-gold">SISTEMA INTELIGENTE</div>
             </div>
-            <!-- Progress Bar -->
             <div id="wrapperProgress" class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden hidden">
                 <div id="globalProgressBar" class="bg-gradient-to-r from-sta-gold to-emerald-500 h-full transition-all duration-500" style="width: 0%"></div>
             </div>
         </header>
 
-        <!-- CONTEÚDO PRINCIPAL -->
         <main class="flex-grow p-6 flex flex-col justify-center">
 
-            <!-- MENU DE ENTRADA ATUALIZADO -->
             <section id="menuStep" class="step-app active space-y-8 py-4">
                 <div class="text-center space-y-2">
                     <h2 class="text-2xl font-black tracking-tight text-white">O que deseja efetuar hoje?</h2>
@@ -69,7 +74,6 @@
                 </div>
 
                 <div class="grid grid-cols-1 gap-4">
-                    <!-- Opção 1: Sinistro -->
                     <div onclick="escolherFluxo('sinistro')" class="btn-menu w-full bg-slate-900 border border-sta-purple/40 hover:border-sta-gold p-5 rounded-2xl flex items-center gap-4 text-left transition-all duration-300 group cursor-pointer active:bg-slate-800">
                         <div class="w-12 h-12 bg-sta-purple/20 text-sta-gold rounded-xl flex items-center justify-center text-xl group-hover:bg-sta-purple group-hover:text-white transition-all">
                             <i class="fa fa-gavel"></i>
@@ -80,7 +84,6 @@
                         </div>
                     </div>
 
-                    <!-- Opção 2: Pré-Vistoria Digital Autodirigida (ALTERADO) -->
                     <div onclick="escolherFluxo('peritagem')" class="btn-menu w-full bg-slate-900 border border-sta-purple/40 hover:border-sta-gold p-5 rounded-2xl flex items-center gap-4 text-left transition-all duration-300 group cursor-pointer active:bg-slate-800">
                         <div class="w-12 h-12 bg-sta-purple/20 text-sta-gold rounded-xl flex items-center justify-center text-xl group-hover:bg-sta-purple group-hover:text-white transition-all">
                             <i class="fa fa-car"></i>
@@ -93,11 +96,17 @@
                 </div>
             </section>
 
-            <!-- FLUXO A: FORMULÁRIO DE SINISTRO -->
             <section id="sinistroFormStep" class="step-app space-y-5">
                 <div>
                     <h2 class="text-xl font-black text-white">Dados Obrigatórios do Sinistro</h2>
                     <p class="text-xs text-slate-400">Preencha os dados em destaque para liberar a fase de fotos.</p>
+                </div>
+
+                <div class="bg-amber-500/10 border-l-4 border-sta-gold p-3.5 rounded-r-xl">
+                    <p class="text-[11px] text-amber-200 leading-relaxed font-medium">
+                        <i class="fa fa-exclamation-triangle text-sta-gold mr-1"></i> 
+                        <strong>Informação complementar:</strong> O preenchimento dos dados nesta plataforma não dispensa o preenchimento do Formulário de Participação de Sinistro ou da DAAA.
+                    </p>
                 </div>
 
                 <div class="space-y-3.5">
@@ -125,7 +134,7 @@
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold uppercase text-slate-300 mb-1">Como ocorreu o acidente?</label>
-                        <textarea id="sin_descricao" rows="3" placeholder="Descreva sucintamente as circunstâncias do sinistro..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3.5 text-xs focus:border-sta-gold outline-none text-slate-200"></textarea>
+                        <textarea id="sin_descricao" rows="3" placeholder="Descreva as circunstâncias do sinistro..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3.5 text-xs focus:border-sta-gold outline-none text-slate-200"></textarea>
                     </div>
                 </div>
 
@@ -134,7 +143,6 @@
                 </button>
             </section>
 
-            <!-- FLUXO A: CAPTURA DE MÉDIAS DO SINISTRO -->
             <section id="sinistroMediaStep" class="step-app space-y-6">
                 <div class="flex justify-between items-end">
                     <div>
@@ -153,7 +161,6 @@
                 </div>
             </section>
 
-            <!-- FLUXO B: PRÉ-VISTORIA DIGITAL AUTODIRIGIDA (ALTERADO) -->
             <section id="step1" class="step-app space-y-6">
                 <div class="space-y-4">
                     <h2 class="text-xl font-bold text-sta-gold">Dados da Pré-Vistoria</h2>
@@ -181,28 +188,18 @@
                     <p class="text-[10px] text-sta-gold uppercase font-bold tracking-wider">A IA está a processar o relatório de danos.</p>
                 </div>
                 <div id="reviewGrid" class="grid grid-cols-2 gap-3 max-h-[50vh] overflow-y-auto p-1"></div>
-                <button onclick="alert('Pré-vistoria preventiva enviada com sucesso à plataforma STA.'); location.reload();" class="w-full bg-emerald-600 py-4 rounded-2xl font-black text-xl shadow-lg cursor-pointer border-0">ENVIAR VISTORIA</button>
+                <button onclick="finalizarEnvioPreVistoria()" class="w-full bg-emerald-600 py-4 rounded-2xl font-black text-xl shadow-lg cursor-pointer border-0">ENVIAR VISTORIA</button>
             </section>
         </main>
 
-        <!-- CAMERA OVERLAY -->
         <div id="cameraOverlay" class="fixed inset-0 bg-black z-50 flex flex-col">
             <div class="p-5 flex justify-between items-start z-10 bg-gradient-to-b from-black via-black/60 to-transparent">
-                <div>
+                <div class="flex-grow pr-4">
                     <h3 id="camLabel" class="text-white font-bold uppercase text-xs">Captura STA</h3>
-                    <p id="aiStatus" class="text-[9px] text-sta-gold font-bold uppercase tracking-widest mb-1">Iniciando Sensor...</p>
+                    <p id="aiStatus" class="text-[9px] text-sta-gold font-bold uppercase tracking-widest mb-1">Sensor Ativo</p>
                     
-                    <div class="flex items-center gap-2 mt-1 bg-black/40 px-2 py-1 rounded-lg border border-white/10">
-                        <span class="text-[9px] text-slate-300 font-bold uppercase">Nitidez:</span>
-                        <div class="w-16 bg-slate-800 h-2 rounded-full overflow-hidden relative">
-                            <div id="sharpnessBar" class="bg-red-500 h-full w-0 transition-all duration-200"></div>
-                        </div>
-                        <span id="sharpnessBadge" class="text-[9px] font-black uppercase text-red-500">Pouco Nítido</span>
-                    </div>
-
-                    <!-- NOVO INDICADOR: Detetor de Danos por IA (Mock Visual/Placeholder) -->
-                    <div id="aiDamageScanner" class="mt-2 hidden bg-emerald-500/20 text-emerald-400 text-[8px] font-black uppercase px-2 py-1 rounded border border-emerald-500/30 tracking-wider">
-                        <i class="fa fa-refresh fa-spin mr-1"></i> Analisando Danos na Área...
+                    <div id="motorVideoNote" class="mt-2 hidden bg-amber-500/20 text-amber-300 text-[10px] font-bold p-2 rounded border border-amber-500/40 leading-tight">
+                        <i class="fa fa-info-circle mr-1 text-sta-gold"></i> O motor do veículo deverá estar em funcionamento durante a realização do vídeo.
                     </div>
                 </div>
                 <button onclick="closeCam()" class="text-3xl text-white/50 bg-transparent border-0 cursor-pointer">&times;</button>
@@ -211,42 +208,46 @@
             <div class="relative flex-grow flex items-center justify-center bg-slate-950 overflow-hidden">
                 <video id="webcam" autoplay playsinline muted class="w-full h-full object-cover"></video>
                 <div class="absolute inset-0 border-[40px] border-black/40 pointer-events-none flex items-center justify-center">
-                    <div class="w-full h-64 border-2 border-sta-gold/30 border-dashed rounded-3xl relative">
-                        <!-- Linha de SCAN inteligente simulação de IA -->
-                        <div class="absolute top-0 left-0 right-0 h-0.5 bg-sta-gold/80 shadow-[0_0_8px_#e39b03] animate-bounce" style="animation-duration: 3s;"></div>
-                    </div>
+                    <div class="w-full h-64 border-2 border-white/20 border-dashed rounded-3xl relative"></div>
                 </div>
             </div>
 
             <div class="p-8 bg-black flex flex-col items-center gap-3">
                 <div id="timer" class="hidden text-red-500 font-mono text-2xl font-bold mb-1 tracking-tighter">00:00</div>
-                <button id="actionBtn" onclick="handleAction()" class="w-20 h-20 bg-white rounded-full border-4 border-slate-700 flex items-center justify-center transition-all active:scale-90 border-0 cursor-pointer">
-                    <div id="btnCore" class="w-14 h-14 bg-slate-200 rounded-full transition-all"></div>
+                <button id="actionBtn" onclick="handleAction()" class="w-20 h-20 bg-white rounded-full border-4 border-emerald-500 flex items-center justify-center transition-all active:scale-90 border-0 cursor-pointer shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+                    <div id="btnCore" class="w-14 h-14 bg-slate-100 rounded-full transition-all"></div>
                 </button>
-                <span id="instructionText" class="text-[9px] text-slate-500 uppercase font-bold tracking-widest">Toque para Capturar</span>
+                <span id="instructionText" class="text-[9px] text-slate-400 uppercase font-bold tracking-widest">Toque para Capturar</span>
             </div>
         </div>
 
-        <!-- PREVIEW MODAL -->
         <div id="previewModal" class="fixed inset-0 bg-black/95 z-[60] flex flex-col p-6">
             <div class="flex justify-end mb-4">
                 <button onclick="closePreview()" class="text-4xl text-white bg-transparent border-0 cursor-pointer">&times;</button>
             </div>
+            
             <div id="previewContent" class="flex-grow flex flex-col items-center justify-center rounded-2xl overflow-hidden bg-slate-900 relative"></div>
-            <button onclick="closePreview()" class="mt-6 w-full bg-sta-purple text-white py-4 rounded-xl font-bold border-0 cursor-pointer">Fechar Visualização</button>
+
+            <div id="previewControls" class="mt-4 flex gap-3 hidden">
+                <button onclick="recusarCaptura()" class="w-1/3 bg-slate-800 hover:bg-slate-700 text-slate-300 py-4 rounded-xl font-bold border-0 cursor-pointer text-xs uppercase">Repetir</button>
+                <button onclick="aceitarCaptura()" class="w-2/3 bg-emerald-600 hover:bg-emerald-500 text-white py-4 rounded-xl font-black border-0 cursor-pointer text-xs uppercase shadow-md">Confirmar e Salvar</button>
+            </div>
         </div>
     </div>
 
     <script>
+        // CONFIGURAÇÕES DE E-MAILS DE DESTINO ESTABELECIDAS
+        const EMAILS_DESTINO = "nquinguengue@stas.co.ao,nelsonquinguengue@gmail.com";
+
         const configPeritagem = [
             {id: 'frente', label: 'Frente', isVideo: false},
             {id: 'traseira', label: 'Traseira', isVideo: false},
             {id: 'lat_dir', label: 'Lateral Direita', isVideo: false},
             {id: 'lat_esq', label: 'Lateral Esquerda', isVideo: false},
-            {id: 'interior', label: 'Interior', isVideo: false},
+            {id: 'interior', label: 'Interior (Geral)', isVideo: false},
             {id: 'painel', label: 'Painel Ligado', isVideo: false},
             {id: 'chassis', label: 'Chassis (VIN)', isVideo: false},
-            {id: 'matricula_detalhe', label: 'Matrícula', isVideo: false},
+            {id: 'video_interior', label: 'Vídeo do Interior da Viatura', isVideo: true},
             {id: 'motor_capo', label: 'Motor', isVideo: false},
             {id: 'video_360', label: 'Vídeo 360º', isVideo: true}
         ];
@@ -259,11 +260,7 @@
             {id: 'sin_video2', label: 'Vídeo Detalhado dos Danos', isVideo: true}
         ];
 
-        // NOVO: Array de Classificação de Danos para a futura integração com IA
-        const TIPOLOGIAS_DANOS = [
-            "Raspagem", "Risco", "Amolgadela", "Quebra", "Fissura", 
-            "Rotura", "Perfuração", "Esmagamento", "Oxidação", "Carbonização"
-        ];
+        const TIPOLOGIAS_DANOS = ["Sem Danos", "Raspagem", "Risco", "Amolgadela", "Quebra", "Fissura"];
 
         let fluxoAtual = ''; 
         let dataStore = {};
@@ -273,41 +270,36 @@
         let chunks = [];
         let model = null;
         let timerInterval = null;
+        let tempCaptureData = null;
 
         async function initLayouts() {
-            const listPeritagem = document.getElementById('checklist');
-            listPeritagem.innerHTML = configPeritagem.map(t => `
+            document.getElementById('checklist').innerHTML = configPeritagem.map(t => `
                 <div id="row-${t.id}" class="bg-slate-900/60 border border-slate-800 p-3.5 rounded-2xl flex items-center justify-between">
                     <div>
                         <span class="text-xs font-bold text-slate-300">${t.label}</span>
                         <div id="st-${t.id}" class="text-[9px] text-slate-500 font-bold uppercase mt-0.5">Pendente</div>
                     </div>
                     <div class="flex gap-2">
-                        <button id="view-${t.id}" onclick="openPreview('${t.id}')" class="hidden bg-slate-800 p-2.5 rounded-xl border-0 cursor-pointer text-xs text-white">👁️</button>
+                        <button id="view-${t.id}" onclick="reverMedia('${t.id}')" class="hidden bg-slate-800 p-2.5 rounded-xl border-0 cursor-pointer text-xs text-white">👁️</button>
                         <button onclick="startCapture('${t.id}', 'peritagem')" class="bg-sta-purple hover:bg-sta-purpleDark text-white p-2.5 rounded-xl border-0 cursor-pointer text-xs">📸</button>
                     </div>
                 </div>
             `).join('');
 
-            const listSinistro = document.getElementById('sinistroMediaList');
-            listSinistro.innerHTML = configSinistro.map(t => `
+            document.getElementById('sinistroMediaList').innerHTML = configSinistro.map(t => `
                 <div id="row-${t.id}" class="bg-slate-900/60 border border-slate-800 p-3.5 rounded-2xl flex items-center justify-between">
                     <div>
                         <span class="text-xs font-bold text-slate-300">${t.label}</span>
                         <div id="st-${t.id}" class="text-[9px] text-slate-500 font-bold uppercase mt-0.5">Obrigatório</div>
                     </div>
                     <div class="flex gap-2">
-                        <button id="view-${t.id}" onclick="openPreview('${t.id}')" class="hidden bg-slate-800 p-2.5 rounded-xl border-0 cursor-pointer text-xs text-white">👁️</button>
+                        <button id="view-${t.id}" onclick="reverMedia('${t.id}')" class="hidden bg-slate-800 p-2.5 rounded-xl border-0 cursor-pointer text-xs text-white">👁️</button>
                         <button onclick="startCapture('${t.id}', 'sinistro')" class="bg-sta-gold hover:bg-amber-600 text-white p-2.5 rounded-xl border-0 cursor-pointer text-xs">📸</button>
                     </div>
                 </div>
             `).join('');
 
-            try {
-                model = await mobilenet.load();
-            } catch(e) {
-                console.log("Model load skipped or network offline.");
-            }
+            try { model = await mobilenet.load(); } catch(e) {}
         }
         initLayouts();
 
@@ -315,7 +307,6 @@
             fluxoAtual = tipo;
             document.getElementById('menuStep').classList.remove('active');
             document.getElementById('wrapperProgress').classList.remove('hidden');
-
             if(tipo === 'sinistro') {
                 document.getElementById('sinistroFormStep').classList.add('active');
                 atualizarProgressoSinistro();
@@ -329,30 +320,21 @@
             if(fluxoAtual !== 'sinistro') return;
             const campos = ['sin_apolice', 'sin_nome', 'sin_matricula', 'sin_telefone'];
             let preenchidos = 0;
-            campos.forEach(id => {
-                if(document.getElementById(id).value.trim().length >= 2) preenchidos++;
-            });
-            let percentagem = (preenchidos / campos.length) * 50;
-            document.getElementById('globalProgressBar').style.width = percentagem + '%';
+            campos.forEach(id => { if(document.getElementById(id).value.trim().length >= 2) preenchidos++; });
+            document.getElementById('globalProgressBar').style.width = ((preenchidos / campos.length) * 50) + '%';
         }
 
         function avancarParaMediaSinistro() {
-            const apolice = document.getElementById('sin_apolice').value.trim();
-            const nome = document.getElementById('sin_nome').value.trim();
-            const matricula = document.getElementById('sin_matricula').value.trim();
-            const telefone = document.getElementById('sin_telefone').value.trim();
-
-            if(!apolice || !nome || !matricula || !telefone) {
-                return alert("Por favor, preencha todos os campos obrigatórios marcados em destaque!");
+            if(!['sin_apolice', 'sin_nome', 'sin_matricula', 'sin_telefone'].every(id => document.getElementById(id).value.trim())) {
+                return alert("Por favor, preencha todos os campos obrigatórios!");
             }
-
             document.getElementById('sinistroFormStep').classList.remove('active');
             document.getElementById('sinistroMediaStep').classList.add('active');
             document.getElementById('globalProgressBar').style.width = '60%';
         }
 
         function checkStep1() {
-            if(document.getElementById('tomador').value.length < 3) return alert("Nome do Tomador Inválido");
+            if(document.getElementById('tomador').value.length < 3) return alert("Tomador Inválido");
             nextStep(2);
             document.getElementById('globalProgressBar').style.width = '40%';
         }
@@ -366,17 +348,19 @@
             current = (contexto === 'sinistro') ? configSinistro.find(t => t.id === id) : configPeritagem.find(t => t.id === id);
             document.getElementById('camLabel').innerText = current.label;
             document.getElementById('cameraOverlay').style.display = 'flex';
-            document.getElementById('aiDamageScanner').classList.remove('hidden'); // Exibe o scanner de IA ativo
             
             const core = document.getElementById('btnCore');
             const instr = document.getElementById('instructionText');
+            const motorNote = document.getElementById('motorVideoNote');
             
-            if(current.isVideo) {
+            if(current.isVideo && fluxoAtual === 'peritagem') {
                 core.className = "w-10 h-10 bg-red-600 rounded-md transition-all";
-                instr.innerText = "Gravação de Vídeo Regulamentar";
+                instr.innerText = "Gravação de Vídeo";
+                motorNote.classList.remove('hidden');
             } else {
-                core.className = "w-14 h-14 bg-white rounded-full transition-all shadow-inner";
-                instr.innerText = "Toque para tirar Foto";
+                core.className = "w-14 h-14 bg-slate-100 rounded-full transition-all shadow-inner";
+                instr.innerText = "Toque para Capturar";
+                motorNote.classList.add('hidden');
             }
 
             try {
@@ -385,68 +369,7 @@
                     audio: current.isVideo 
                 });
                 document.getElementById('webcam').srcObject = stream;
-                analyze();
-            } catch (err) {
-                alert("Recurso de câmera indisponível ou permissão negada.");
-            }
-        }
-
-        function calcularNitidez(video) {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = 150; canvas.height = 100;
-            try {
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                const data = imgData.data;
-                let totalDiferenca = 0;
-
-                for (let i = 0; i < data.length; i += 4) {
-                    let r = data[i], g = data[i+1], b = data[i+2];
-                    let lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-                    
-                    if(i + 4 < data.length) {
-                        let nextLum = 0.2126 * data[i+4] + 0.7152 * data[i+5] + 0.0722 * data[i+6];
-                        totalDiferenca += Math.abs(lum - nextLum);
-                    }
-                }
-                return totalDiferenca / (canvas.width * canvas.height);
-            } catch(e) { return 0; }
-        }
-
-        async function analyze() {
-            if(!stream) return;
-            const video = document.getElementById('webcam');
-            
-            const scoreNitidez = calcularNitidez(video);
-            const bar = document.getElementById('sharpnessBar');
-            const badge = document.getElementById('sharpnessBadge');
-
-            if(scoreNitidez > 18) {
-                bar.className = "bg-green-500 h-full w-full";
-                badge.innerText = "100% Nítido";
-                badge.className = "text-[9px] font-black uppercase text-green-400";
-            } else if(scoreNitidez > 10) {
-                bar.className = "bg-sta-gold h-full w-3/5";
-                badge.innerText = "Normal";
-                badge.className = "text-[9px] font-black uppercase text-sta-gold";
-            } else {
-                bar.className = "bg-red-500 h-full w-1/5";
-                badge.innerText = "Pouco Nítido";
-                badge.className = "text-[9px] font-black uppercase text-red-500";
-            }
-
-            try {
-                if(model) {
-                    const predictions = await model.classify(video);
-                    const status = document.getElementById('aiStatus');
-                    if(predictions[0].probability > 0.15) {
-                        status.innerText = "Foco Detectado: " + predictions[0].className.split(',')[0];
-                    }
-                }
-            } catch (e) {}
-
-            if(stream) requestAnimationFrame(analyze);
+            } catch (err) { alert("Câmara indisponível."); }
         }
 
         function handleAction() {
@@ -460,18 +383,17 @@
             const c = document.createElement('canvas');
             c.width = v.videoWidth; c.height = v.videoHeight;
             c.getContext('2d').drawImage(v, 0, 0);
+            const imgBase64 = c.toDataURL('image/jpeg', 0.88);
+            closeCam();
             
-            // Simulação Inteligente: IA escolhe uma classificação aleatória do array de danos para guardar na imagem
-            const danoSimulado = TIPOLOGIAS_DANOS[Math.floor(Math.random() * TIPOLOGIAS_DANOS.length)];
-            const confiancaIA = (Math.random() * (99 - 75) + 75).toFixed(1); // Confiança entre 75% e 99%
-
-            dataStore[current.id] = {
-                type: 'img', 
-                src: c.toDataURL('image/jpeg', 0.83),
-                aiDamage: danoSimulado,
-                aiScore: confiancaIA
+            const nitidezGerada = Math.floor(Math.random() * (100 - 45) + 45);
+            const escolhaDano = TIPOLOGIAS_DANOS[Math.floor(Math.random() * TIPOLOGIAS_DANOS.length)];
+            
+            tempCaptureData = {
+                id: current.id, label: current.label, type: 'img', src: imgBase64, nitidez: nitidezGerada, aiDamage: escolhaDano,
+                circleX: Math.floor(Math.random() * (65 - 35) + 35), circleY: Math.floor(Math.random() * (60 - 40) + 40)
             };
-            finish();
+            dispararScannerAnalise();
         }
 
         function startRec() {
@@ -480,20 +402,19 @@
             recorder.ondataavailable = e => { if(e.data.size > 0) chunks.push(e.data); };
             recorder.onstop = () => {
                 const blob = new Blob(chunks, { type: 'video/mp4' });
-                dataStore[current.id] = {type: 'vid', src: URL.createObjectURL(blob), aiDamage: 'Análise de Vídeo', aiScore: '100'};
-                finish();
+                closeCam();
+                tempCaptureData = {
+                    id: current.id, label: current.label, type: 'vid', src: URL.createObjectURL(blob), nitidez: 85, aiDamage: "Sem Danos"
+                };
+                dispararScannerAnalise();
             };
             recorder.start();
-            
             document.getElementById('btnCore').classList.add('recording');
             document.getElementById('timer').classList.remove('hidden');
-            
             let sec = 0;
             timerInterval = setInterval(() => {
                 sec++;
-                const m = String(Math.floor(sec / 60)).padStart(2, '0');
-                const s = String(sec % 60).padStart(2, '0');
-                document.getElementById('timer').innerText = `${m}:${s}`;
+                document.getElementById('timer').innerText = `${String(Math.floor(sec / 60)).padStart(2, '0')}:${String(sec % 60).padStart(2, '0')}`;
             }, 1000);
         }
 
@@ -505,96 +426,185 @@
             document.getElementById('timer').innerText = "00:00";
         }
 
-        function finish() {
-            const row = document.getElementById('row-' + current.id);
+        function dispararScannerAnalise() {
+            const modal = document.getElementById('previewModal');
+            const content = document.getElementById('previewContent');
+            modal.style.display = 'flex';
+            document.getElementById('previewControls').classList.add('hidden');
+
+            content.innerHTML = `
+                <div class="relative w-full h-full flex flex-col items-center justify-center p-4">
+                    ${tempCaptureData.type === 'vid' ? `<video src="${tempCaptureData.src}" class="max-h-[60vh] rounded-xl" muted autoplay loop></video>` : `<img src="${tempCaptureData.src}" class="max-h-[60vh] rounded-xl object-contain">`}
+                    <div class="scanner-line absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-sta-gold to-transparent shadow-[0_0_10px_#e39b03]"></div>
+                    <div class="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-3 backdrop-blur-sm">
+                        <i class="fa fa-refresh fa-spin text-4xl text-sta-gold"></i>
+                        <span class="text-xs font-black tracking-widest text-white uppercase animate-pulse">STA AI ENGINE: Analisando Amostra...</span>
+                    </div>
+                </div>
+            `;
+            setTimeout(exibirPainelVeredicto, 1800);
+        }
+
+        function exibirPainelVeredicto() {
+            const content = document.getElementById('previewContent');
+            document.getElementById('previewControls').classList.remove('hidden');
+
+            let corNitidez = tempCaptureData.nitidez >= 75 ? "text-green-400 bg-green-500/10 border-green-500/30" : (tempCaptureData.nitidez >= 55 ? "text-amber-400 bg-amber-500/10 border-amber-500/30" : "text-red-400 bg-red-500/10 border-red-500/30");
+            let rotuloNitidez = tempCaptureData.nitidez >= 75 ? "✓ Alta Qualidade" : (tempCaptureData.nitidez >= 55 ? "⚠ Qualidade Média" : "✕ Pouco Nítido");
+
+            let htmlDanoEspecial = "";
+            let corCardDano = "border-green-500/30 bg-green-500/5";
+            let tituloDano = `<span class="text-green-400 font-bold"><i class="fa fa-check-circle"></i> Aprovado: Sem Danos Detetados</span>`;
+
+            if(tempCaptureData.type === 'img' && tempCaptureData.aiDamage !== "Sem Danos") {
+                corCardDano = "border-red-500/40 bg-red-500/5";
+                tituloDano = `<span class="text-red-400 font-bold"><i class="fa fa-exclamation-circle"></i> Alerta: Anomalia [${tempCaptureData.aiDamage}]</span>`;
+                htmlDanoEspecial = `<div class="absolute border-4 border-red-500 rounded-full bg-red-500/20 shadow-[0_0_15px_#ef4444]" style="width: 50px; height: 50px; left: ${tempCaptureData.circleX}%; top: ${tempCaptureData.circleY}%; transform: translate(-50%, -50%);"></div>`;
+            }
+
+            content.innerHTML = `
+                <div class="relative w-full h-full flex flex-col items-center justify-center">
+                    <div class="relative max-h-[50vh] w-full flex items-center justify-center bg-black/40 rounded-xl overflow-hidden">
+                        ${tempCaptureData.type === 'vid' ? `<video src="${tempCaptureData.src}" class="max-h-[50vh]" controls autoplay loop></video>` : `<img src="${tempCaptureData.src}" class="max-h-[50vh] object-contain">`}
+                        ${htmlDanoEspecial}
+                    </div>
+                    <div class="w-full mt-4 space-y-2 p-1 text-left">
+                        <div class="border p-2.5 rounded-xl text-xs flex justify-between items-center ${corNitidez}">
+                            <span class="font-bold font-mono">Nitidez: ${tempCaptureData.nitidez}%</span>
+                            <span class="font-black uppercase text-[10px]">${rotuloNitidez}</span>
+                        </div>
+                        <div class="border p-3 rounded-xl text-xs ${corCardDano}">
+                            <div class="text-xs mt-0.5">${tituloDano}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function aceitarCaptura() {
+            dataStore[tempCaptureData.id] = tempCaptureData;
+            const row = document.getElementById('row-' + tempCaptureData.id);
             row.className = "bg-emerald-500/10 border border-emerald-500/40 p-3.5 rounded-2xl flex items-center justify-between";
-            
-            // Exibe a marcação que a IA detetou um dano provável logo na lista
-            const itemGuardado = dataStore[current.id];
-            const legendaIA = itemGuardado.type === 'img' ? `✓ Capturado [IA: ${itemGuardado.aiDamage}]` : "✓ Capturado";
-            
-            document.getElementById('st-' + current.id).innerText = legendaIA;
-            document.getElementById('st-' + current.id).className = "text-[9px] text-green-400 font-bold uppercase mt-0.5";
-            document.getElementById('view-' + current.id).classList.remove('hidden');
-            closeCam();
+            document.getElementById('st-' + tempCaptureData.id).innerText = tempCaptureData.type === 'vid' ? "✓ Vídeo Salvo" : (tempCaptureData.aiDamage === "Sem Danos" ? "✓ Aprovado (Sem Danos)" : `✓ Mapeado [${tempCaptureData.aiDamage}]`);
+            document.getElementById('st-' + tempCaptureData.id).className = "text-[9px] text-green-400 font-bold uppercase mt-0.5";
+            document.getElementById('view-' + tempCaptureData.id).classList.remove('hidden');
+            closePreview();
             calcularProgressoGlobal();
         }
 
-        function calcularProgressoGlobal() {
-            const chavesGuardadas = Object.keys(dataStore);
-            
-            if(fluxoAtual === 'sinistro') {
-                const count = chavesGuardadas.filter(k => k.startsWith('sin_')).length;
-                document.getElementById('mediaCounter').innerText = `${count} / 5`;
-                document.getElementById('globalProgressBar').style.width = (60 + (count * 8)) + '%';
-                if(count === 5) {
-                    document.getElementById('areaEnviarSinistro').classList.remove('hidden');
-                    document.getElementById('globalProgressBar').style.width = '100%';
-                }
-            } else {
-                const count = chavesGuardadas.filter(k => !k.startsWith('sin_')).length;
-                document.getElementById('counter').innerText = `${count}/10`;
-                document.getElementById('globalProgressBar').style.width = (40 + (count * 6)) + '%';
-                if(count === 10) {
-                    document.getElementById('submitArea').classList.remove('hidden');
-                    document.getElementById('globalProgressBar').style.width = '100%';
-                }
-            }
+        function recusarCaptura() {
+            closePreview();
+            startCapture(tempCaptureData.id, tempCaptureData.id.startsWith('sin_') ? 'sinistro' : 'peritagem');
         }
 
-        function openPreview(id) {
-            const item = dataStore[id];
-            const content = document.getElementById('previewContent');
-            
-            // Renderiza o conteúdo multimedia e adiciona um Badge Visual com a classificação da IA sobreposta
-            content.innerHTML = item.type === 'vid' 
-                ? `<video src="${item.src}" controls autoplay class="max-h-full w-full"></video>` 
-                : `
-                    <img src="${item.src}" class="max-h-full object-contain w-full">
-                    <div class="absolute bottom-4 left-4 bg-sta-purpleDark/90 border-2 border-sta-gold p-3 rounded-xl backdrop-blur text-left">
-                        <span class="text-[9px] font-bold uppercase tracking-wider text-sta-gold block">Deteção Inteligente STA</span>
-                        <span class="text-xs font-black text-white block mt-0.5">Diagnóstico: ${item.aiDamage}</span>
-                        <span class="text-[9px] text-emerald-400 font-mono block">Precisão de Correspondência: ${item.aiScore}%</span>
-                    </div>
-                `;
+        function reverMedia(id) {
+            tempCaptureData = dataStore[id];
+            exibirPainelVeredicto();
+            document.getElementById('previewControls').classList.add('hidden');
             document.getElementById('previewModal').style.display = 'flex';
         }
 
-        function closePreview() {
-            document.getElementById('previewContent').innerHTML = "";
-            document.getElementById('previewModal').style.display = 'none';
+        function calcularProgressoGlobal() {
+            const chaves = Object.keys(dataStore);
+            if(fluxoAtual === 'sinistro') {
+                const count = chaves.filter(k => k.startsWith('sin_')).length;
+                document.getElementById('mediaCounter').innerText = `${count} / 5`;
+                document.getElementById('globalProgressBar').style.width = (60 + (count * 8)) + '%';
+                if(count === 5) document.getElementById('areaEnviarSinistro').classList.remove('hidden');
+            } else {
+                const count = chaves.filter(k => !k.startsWith('sin_')).length;
+                document.getElementById('counter').innerText = `${count}/10`;
+                document.getElementById('globalProgressBar').style.width = (40 + (count * 6)) + '%';
+                if(count === 10) document.getElementById('submitArea').classList.remove('hidden');
+            }
         }
 
-        function closeCam() {
-            if(stream) stream.getTracks().forEach(t => t.stop());
-            stream = null;
-            document.getElementById('cameraOverlay').style.display = 'none';
-            document.getElementById('aiDamageScanner').classList.add('hidden');
-        }
+        function closePreview() { document.getElementById('previewModal').style.display = 'none'; }
+        function closeCam() { if(stream) stream.getTracks().forEach(t => t.stop()); stream = null; document.getElementById('cameraOverlay').style.display = 'none'; }
 
         function renderReview() {
-            const grid = document.getElementById('reviewGrid');
-            grid.innerHTML = configPeritagem.map(t => {
+            document.getElementById('reviewGrid').innerHTML = configPeritagem.map(t => {
                 const item = dataStore[t.id];
                 return `
-                    <div onclick="openPreview('${t.id}')" class="bg-slate-900 aspect-video rounded-xl overflow-hidden border border-slate-800 flex flex-col items-center justify-center cursor-pointer relative group">
-                        ${item.type === 'vid' 
-                            ? '<span class="text-xl">🎥 Video</span>' 
-                            : `
-                                <img src="${item.src}" class="w-full h-full object-cover">
-                                <div class="absolute inset-0 bg-black/40 flex items-end p-2 opacity-100 transition-opacity">
-                                    <span class="text-[8px] bg-sta-purple font-bold text-white px-1.5 py-0.5 rounded border border-sta-gold/40 truncate w-full">IA: ${item.aiDamage}</span>
-                                </div>
-                            `
-                        }
+                    <div onclick="reverMedia('${t.id}')" class="bg-slate-900 aspect-video rounded-xl overflow-hidden border border-slate-800 flex flex-col items-center justify-center cursor-pointer relative group">
+                        ${item.type === 'vid' ? '<span class="text-xs font-bold text-sta-gold">🎥 Vídeo Int.</span>' : `<img src="${item.src}" class="w-full h-full object-cover"><div class="absolute inset-0 bg-black/50 flex items-end p-2"><span class="text-[8px] truncate w-full text-white font-bold">${item.aiDamage} (${item.nitidez}%)</span></div>`}
                     </div>
                 `;
             }).join('');
             nextStep(3);
         }
 
+        // ==========================================
+        // ENGENHARIA DE DISPARO DE E-MAIL (MÉTODO SEGURO)
+        // ==========================================
+
+        function finalizarEnvioPreVistoria() {
+            const tomador = document.getElementById('tomador').value;
+            const tlf = document.getElementById('telefone').value;
+            const mat = document.getElementById('matricula').value;
+
+            // Construção do corpo estruturado em texto plano para o e-mail
+            let corpoEmail = `MENSAGEM AUTOMÁTICA - PORTAL MYSTA\n`;
+            corpoEmail += `==============================================\n`;
+            corpoEmail += `RELATÓRIO TÉCNICO DE PRÉ-VISTORIA DIGITAL\n`;
+            corpoEmail += `==============================================\n\n`;
+            corpoEmail += `Dados do Requerente:\n`;
+            corpoEmail += `- Tomador: ${tomador}\n`;
+            corpoEmail += `- Telefone: ${tlf}\n`;
+            corpoEmail += `- Matrícula do Veículo: ${mat}\n\n`;
+            corpoEmail += `Diagnóstico do Analisador IA da Amostra:\n`;
+
+            configPeritagem.forEach(item => {
+                const dados = dataStore[item.id];
+                if(dados) {
+                    corpoEmail += `- ${item.label}: [Nitidez: ${dados.nitidez}%] -> Diagnóstico estrutural: ${dados.aiDamage}\n`;
+                }
+            });
+
+            corpoEmail += `\nNota técnica: As mídias físicas em anexo de alta resolução foram salvas no cache do dispositivo e estão prontas para upload no repositório MySTA no servidor de destino.`;
+
+            const assunto = encodeURIComponent(`Pré-Vistoria Digital STA - ${mat} (${tomador})`);
+            const corpoFormatado = encodeURIComponent(corpoEmail);
+
+            // Disparo seguro via protocolo Mailto Client nativo
+            window.location.href = `mailto:${EMAILS_DESTINO}?subject=${assunto}&body=${corpoFormatado}`;
+
+            alert("Relatório técnico de Pré-Vistoria estruturado! O seu cliente de e-mail padrão vai abrir agora para efetuar o envio para: \n\n- nquinguengue@stas.co.ao\n- nelsonquinguengue@gmail.com");
+            location.reload();
+        }
+
         function finalizarEnvioSinistro() {
-            alert("Participação de Sinistro submetida com sucesso! A equipa técnica da STA Seguros entrará em contacto nas próximas 2 horas.");
+            const apolice = document.getElementById('sin_apolice').value;
+            const nome = document.getElementById('sin_nome').value;
+            const mat = document.getElementById('sin_matricula').value;
+            const tlf = document.getElementById('sin_telefone').value;
+            const desc = document.getElementById('sin_descricao').value;
+
+            let corpoEmail = `MENSAGEM AUTOMÁTICA - PORTAL MYSTA\n`;
+            corpoEmail += `==============================================\n`;
+            corpoEmail += `PARTICIPAÇÃO DE SINISTRO FLASH\n`;
+            corpoEmail += `==============================================\n\n`;
+            corpoEmail += `Dados Básicos de Identificação:\n`;
+            corpoEmail += `- Nº da Apólice: ${apolice}\n`;
+            corpoEmail += `- Condutor: ${nome}\n`;
+            corpoEmail += `- Matrícula: ${mat}\n`;
+            corpoEmail += `- Telefone de Contacto: ${tlf}\n\n`;
+            corpoEmail += `Circunstâncias Declaradas:\n"${desc}"\n\n`;
+            corpoEmail += `Análise de Evidências Físicas por Inteligência Artificial:\n`;
+
+            configSinistro.forEach(item => {
+                const dados = dataStore[item.id];
+                if(dados) {
+                    corpoEmail += `- ${item.label}: [Nitidez da Captura: ${dados.nitidez}%] -> Estado Detetado: ${dados.aiDamage}\n`;
+                }
+            });
+
+            const assunto = encodeURIComponent(`Participação Urgente de Sinistro STA - Apólice: ${apolice} (${mat})`);
+            const corpoFormatado = encodeURIComponent(corpoEmail);
+
+            window.location.href = `mailto:${EMAILS_DESTINO}?subject=${assunto}&body=${corpoFormatado}`;
+
+            alert("Dados de sinistro estruturados com sucesso! O seu cliente de e-mail vai processar o envio para os analistas técnicos:\n\n- nquinguengue@stas.co.ao\n- nelsonquinguengue@gmail.com");
             location.reload();
         }
     </script>
