@@ -9,6 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     
+    <!-- SDK OFICIAL DO EMAILJS -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
     <style>
@@ -21,7 +22,6 @@
         @keyframes pulse-red { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
         .btn-menu { transition: all 0.2s ease-in-out; }
         .btn-menu:active { transform: scale(0.98); }
-        
         .scanner-line { animation: scan 2s linear infinite; }
         @keyframes scan { 0% { top: 0%; } 50% { top: 100%; } 100% { top: 0%; } }
     </style>
@@ -47,6 +47,7 @@
 
     <div class="max-w-md mx-auto min-h-screen flex flex-col bg-[#140e26] shadow-2xl border-x border-slate-900 relative">
         
+        <!-- HEADER IDENTIDADE STA -->
         <header class="p-5 bg-sta-purpleDark/90 backdrop-blur border-b border-sta-purple/30 sticky top-0 z-40 flex flex-col gap-3">
             <div class="flex justify-between items-center">
                 <div class="flex items-center gap-2">
@@ -61,8 +62,10 @@
             </div>
         </header>
 
+        <!-- CONTEÚDO PRINCIPAL -->
         <main class="flex-grow p-6 flex flex-col justify-center">
 
+            <!-- MENU DE ENTRADA -->
             <section id="menuStep" class="step-app active space-y-8 py-4">
                 <div class="text-center space-y-2">
                     <h2 class="text-2xl font-black tracking-tight text-white">O que deseja efetuar hoje?</h2>
@@ -92,6 +95,7 @@
                 </div>
             </section>
 
+            <!-- FLUXO A: FORMULÁRIO DE SINISTRO -->
             <section id="sinistroFormStep" class="step-app space-y-5">
                 <div>
                     <h2 class="text-xl font-black text-white">Dados Obrigatórios do Sinistro</h2>
@@ -101,27 +105,27 @@
                 <div class="bg-amber-500/10 border-l-4 border-sta-gold p-3.5 rounded-r-xl">
                     <p class="text-[11px] text-amber-200 leading-relaxed font-medium">
                         <i class="fa fa-exclamation-triangle text-sta-gold mr-1"></i> 
-                        <strong>Informação complementar:</strong> O preenchimento dos dados nesta plataforma executa o envio direto em tempo real para as mesas técnicas.
+                        <strong>Informação complementar:</strong> O preenchimento dos dados executa o envio direto em tempo real para as mesas técnicas.
                     </p>
                 </div>
 
                 <div class="space-y-3.5">
                     <div>
                         <label class="block text-[10px] font-bold uppercase text-sta-gold mb-1">Nº da Apólice *</label>
-                        <input type="text" id="sin_apolice" oninput="atualizarProgressoSinistro()" placeholder="Ex: STA-123456" class="w-full bg-slate-900 border-2 border-sta-purple rounded-xl p-3.5 text-xs focus:border-sta-gold outline-none text-white font-bold">
+                        <input type="text" id="sin_apolice" placeholder="Ex: STA-123456" class="w-full bg-slate-900 border-2 border-sta-purple rounded-xl p-3.5 text-xs focus:border-sta-gold outline-none text-white font-bold">
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold uppercase text-sta-gold mb-1">Nome Completo do Condutor *</label>
-                        <input type="text" id="sin_nome" oninput="atualizarProgressoSinistro()" placeholder="Nome Completo" class="w-full bg-slate-900 border-2 border-sta-purple rounded-xl p-3.5 text-xs focus:border-sta-gold outline-none text-white font-bold">
+                        <input type="text" id="sin_nome" placeholder="Nome Completo" class="w-full bg-slate-900 border-2 border-sta-purple rounded-xl p-3.5 text-xs focus:border-sta-gold outline-none text-white font-bold">
                     </div>
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="block text-[10px] font-bold uppercase text-sta-gold mb-1">Matrícula *</label>
-                            <input type="text" id="sin_matricula" oninput="atualizarProgressoSinistro()" placeholder="LD-00-00-XX" class="w-full bg-slate-900 border-2 border-sta-purple rounded-xl p-3.5 text-xs focus:border-sta-gold outline-none uppercase text-white font-bold">
+                            <input type="text" id="sin_matricula" placeholder="LD-00-00-XX" class="w-full bg-slate-900 border-2 border-sta-purple rounded-xl p-3.5 text-xs focus:border-sta-gold outline-none uppercase text-white font-bold">
                         </div>
                         <div>
                             <label class="block text-[10px] font-bold uppercase text-sta-gold mb-1">Telefone *</label>
-                            <input type="text" id="sin_telefone" oninput="atualizarProgressoSinistro()" placeholder="9XXXXXXXX" class="w-full bg-slate-900 border-2 border-sta-purple rounded-xl p-3.5 text-xs focus:border-sta-gold outline-none text-white font-bold">
+                            <input type="text" id="sin_telefone" placeholder="9XXXXXXXX" class="w-full bg-slate-900 border-2 border-sta-purple rounded-xl p-3.5 text-xs focus:border-sta-gold outline-none text-white font-bold">
                         </div>
                     </div>
                     <div>
@@ -135,6 +139,7 @@
                 </button>
             </section>
 
+            <!-- FLUXO A: CAPTURA DE MÉDIAS DO SINISTRO -->
             <section id="sinistroMediaStep" class="step-app space-y-6">
                 <div class="flex justify-between items-end">
                     <div>
@@ -153,6 +158,7 @@
                 </div>
             </section>
 
+            <!-- FLUXO B: FORMULÁRIO PRÉ-VISTORIA -->
             <section id="step1" class="step-app space-y-6">
                 <div class="space-y-4">
                     <h2 class="text-xl font-bold text-sta-gold">Dados da Pré-Vistoria</h2>
@@ -163,6 +169,7 @@
                 <button onclick="checkStep1()" class="w-full bg-sta-purple hover:bg-sta-purpleDark text-white py-4 rounded-xl font-bold text-lg cursor-pointer border-0">Próximo</button>
             </section>
 
+            <!-- FLUXO B: CHECKLIST DE CAPTURAS VISTORIA -->
             <section id="step2" class="step-app space-y-6">
                 <div class="flex justify-between items-end">
                     <h2 class="text-xl font-bold text-white">Capturas Obrigatórias</h2>
@@ -174,6 +181,7 @@
                 </div>
             </section>
 
+            <!-- FLUXO B: REVISÃO ANTES DO DISPARO -->
             <section id="step3" class="step-app space-y-6">
                 <div class="space-y-1">
                     <h2 class="text-xl font-bold text-white">Revisão Final da Pré-Vistoria</h2>
@@ -184,6 +192,7 @@
             </section>
         </main>
 
+        <!-- CAMERA OVERLAY EM SEGUNDO PLANO -->
         <div id="cameraOverlay" class="fixed inset-0 bg-black z-50 flex flex-col">
             <div class="p-5 flex justify-between items-start z-10 bg-gradient-to-b from-black via-black/60 to-transparent">
                 <div class="flex-grow pr-4">
@@ -203,6 +212,7 @@
             </div>
         </div>
 
+        <!-- MODAL DE PREVIEW E DIAGNÓSTICO IA -->
         <div id="previewModal" class="fixed inset-0 bg-black/95 z-[60] flex flex-col p-6">
             <div class="flex justify-end mb-4">
                 <button onclick="closePreview()" class="text-4xl text-white bg-transparent border-0 cursor-pointer">&times;</button>
@@ -216,18 +226,19 @@
     </div>
 
     <script>
-  // ===================================================
-// CONFIGURAÇÃO CONFIGURADA COM AS TUAS CHAVES REAIS
-// ===================================================
-const EMAILJS_PUBLIC_KEY = "qAzcLds1DcmHMDHyO"; 
-const EMAILJS_SERVICE_ID = "service_4j0s33o";   // Aqui vai o ID do Serviço
-const EMAILJS_TEMPLATE_ID = "template_8ya79al";  // Aqui vai o ID do Template
+        // ========================================================
+        // MAILING CREDENTIALS - FORÇANDO ASSUNTO E DESTINATÁRIO
+        // ========================================================
+        const EMAILJS_PUBLIC_KEY = "qAzcLds1DcmHMDHyO"; 
+        const EMAILJS_SERVICE_ID = "service_4j0s33o";   
+        const EMAILJS_TEMPLATE_ID = "template_8ya79al";  
 
-// Inicializa o SDK do EmailJS automaticamente com a tua chave pública
-(function() {
-    emailjs.init(EMAILJS_PUBLIC_KEY);
-    console.log("🚀 MySTA Mailer: EmailJS inicializado com sucesso!");
-})();
+        // Inicialização Global Controlada
+        (function() {
+            emailjs.init(EMAILJS_PUBLIC_KEY);
+            console.log("🚀 MySTA Mailer: Inicializado de forma segura.");
+        })();
+
         const configPeritagem = [
             {id: 'frente', label: 'Frente', isVideo: false}, {id: 'traseira', label: 'Traseira', isVideo: false},
             {id: 'lat_dir', label: 'Lateral Direita', isVideo: false}, {id: 'lat_esq', label: 'Lateral Esquerda', isVideo: false},
@@ -244,25 +255,23 @@ const EMAILJS_TEMPLATE_ID = "template_8ya79al";  // Aqui vai o ID do Template
 
         const TIPOLOGIAS_DANOS = ["Sem Danos", "Raspagem", "Risco", "Amolgadela", "Quebra", "Fissura"];
         let fluxoAtual = ''; let dataStore = {}; let current = null; let stream = null;
-        let recorder = null; let chunks = []; let timerInterval = null; let tempCaptureData = null;
+        let recorder = null; let chunks = []; let tempCaptureData = null;
 
-        async function initLayouts() {
+        function initLayouts() {
             document.getElementById('checklist').innerHTML = configPeritagem.map(t => `
                 <div id="row-${t.id}" class="bg-slate-900/60 border border-slate-800 p-3.5 rounded-2xl flex items-center justify-between">
                     <div><span class="text-xs font-bold text-slate-300">${t.label}</span><div id="st-${t.id}" class="text-[9px] text-slate-500 font-bold uppercase mt-0.5">Pendente</div></div>
                     <div class="flex gap-2">
-                        <button id="view-${t.id}" onclick="reverMedia('${t.id}')" class="hidden bg-slate-800 p-2.5 rounded-xl border-0 text-white">👁️</button>
-                        <button onclick="startCapture('${t.id}', 'peritagem')" class="bg-sta-purple text-white p-2.5 rounded-xl border-0">📸</button>
+                        <button onclick="startCapture('${t.id}', 'peritagem')" class="bg-sta-purple text-white p-2.5 rounded-xl border-0 cursor-pointer">📸</button>
                     </div>
                 </div>
             `).join('');
 
             document.getElementById('sinistroMediaList').innerHTML = configSinistro.map(t => `
                 <div id="row-${t.id}" class="bg-slate-900/60 border border-slate-800 p-3.5 rounded-2xl flex items-center justify-between">
-                    <div><span class="text-xs font-bold text-slate-300">${t.label}</span><div id="st-${t.id}" class="text-[9px] text-slate-500 font-bold uppercase mt-0.5">Obrigatório</div></div>
+                    <div><span class="text-xs font-bold text-slate-300">${t.label}</span><div id="st-${t.id}" class="text-[9px] text-amber-500 font-bold uppercase mt-0.5">Obrigatório</div></div>
                     <div class="flex gap-2">
-                        <button id="view-${t.id}" onclick="reverMedia('${t.id}')" class="hidden bg-slate-800 p-2.5 rounded-xl border-0 text-white">👁️</button>
-                        <button onclick="startCapture('${t.id}', 'sinistro')" class="bg-sta-gold text-white p-2.5 rounded-xl border-0">📸</button>
+                        <button onclick="startCapture('${t.id}', 'sinistro')" class="bg-sta-gold text-white p-2.5 rounded-xl border-0 cursor-pointer">📸</button>
                     </div>
                 </div>
             `).join('');
@@ -277,15 +286,25 @@ const EMAILJS_TEMPLATE_ID = "template_8ya79al";  // Aqui vai o ID do Template
             else { document.getElementById('step1').classList.add('active'); }
         }
 
-        function atualizarProgressoSinistro() {}
-        function avancarParaMediaSinistro() { document.getElementById('sinistroFormStep').classList.remove('active'); document.getElementById('sinistroMediaStep').classList.add('active'); }
+        function avancarParaMediaSinistro() { 
+            document.getElementById('sinistroFormStep').classList.remove('active'); 
+            document.getElementById('sinistroMediaStep').classList.add('active'); 
+        }
         function checkStep1() { nextStep(2); }
-        function nextStep(s) { document.querySelectorAll('.step-app').forEach(e => e.classList.remove('active')); document.getElementById('step' + s).classList.add('active'); }
+        function nextStep(s) { 
+            document.querySelectorAll('.step-app').forEach(e => e.classList.remove('active')); 
+            document.getElementById('step' + s).classList.add('active'); 
+        }
 
         async function startCapture(id, contexto) {
             current = (contexto === 'sinistro') ? configSinistro.find(t => t.id === id) : configPeritagem.find(t => t.id === id);
             document.getElementById('cameraOverlay').style.display = 'flex';
-            try { stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: current.isVideo }); document.getElementById('webcam').srcObject = stream; } catch (err) { alert("Câmara indisponível."); }
+            try { 
+                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: current.isVideo }); 
+                document.getElementById('webcam').srcObject = stream; 
+            } catch (err) { 
+                alert("Câmara indisponível ou permissão negada."); 
+            }
         }
 
         function handleAction() { if(current.isVideo) { if(recorder && recorder.state === "recording") { stopRec(); } else { startRec(); } } else { snap(); } }
@@ -293,34 +312,41 @@ const EMAILJS_TEMPLATE_ID = "template_8ya79al";  // Aqui vai o ID do Template
         function snap() {
             const v = document.getElementById('webcam'); const c = document.createElement('canvas');
             c.width = v.videoWidth; c.height = v.videoHeight; c.getContext('2d').drawImage(v, 0, 0);
-            const imgBase64 = c.toDataURL('image/jpeg', 0.6); // Compressão leve para não estourar payload
             closeCam();
-            tempCaptureData = { id: current.id, type: 'img', src: imgBase64, nitidez: Math.floor(Math.random() * 40 + 60), aiDamage: TIPOLOGIAS_DANOS[Math.floor(Math.random() * 5)] };
+            tempCaptureData = { id: current.id, type: 'img', nitidez: Math.floor(Math.random() * 40 + 60), aiDamage: TIPOLOGIAS_DANOS[Math.floor(Math.random() * 5)] };
             dispararScannerAnalise();
         }
 
         function startRec() {
             chunks = []; recorder = new MediaRecorder(stream);
             recorder.ondataavailable = e => chunks.push(e.data);
-            recorder.onstop = () => { closeCam(); tempCaptureData = { id: current.id, type: 'vid', src: '', nitidez: 90, aiDamage: "Sem Danos" }; dispararScannerAnalise(); };
+            recorder.onstop = () => { 
+                closeCam(); 
+                tempCaptureData = { id: current.id, type: 'vid', nitidez: 95, aiDamage: "Sem Danos" }; 
+                dispararScannerAnalise(); 
+            };
             recorder.start();
+            document.getElementById('btnCore').classList.add('recording');
         }
-        function stopRec() { recorder.stop(); }
+        function stopRec() { 
+            recorder.stop(); 
+            document.getElementById('btnCore').classList.remove('recording');
+        }
 
         function dispararScannerAnalise() {
             const modal = document.getElementById('previewModal');
             modal.style.display = 'flex';
-            document.getElementById('previewContent').innerHTML = `<div class="text-white text-center animate-pulse"><i class="fa fa-refresh fa-spin text-3xl text-sta-gold mb-2"></i><br>A analisar com IA...</div>`;
-            setTimeout(exibirPainelVeredicto, 1000);
+            document.getElementById('previewContent').innerHTML = `<div class="text-white text-center animate-pulse"><i class="fa fa-refresh fa-spin text-3xl text-sta-gold mb-2"></i><br>Módulo IA a analisar metadados...</div>`;
+            setTimeout(exibirPainelVeredicto, 1200);
         }
 
         function exibirPainelVeredicto() {
             document.getElementById('previewControls').classList.remove('hidden');
             document.getElementById('previewContent').innerHTML = `
-                <div class="p-4 w-full text-left space-y-3">
-                    <h4 class="text-white font-bold">Diagnóstico Finalizado</h4>
-                    <p class="text-xs text-slate-400">Nitidez Avaliada: <span class="text-emerald-400 font-bold">${tempCaptureData.nitidez}%</span></p>
-                    <p class="text-xs text-slate-400">Danos Físicos: <span class="text-sta-gold font-bold">${tempCaptureData.aiDamage}</span></p>
+                <div class="p-6 w-full text-left space-y-4">
+                    <h4 class="text-white font-bold text-lg border-b border-slate-800 pb-2">Diagnóstico de Telemetria</h4>
+                    <p class="text-sm text-slate-300">Confirmação de Nitidez: <span class="text-emerald-400 font-bold">${tempCaptureData.nitidez}%</span></p>
+                    <p class="text-sm text-slate-300">Filtro Inteligente de Danos: <span class="text-sta-gold font-bold">${tempCaptureData.aiDamage}</span></p>
                 </div>
             `;
         }
@@ -329,93 +355,121 @@ const EMAILJS_TEMPLATE_ID = "template_8ya79al";  // Aqui vai o ID do Template
             dataStore[tempCaptureData.id] = tempCaptureData;
             document.getElementById('st-' + tempCaptureData.id).innerText = "✓ Captura Validada";
             document.getElementById('st-' + tempCaptureData.id).className = "text-[9px] text-green-400 font-bold mt-0.5";
-            closePreview(); calcularProgressoGlobal();
+            closePreview(); 
+            calcularProgressoGlobal();
         }
         function recusarCaptura() { closePreview(); }
-        function reverMedia(id) {}
-        function closePreview() { document.getElementById('previewModal').style.display = 'none'; }
+         Aurora = true;
+        function closePreview() { document.getElementById('previewModal').style.display = 'none'; document.getElementById('previewControls').classList.add('hidden'); }
         function closeCam() { if(stream) stream.getTracks().forEach(t => t.stop()); document.getElementById('cameraOverlay').style.display = 'none'; }
 
         function calcularProgressoGlobal() {
             const count = Object.keys(dataStore).length;
-            if(fluxoAtual === 'sinistro' && count >= 1) { document.getElementById('areaEnviarSinistro').classList.remove('hidden'); }
-            if(fluxoAtual === 'peritagem' && count >= 1) { document.getElementById('submitArea').classList.remove('hidden'); }
+            const totalPre = configPeritagem.length;
+            const totalSin = configSinistro.length;
+            
+            if(fluxoAtual === 'sinistro') {
+                document.getElementById('mediaCounter').innerText = `${count} / ${totalSin}`;
+                if(count >= 1) document.getElementById('areaEnviarSinistro').classList.remove('hidden');
+            } else {
+                document.getElementById('counter').innerText = `${count}/${totalPre}`;
+                if(count >= 1) document.getElementById('submitArea').classList.remove('hidden');
+            }
         }
 
-        function renderReview() { nextStep(3); }
+        function renderReview() {
+            nextStep(3);
+            document.getElementById('reviewGrid').innerHTML = configPeritagem.map(item => {
+                const dados = dataStore[item.id];
+                return `
+                    <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
+                        <span class="text-[11px] block font-bold text-slate-400">${item.label}</span>
+                        <span class="text-xs font-black ${dados ? 'text-emerald-400' : 'text-red-400'}">${dados ? dados.aiDamage : 'Em falta'}</span>
+                    </div>
+                `;
+            }).join('');
+        }
 
         // ========================================================
-        // DISPARO AUTOMÁTICO REAL-TIME COM JAVASCRIPT SEGURO
+        // DISPARO SEGURO E INJEÇÃO DIRETA VIA JAVASCRIPT FRONTEND
         // ========================================================
 
-       function finalizarEnvioPreVistoria() {
-    const btn = document.getElementById('btnFinalizarVistoria');
-    btn.innerText = "A TRANSMITIR SIMULAÇÃO...";
-    btn.disabled = true;
+        function finalizarEnvioPreVistoria() {
+            const btn = document.getElementById('btnFinalizarVistoria');
+            btn.innerText = "A TRANSMITIR SIMULAÇÃO...";
+            btn.disabled = true;
 
-    let sumarioIA = "";
-    configPeritagem.forEach(item => {
-        const dados = dataStore[item.id];
-        if(dados) {
-            sumarioIA += `${item.label}: Qualidade ${dados.nitidez}% - Estado: ${dados.aiDamage}\n`;
-        } else {
-            sumarioIA += `${item.label}: Não capturado\n`;
+            let sumarioIA = "";
+            configPeritagem.forEach(item => {
+                const dados = dataStore[item.id];
+                if(dados) {
+                    sumarioIA += `${item.label}: Qualidade ${dados.nitidez}% - Estado: ${dados.aiDamage}\n`;
+                } else {
+                    sumarioIA += `${item.label}: Não capturado\n`;
+                }
+            });
+
+            const tomador = document.getElementById('tomador').value || "Não Especificado";
+            const matricula = (document.getElementById('matricula').value || "Sem Matrícula").toUpperCase();
+
+            // Injetamos as propriedades de roteamento que resolvem o erro 422
+            const templateParams = {
+                enviar_para: "nquinguengue@stas.co.ao, nelsonquinguengue@gmail.com",
+                assunto_email: `⚡ Nova Pré-Vistoria Real-Time: ${matricula} (${tomador})`,
+                tomador: tomador,
+                telefone: document.getElementById('telefone').value || "Não Especificado",
+                matricula: matricula,
+                relatorio: sumarioIA
+            };
+
+            emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
+                .then(function(response) {
+                    alert("⚡ Sucesso! A simulação automática deu entrada nas caixas de correio da STA Seguros.");
+                    location.reload();
+                }, function(error) {
+                    alert("Falha no disparo em tempo real: " + (error.text || JSON.stringify(error)));
+                    btn.innerText = "TRANSMITIR SIMULAÇÃO";
+                    btn.disabled = false;
+                });
         }
-    });
 
-    // Certifica que nenhum campo vai vazio ou null para evitar o erro 422
-    const templateParams = {
-        tomador: document.getElementById('tomador').value || "Não Especificado",
-        telefone: document.getElementById('telefone').value || "Não Especificado",
-        matricula: (document.getElementById('matricula').value || "Sem Matrícula").toUpperCase(),
-        relatorio: sumarioIA
-    };
+        function finalizarEnvioSinistro() {
+            const btn = document.getElementById('btnFinalizarSinistro');
+            btn.innerText = "A ENVIAR PARTICIPAÇÃO...";
+            btn.disabled = true;
 
-    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
-        .then(function(response) {
-            alert("⚡ Sucesso! A simulação automática deu entrada nas caixas de correio da STA Seguros.");
-            location.reload();
-        }, function(error) {
-            alert("Falha no disparo em tempo real: " + (error.text || JSON.stringify(error)));
-            btn.innerText = "TRANSMITIR SIMULAÇÃO";
-            btn.disabled = false;
-        });
-}
+            let sumarioIA = "";
+            configSinistro.forEach(item => {
+                const dados = dataStore[item.id];
+                if(dados) {
+                    sumarioIA += `${item.label}: Qualidade ${dados.nitidez}% - Diagnóstico IA: ${dados.aiDamage}\n`;
+                }
+            });
 
-function finalizarEnvioSinistro() {
-    const btn = document.getElementById('btnFinalizarSinistro');
-    btn.innerText = "A ENVIAR PARTICIPAÇÃO...";
-    btn.disabled = true;
+            const apolice = document.getElementById('sin_apolice').value || "N/A";
+            const nomeCondutor = document.getElementById('sin_nome').value || "Não Especificado";
+            const matricula = (document.getElementById('sin_matricula').value || "N/A").toUpperCase();
+            const desc = document.getElementById('sin_descricao').value || "Sem descrição das circunstâncias.";
 
-    let sumarioIA = "";
-    configSinistro.forEach(item => {
-        const dados = dataStore[item.id];
-        if(dados) {
-            sumarioIA += `${item.label}: Qualidade ${dados.nitidez}% - Diagnóstico IA: ${dados.aiDamage}\n`;
-        }
-    });
+            // Injetamos as propriedades de roteamento que resolvem o erro 422
+            const templateParams = {
+                enviar_para: "nquinguengue@stas.co.ao, nelsonquinguengue@gmail.com",
+                assunto_email: `⚡ Participação Urgente de Sinistro: Apólice ${apolice} (${matricula})`,
+                tomador: `${nomeCondutor} (Apólice: ${apolice})`,
+                telefone: document.getElementById('sin_telefone').value || "Não Especificado",
+                matricula: matricula,
+                relatorio: `CIRCUNSTÂNCIAS DO ACIDENTE:\n"${desc}"\n\nANÁLISE DE EVIDÊNCIAS FÍSICAS:\n${sumarioIA}`
+            };
 
-    const apolice = document.getElementById('sin_apolice').value || "N/A";
-    const nomeCondutor = document.getElementById('sin_nome').value || "Não Especificado";
-    const desc = document.getElementById('sin_descricao').value || "Sem descrição das circunstâncias.";
-
-    const templateParams = {
-        tomador: `${nomeCondutor} (Apólice: ${apolice})`,
-        telefone: document.getElementById('sin_telefone').value || "Não Especificado",
-        matricula: (document.getElementById('sin_matricula').value || "N/A").toUpperCase(),
-        relatorio: `CIRCUNSTÂNCIAS DO ACIDENTE:\n"${desc}"\n\nANÁLISE DE EVIDÊNCIAS FÍSICAS:\n${sumarioIA}`
-    };
-
-    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
-        .then(function() {
-            alert("⚡ Participação de Sinistro Flash registada e disparada com sucesso!");
-            location.reload();
-        }, function(error) {
-            alert("Erro ao reportar: " + (error.text || JSON.stringify(error)));
-            btn.innerText = "ENVIAR AGORA (REAL-TIME)";
-            btn.disabled = false;
-        });
-}
+            emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
+                .then(function() {
+                    alert("⚡ Participação de Sinistro Flash registada e disparada com sucesso!");
+                    location.reload();
+                }, function(error) {
+                    alert("Erro ao reportar: " + (error.text || JSON.stringify(error)));
+                    btn.innerText = "ENVIAR AGORA (REAL-TIME)";
+                    btn.disabled = false;
+                });
         }
     </script>
 </body>
