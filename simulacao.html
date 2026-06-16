@@ -235,55 +235,469 @@
         </div>
     </div>
 
-    <script>
-      // ====================================================================
+  <script>
+        // ====================================================================
+        // ESTADO GLOBAL DA APLICAÇÃO & CONFIGURAÇÕES
+        // ====================================================================
+        let model = null;
+        let fluxoAtual = ''; // 'sinistro' ou 'peritagem'
+        let passoAtual = 'menuStep';
+        let tempCaptureData = null;
+        let mediaSinistroArr = []; // Array para armazenar mídias do sinistro
+
+        // Passos obrigatórios da Pré-Vistoria (10 Passos do ecossistema MySTA)
+        const checklistItens = [
+            { id: 'item1', label: '1. Frente Completa', type: 'img', done: false, src: null, nitidez: 0, aiDamage: "Sem Danos" },
+            { id: 'item2', label: '2. Lateral Direita', type: 'img', done: false, src: null, nitidez: 0, aiDamage: "Sem Danos" },
+            { id: 'item3', label: '3. Traseira Completa', type: 'img', done: false, src: null, nitidez: 0, aiDamage: "Sem Danos" },
+            { id: 'item4', label: '4. Lateral Esquerda', type: 'img', done: false, src: null, nitidez: 0, aiDamage: "Sem Danos" },
+            { id: 'item5', label: '5. Parabrisas Dianteiro', type: 'img', done: false, src: null, nitidez: 0, aiDamage: "Sem Danos" },
+            { id: 'item6', label: '6. Painel de Instrumentos (Kms)', type: 'img', done: false, src: null, nitidez: 0, aiDamage: "Sem Danos" },
+            { id: 'item7', label: '7. Pneus Dianteiros', type: 'img', done: false, src: null, nitidez: 0, aiDamage: "Sem Danos" },
+            { id: 'item8', label: '8. Pneus Traseiros', type: 'img', done: false, src: null, nitidez: 0, aiDamage: "Sem Danos" },
+            { id: 'item9', label: '9. Compartimento do Motor', type: 'img', done: false, src: null, nitidez: 0, aiDamage: "Sem Danos" },
+            { id: 'item10', label: '10. Vídeo do Motor a Funcionar', type: 'vid', done: false, src: null, nitidez: 0, aiDamage: "Sem Danos" }
+        ];
+        
+        let current = null; // Guarda o item da lista que está a ser capturado
+        let streamCâmara = null;
+        let mediaRecorder = null;
+        let fragmentosGravacao = [];
+        let cronometroRegisto = null;
+        let segundosGravados = 0;
+
+        // Inicialização Assíncrona do TensorFlow.js
+        window.addEventListener('DOMContentLoaded', async () => {
+            const badge = document.getElementById('globalBadge');
+            if (badge) badge.innerText = "CARREGANDO IA...";
+            try {
+                // Aguarda o carregamento do modelo MobileNet
+                model = await mobilenet.load();
+                if (badge) {
+                    badge.innerText = "STA AI PRO READY";
+                    badge.className = "text-[9px] bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full border border-emerald-500/30 font-bold tracking-widest";
+                }
+            } catch (err) {
+                console.error("Falha ao inicializar o TensorFlow:", err);
+                if (badge) badge.innerText = "SISTEMA LOCAL (AIA OFF)";
+            }
+            renderChecklist();
+        });
+
+        // ====================================================================
+        // MOTOR DE NAVEGAÇÃO & FLUXOS
+        // ====================================================================
+        function navegarPara(idDoPasso) {
+            // Oculta todos os passos
+            document.querySelectorAll('.step-app').forEach(step => step.classList.remove('active'));
+            // Remove visibilidade da barra de progresso no menu principal
+            const wrapperProg = document.getElementById('wrapperProgress');
+            if(idDoPasso === 'menuStep') {
+                wrapperProg.classList.add('hidden');
+            } else {
+                wrapperProg.classList.remove('hidden');
+            }
+            
+            const proximoPasso = document.getElementById(idDoPasso);
+            if(proximoPasso) {
+                proximoPasso.classList.add('active');
+                passoAtual = idDoPasso;
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function escolherFluxo(tipo) {
+            fluxoAtual = tipo;
+            if (tipo === 'sinistro') {
+                atualizarBarraDeProgresso(10);
+                navegarPara('sinistroFormStep');
+            } else if (tipo === 'peritagem') {
+                atualizarBarraDeProgresso(5);
+                navegarPara('step1');
+            }
+        }
+
+        function atualizarBarraDeProgresso(percentagem) {
+            const bar = document.getElementById('globalProgressBar');
+            if(bar) bar.style.width = percentagem + '%';
+        }
+
+        // ====================================================================
+        // FLUXO 1: PARTICIPAÇÃO DE SINISTRO
+        // ====================================================================
+        function atualizarProgressoSinistro() {
+            let camposObrigatórios = ['sin_apolice', 'sin_nome', 'sin_matricula', 'sin_telefone'];
+            let preenchidos = 0;
+            camposObrigatórios.forEach(id => {
+                if(document.getElementById(id).value.trim() !== '') preenchidos++;
+            });
+            let progresso = 10 + (preenchidos * 10); // vai de 10% a 50%
+            atualizarBarraDeProgresso(progresso);
+        }
+
+        function avancarParaMediaSinistro() {
+            const apolice = document.getElementById('sin_apolice').value.trim();
+            const nome = document.getElementById('sin_nome').value.trim();
+            const matricula = document.getElementById('sin_matricula').value.trim();
+            const telefone = document.getElementById('sin_telefone').value.trim();
+
+            if(!apolice || !nome || !matricula || !telefone) {
+                alert('Por favor, preencha todos os dados obrigatórios em destaque.');
+                return;
+            }
+            atualizarBarraDeProgresso(60);
+            renderMediaSinistroList();
+            navegarPara('sinistroMediaStep');
+        }
+
+        function renderMediaSinistroList() {
+            const container = document.getElementById('sinistroMediaList');
+            container.innerHTML = '';
+            
+            // Contador de mídias adicionadas
+            let totalFotos = mediaSinistroArr.filter(m => m.type === 'img').length;
+            let totalVideos = mediaSinistroArr.filter(m => m.type === 'vid').length;
+            
+            document.getElementById('mediaCounter').innerText = `${mediaSinistroArr.length} / 5`;
+
+            // Renderizar itens já capturados
+            mediaSinistroArr.forEach((media, index) => {
+                container.innerHTML += `
+                    <div class="bg-slate-900 border border-sta-purple/30 p-3 rounded-xl flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            ${media.type === 'img' ? `<img src="${media.src}" class="w-12 h-12 rounded-lg object-cover">` : `<div class="w-12 h-12 bg-red-950 flex items-center justify-center text-red-400 rounded-lg"><i class="fa fa-video-camera"></i></div>`}
+                            <div>
+                                <h4 class="text-xs font-bold text-white">Evidência #${index + 1} (${media.type.toUpperCase()})</h4>
+                                <p class="text-[10px] text-green-400">Nitidez: ${media.nitidez}% | IA: ${media.aiDamage}</p>
+                            </div>
+                        </div>
+                        <button onclick="removerMediaSinistro(${index})" class="text-xs bg-red-500/20 text-red-400 border-0 px-2.5 py-1.5 rounded-lg cursor-pointer hover:bg-red-500 hover:text-white transition-all">Remover</button>
+                    </div>
+                `;
+            });
+
+            // Adicionar botões de captura se não atingiu o limite
+            if(mediaSinistroArr.length < 5) {
+                let botoesHtml = `<div class="grid grid-cols-2 gap-3 pt-2">`;
+                if(totalFotos < 3) {
+                    botoesHtml += `<button onclick="capturarMediaSinistro('img')" class="bg-slate-950 border border-dashed border-sta-gold/40 text-sta-gold p-3 rounded-xl text-xs font-bold flex flex-col items-center gap-1"><i class="fa fa-camera text-base"></i>+ Foto Evidência</button>`;
+                }
+                if(totalVideos < 2) {
+                    botoesHtml += `<button onclick="capturarMediaSinistro('vid')" class="bg-slate-950 border border-dashed border-sta-purple/40 text-sta-purple p-3 rounded-xl text-xs font-bold flex flex-col items-center gap-1"><i class="fa fa-video-camera text-base"></i>+ Vídeo Evidência</button>`;
+                }
+                botoesHtml += `</div>`;
+                container.innerHTML += botoesHtml;
+            }
+
+            // Exibir botão de envio final caso possua pelo menos uma evidência
+            if(mediaSinistroArr.length > 0) {
+                document.getElementById('areaEnviarSinistro').classList.remove('hidden');
+                atualizarBarraDeProgresso(80);
+            } else {
+                document.getElementById('areaEnviarSinistro').classList.add('hidden');
+            }
+        }
+
+        function capturarMediaSinistro(tipo) {
+            current = {
+                id: 'sinistro_' + Date.now(),
+                label: tipo === 'img' ? 'Foto de Evidência Sinistro' : 'Vídeo Demonstrativo do Acidente',
+                type: tipo,
+                isSinistro: true
+            };
+            openCam(tipo);
+        }
+
+        function removerMediaSinistro(index) {
+            mediaSinistroArr.splice(index, 1);
+            renderMediaSinistroList();
+        }
+
+        function finalizarEnvioSinistro() {
+            atualizarBarraDeProgresso(100);
+            alert('Participação de Sinistro enviada com sucesso para análise pericial MySTA!');
+            location.reload();
+        }
+
+        // ====================================================================
+        // FLUXO 2: PRÉ-VISTORIA DIGITAL AUTODIRIGIDA (10 PASSOS)
+        // ====================================================================
+        function checkStep1() {
+            const tomador = document.getElementById('tomador').value.trim();
+            const telefone = document.getElementById('telefone').value.trim();
+            const matricula = document.getElementById('matricula').value.trim();
+
+            if(!tomador || !telefone || !matricula) {
+                alert('Preencha os dados do veículo e do tomador para prosseguir.');
+                return;
+            }
+            atualizarBarraDeProgresso(30);
+            navegarPara('step2');
+        }
+
+        function renderChecklist() {
+            const container = document.getElementById('checklist');
+            if(!container) return;
+            container.innerHTML = '';
+            
+            let concluidos = 0;
+
+            checklistItens.forEach(item => {
+                if(item.done) concluidos++;
+                
+                container.innerHTML += `
+                    <div class="bg-slate-900 border ${item.done ? 'border-emerald-500/40 bg-emerald-500/5' : 'border-sta-purple/20'} p-4 rounded-xl flex justify-between items-center transition-all">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs ${item.done ? 'bg-emerald-500/20 text-emerald-400' : 'bg-sta-purple/10 text-slate-400'}">
+                                <i class="fa ${item.done ? 'fa-check' : (item.type === 'vid' ? 'fa-video-camera' : 'fa-camera')}"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-white">${item.label}</h4>
+                                <p class="text-[10px] ${item.done ? 'text-slate-400' : 'text-sta-gold animate-pulse'}">
+                                    ${item.done ? `Análise: ${item.aiDamage} (${item.nitidez}% Nítido)` : 'Aguardando captura...'}
+                                </p>
+                            </div>
+                        </div>
+                        <button onclick="iniciarCapturaItem('${item.id}')" class="text-xs font-bold px-3 py-2 rounded-xl transition-all border-0 cursor-pointer ${item.done ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-sta-purple hover:bg-sta-purpleDark text-white'}">
+                            ${item.done ? 'Refazer' : 'Capturar'}
+                        </button>
+                    </div>
+                `;
+            });
+
+            document.getElementById('counter').innerText = `${concluidos} / 10`;
+            let novaPercentagem = 30 + Math.floor((concluidos / 10) * 50); // Vai de 30% a 80%
+            atualizarBarraDeProgresso(novaPercentagem);
+
+            if(concluidos === 10) {
+                document.getElementById('submitArea').classList.remove('hidden');
+            } else {
+                document.getElementById('submitArea').classList.add('hidden');
+            }
+        }
+
+        function iniciarCapturaItem(id) {
+            const item = checklistItens.find(i => i.id === id);
+            if(item) {
+                current = item;
+                openCam(item.type);
+            }
+        }
+
+        function renderReview() {
+            const grid = document.getElementById('reviewGrid');
+            grid.innerHTML = '';
+            
+            checklistItens.forEach(item => {
+                grid.innerHTML += `
+                    <div class="bg-slate-950 border border-slate-800 rounded-xl overflow-hidden flex flex-col relative">
+                        <div class="absolute top-1.5 left-1.5 bg-black/70 text-[9px] px-2 py-0.5 rounded font-bold text-white">${item.label.split('.')[0]}</div>
+                        ${item.type === 'img' ? `<img src="${item.src}" class="w-full h-24 object-cover">` : `<video src="${item.src}" class="w-full h-24 object-cover" muted autoplay loop></video>`}
+                        <div class="p-2 flex flex-col gap-0.5">
+                            <span class="text-[9px] font-bold text-white truncate">${item.label}</span>
+                            <span class="text-[9px] ${item.aiDamage === 'Sem Danos' ? 'text-green-400' : 'text-red-400'} font-bold">${item.aiDamage}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            atualizarBarraDeProgresso(90);
+            navegarPara('step3');
+        }
+
+        function finalizarEnvioPreVistoria() {
+            atualizarBarraDeProgresso(100);
+            alert('Relatório de Pré-Vistoria Digital MySTA submetido com sucesso à seguradora!');
+            location.reload();
+        }
+
+        // ====================================================================
+        // GESTOR DE CÂMARA (FOTO & VÍDEO HARDWARE)
+        // ====================================================================
+        async function openCam(tipo) {
+            document.getElementById('camLabel').innerText = current.label;
+            document.getElementById('cameraOverlay').style.display = 'flex';
+            
+            const noteVideo = document.getElementById('motorVideoNote');
+            if(current.id === 'item10' && noteVideo) {
+                noteVideo.classList.remove('hidden');
+            } else if(noteVideo) {
+                noteVideo.classList.add('hidden');
+            }
+
+            // Reset UI do Botão de Captura
+            const actionBtn = document.getElementById('actionBtn');
+            const btnCore = document.getElementById('btnCore');
+            const instruction = document.getElementById('instructionText');
+            
+            if(tipo === 'vid') {
+                actionBtn.className = "w-20 h-20 bg-white rounded-full border-4 border-red-500 flex items-center justify-center transition-all active:scale-90 border-0 cursor-pointer";
+                btnCore.className = "w-14 h-14 bg-red-600 rounded-full transition-all";
+                instruction.innerText = "Toque para Gravar Vídeo";
+            } else {
+                actionBtn.className = "w-20 h-20 bg-white rounded-full border-4 border-emerald-500 flex items-center justify-center transition-all active:scale-90 border-0 cursor-pointer";
+                btnCore.className = "w-14 h-14 bg-slate-100 rounded-full transition-all";
+                instruction.innerText = "Toque para Capturar Foto";
+            }
+
+            try {
+                // Solicita acesso à câmara traseira preferencialmente
+                streamCâmara = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
+                    audio: tipo === 'vid' // Ativa áudio apenas se for vídeo
+                });
+                const videoDom = document.getElementById('webcam');
+                videoDom.srcObject = streamCâmara;
+            } catch (err) {
+                alert("Erro ao aceder à câmara: " + err.message);
+                closeCam();
+            }
+        }
+
+        function closeCam() {
+            document.getElementById('cameraOverlay').style.display = 'none';
+            document.getElementById('timer').classList.add('hidden');
+            if(cronometroRegisto) clearInterval(cronometroRegisto);
+            
+            if (streamCâmara) {
+                streamCâmara.getTracks().forEach(track => track.stop());
+                streamCâmara = null;
+            }
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+            }
+        }
+
+        function handleAction() {
+            if (!streamCâmara) return;
+
+            if (current.type === 'vid') {
+                if (mediaRecorder && mediaRecorder.state === 'recording') {
+                    // Parar gravação
+                    mediaRecorder.stop();
+                } else {
+                    // Iniciar gravação de vídeo
+                    iniciarGravacaoVideo();
+                }
+            } else {
+                // Capturar foto estática
+                snap();
+            }
+        }
+
+        function iniciarGravacaoVideo() {
+            fragmentosGravacao = [];
+            mediaRecorder = new MediaRecorder(streamCâmara, { mimeType: 'video/webm;codecs=vp8' });
+            
+            mediaRecorder.ondataavailable = (e) => {
+                if (e.data && e.data.size > 0) fragmentosGravacao.push(e.data);
+            };
+
+            mediaRecorder.onstop = () => {
+                const videoBlob = new Blob(fragmentosGravacao, { type: 'video/webm' });
+                const videoUrl = URL.createObjectURL(videoBlob);
+                
+                // Mock de inteligência analítica para o vídeo
+                tempCaptureData = {
+                    id: current.id,
+                    label: current.label,
+                    type: 'vid',
+                    src: videoUrl,
+                    nitidez: Math.floor(Math.random() * 20 + 75), // Vídeos recebem validação simulada baseada em frames
+                    aiDamage: current.id === 'item10' ? "Motor Estável (Sem Anomalias)" : "Sem Danos Visíveis"
+                };
+                
+                closeCam();
+                dispararScannerAnalise();
+            };
+
+            mediaRecorder.start();
+            
+            // Ativa contador visual na tela
+            segundosGravados = 0;
+            const timerDom = document.getElementById('timer');
+            timerDom.innerText = "00:00";
+            timerDom.classList.remove('hidden');
+            document.getElementById('btnCore').className = "w-8 h-8 bg-red-600 rounded-md recording";
+            document.getElementById('instructionText').innerText = "Toque para Parar Gravação";
+
+            cronometroRegisto = setInterval(() => {
+                segundosGravados++;
+                let mins = String(Math.floor(segundosGravados / 60)).padStart(2, '0');
+                let secs = String(segundosGravados % 60).padStart(2, '0');
+                timerDom.innerText = `${mins}:${secs}`;
+                
+                // Limite prudencial automático de 8 segundos por vídeo estrutural
+                if(segundosGravados >= 8) {
+                    mediaRecorder.stop();
+                }
+            }, 1000);
+        }
+
+        function closePreview() {
+            document.getElementById('previewModal').style.display = 'none';
+        }
+
+        function aceitarCaptura() {
+            if(current.isSinistro) {
+                // Guarda no fluxo de sinistros
+                mediaSinistroArr.push(tempCaptureData);
+                renderMediaSinistroList();
+            } else {
+                // Atualiza o item correspondente da Pré-Vistoria
+                const item = checklistItens.find(i => i.id === current.id);
+                if(item) {
+                    item.done = true;
+                    item.src = tempCaptureData.src;
+                    item.nitidez = tempCaptureData.nitidez;
+                    item.aiDamage = tempCaptureData.aiDamage;
+                }
+                renderChecklist();
+            }
+            closePreview();
+        }
+
+        function recusarCaptura() {
+            closePreview();
+            openCam(current.type);
+        }
+
+        // ====================================================================
         // MOTOR DE INTELIGÊNCIA ARTIFICIAL REAL (PROCESSAMENTO DE IMAGEM & TENSORES)
         // ====================================================================
-
         async function snap() {
             const v = document.getElementById('webcam');
             const c = document.createElement('canvas');
-            c.width = v.videoWidth; 
-            c.height = v.videoHeight;
+            c.width = v.videoWidth > 0 ? v.videoWidth : 640; 
+            c.height = v.videoHeight > 0 ? v.videoHeight : 480;
             const ctx = c.getContext('2d');
             ctx.drawImage(v, 0, 0);
             
             const imgBase64 = c.toDataURL('image/jpeg', 0.88);
             closeCam();
             
-            // 1. Criar um elemento de imagem temporário em memória para o TensorFlow processar
             const imgElement = new Image();
             imgElement.src = imgBase64;
             
             imgElement.onload = async () => {
-                // Calcular Nitidez Real usando variação de contraste dos pixéis vizinhos
                 const nitidezReal = calcularNitidezReal(ctx, c.width, c.height);
-                
-                // Analisar a imagem usando o modelo TensorFlow.js carregado
                 let classifiacaoIA = "Sem Danos";
-                let coordenadasDano = { x: 50, y: 50 }; // Centro padrão
+                let coordenadasDano = { x: 50, y: 50 }; 
                 
                 if (model) {
                     try {
-                        // Passa a imagem pelo MobileNet para extrair predições e comportamento visual
                         const predictions = await model.classify(imgElement);
-                        
-                        // Mapeia palavras-chave do MobileNet para detetar se há anomalias na estrutura do veículo
                         const palavrasChaveDano = ['scratch', 'dent', 'wreck', 'crash', 'smash', 'broken', 'damage', 'iron', 'metal'];
                         const detetouDano = predictions.some(p => 
                             palavrasChaveDano.some(palavra => p.className.toLowerCase().includes(palavra)) && p.probability > 0.15
                         );
                         
                         if (detetouDano) {
-                            // Define o tipo de dano baseado nas categorias do ecossistema MySTA
-                            classifiacaoIA = predictions[0].className.includes('scratch') ? "Risco" : "Amolgadela";
-                            // Executa o scanner matricial para encontrar as coordenadas exatas da colisão
+                            classifiacaoIA = predictions[0].className.includes('scratch') ? "Risco Detectado" : "Amolgadela Estrutural";
                             coordenadasDano = localizarZonaDeImpacto(ctx, c.width, c.height);
                         } else {
-                            // Validação secundária por contraste: variações abruptas de textura/cor indicam riscos ou mossas
                             const analiseMatricial = localizarZonaDeImpacto(ctx, c.width, c.height);
-                            if (analiseMatricial.score > 35) { // Limiar de anomalia na lataria
-                                classifiacaoIA = analiseMatricial.score > 60 ? "Amolgadela" : "Risco";
+                            if (analiseMatricial.score > 35) { 
+                                classifiacaoIA = analiseMatricial.score > 60 ? "Amolgadela (Chassi)" : "Risco Superficial";
                                 coordenadasDano = { x: analiseMatricial.x, y: analiseMatricial.y };
                             }
                         }
@@ -307,26 +721,23 @@
             };
         }
 
-        // Algoritmo de Laplaciano simplificado: Mede a variação de brilho entre pixéis vizinhos para calcular o foco real
         function calcularNitidezReal(ctx, width, height) {
             try {
                 const imageData = ctx.getImageData(0, 0, width, height);
                 const data = imageData.data;
                 let score = 0;
-                // Amostragem saltada para manter performance fluida em smartphones
                 for (let i = 0; i < data.length - 4; i += 16) {
                     const brilhoAtual = (data[i] + data[i+1] + data[i+2]) / 3;
                     const brilhoProximo = (data[i+4] + data[i+5] + data[i+6]) / 3;
                     score += Math.abs(brilhoAtual - brilhoProximo);
                 }
                 const resultadoNormalizado = Math.min(100, Math.floor((score / (data.length / 16)) * 4));
-                return resultadoNormalizado < 40 ? resultadoNormalizado + 45 : resultadoNormalizado; // Garante margem operacional estável
+                return resultadoNormalizado < 40 ? resultadoNormalizado + 45 : resultadoNormalizado;
             } catch(e) {
                 return Math.floor(Math.random() * 20 + 75);
             }
         }
 
-        // Scanner de Gradiente de Cor e Borda: Varre a imagem em blocos e deteta fraturas estruturais/descontinuidades de reflexo
         function localizarZonaDeImpacto(ctx, width, height) {
             try {
                 const blocksX = 6;
@@ -353,13 +764,12 @@
                         const varianciaTotal = (rVar + gVar + bVar) / d.length;
                         if (varianciaTotal > maiorVariancia) {
                             maiorVariancia = varianciaTotal;
-                            // Converte a posição do bloco para percentagem relativa da tela (CSS % para o círculo)
                             melhorX = Math.floor(((bx * blockW + (blockW / 2)) / width) * 100);
                             melhorY = Math.floor(((by * blockH + (blockH / 2)) / height) * 100);
                         }
                     }
                 }
-                return { x: melhorX, y: melhorY, score: maiorVariancia };
+                return { x:melhorX, y:melhorY, score: maiorVariancia };
             } catch(e) {
                 return { x: 50, y: 50, score: 0 };
             }
@@ -369,7 +779,7 @@
             const modal = document.getElementById('previewModal');
             const content = document.getElementById('previewContent');
             modal.style.display = 'flex';
-            document.getElementById('previewControls').classList.add('hidden');
+            document.getElementById('previewControls').className = "mt-4 flex gap-3 hidden";
 
             content.innerHTML = `
                 <div class="relative w-full h-full flex flex-col items-center justify-center p-4">
@@ -381,12 +791,12 @@
                     </div>
                 </div>
             `;
-            setTimeout(exibirPainelVeredicto, 2200); // Dá tempo para renderizar a animação do scanner real
+            setTimeout(exibirPainelVeredicto, 2200); 
         }
 
         function exibirPainelVeredicto() {
             const content = document.getElementById('previewContent');
-            document.getElementById('previewControls').classList.remove('hidden');
+            document.getElementById('previewControls').className = "mt-4 flex gap-3";
 
             let corNitidez = tempCaptureData.nitidez >= 70 ? "text-green-400 bg-green-500/10 border-green-500/30" : (tempCaptureData.nitidez >= 50 ? "text-amber-400 bg-amber-500/10 border-amber-500/30" : "text-red-400 bg-red-500/10 border-red-500/30");
             let rotuloNitidez = tempCaptureData.nitidez >= 70 ? "✓ Alta Qualidade" : (tempCaptureData.nitidez >= 50 ? "⚠ Qualidade Média" : "✕ Pouco Nítido (Repetir)");
@@ -395,12 +805,13 @@
             let corCardDano = "border-green-500/30 bg-green-500/5";
             let tituloDano = `<span class="text-green-400 font-bold"><i class="fa fa-check-circle"></i> Aprovado: Estrutura Íntegra (Sem Danos)</span>`;
 
-            if(tempCaptureData.type === 'img' && tempCaptureData.aiDamage !== "Sem Danos") {
+            if(tempCaptureData.type === 'img' && !tempCaptureData.aiDamage.includes("Sem Danos")) {
                 corCardDano = "border-red-500/40 bg-red-500/5";
                 tituloDano = `<span class="text-red-400 font-bold"><i class="fa fa-exclamation-circle"></i> Alerta: Anomalia Detetada [${tempCaptureData.aiDamage}]</span>`;
-                // Desenha o círculo vermelho EXATAMENTE na zona de quebra de matriz calculada pelo scanner
-                htmlDanoEspecial = `<div class="absolute border-4 border-red-500 rounded-full bg-red-500/20 shadow-[0_0_20px_#ef4444] animate-ping" style="width: 60px; height: 60px; left: ${tempCaptureData.circleX}%; top: ${tempCaptureData.circleY}%; transform: translate(-50%, -50%); z-index: 50;"></div>
-                                    <div class="absolute border-2 border-white rounded-full bg-red-600/40 shadow-[0_0_10px_#ef4444]" style="width: 35px; height: 35px; left: ${tempCaptureData.circleX}%; top: ${tempCaptureData.circleY}%; transform: translate(-50%, -50%); z-index: 51;"></div>`;
+                htmlDanoEspecial = `
+                    <div class="absolute border-4 border-red-500 rounded-full bg-red-500/20 shadow-[0_0_20px_#ef4444] animate-ping" style="width: 60px; height: 60px; left: ${tempCaptureData.circleX}%; top: ${tempCaptureData.circleY}%; transform: translate(-50%, -50%); z-index: 50;"></div>
+                    <div class="absolute border-2 border-white rounded-full bg-red-600/40 shadow-[0_0_10px_#ef4444]" style="width: 35px; height: 35px; left: ${tempCaptureData.circleX}%; top: ${tempCaptureData.circleY}%; transform: translate(-50%, -50%); z-index: 51;"></div>
+                `;
             }
 
             content.innerHTML = `
