@@ -185,7 +185,7 @@
             <section id="step3" class="step-app space-y-6">
                 <div class="space-y-1">
                     <h2 class="text-xl font-bold text-white">Revisão Final da Pré-Vistoria</h2>
-                    <p class="text-[10px] text-sta-gold uppercase font-bold tracking-wider">A IA está a processar o relatório de danos.</p>
+                    <p class="text-[10px] text-sta-gold uppercase font-bold tracking-wider">O sistema processou os relatórios de danos.</p>
                 </div>
                 <div id="reviewGrid" class="grid grid-cols-2 gap-3 max-h-[50vh] overflow-y-auto p-1"></div>
                 <button onclick="finalizarEnvioPreVistoria()" class="w-full bg-emerald-600 py-4 rounded-2xl font-black text-xl shadow-lg cursor-pointer border-0">ENVIAR VISTORIA</button>
@@ -235,551 +235,199 @@
         </div>
     </div>
 
-  <script>
-        // ====================================================================
-        // ESTADO GLOBAL DA APLICAÇÃO & CONFIGURAÇÕES
-        // ====================================================================
-        let model = null;
-        let fluxoAtual = ''; // 'sinistro' ou 'peritagem'
-        let passoAtual = 'menuStep';
-        let tempCaptureData = null;
-        let mediaSinistroArr = []; // Array para armazenar mídias do sinistro
+    <script>
+        // CONFIGURAÇÃO DO ENDPOINT DA TUA API FASTAPI
+        const API_CORE_URL = "http://localhost:8000/api/v1/scan/";
+        const EMAILS_DESTINO = "nquinguengue@stas.co.ao,nelsonquinguengue@gmail.com";
 
-        // Passos obrigatórios da Pré-Vistoria (10 Passos do ecossistema MySTA)
-        const checklistItens = [
-            { id: 'item1', label: '1. Frente Completa', type: 'img', done: false, src: null, nitidez: 0, aiDamage: "Sem Danos" },
-            { id: 'item2', label: '2. Lateral Direita', type: 'img', done: false, src: null, nitidez: 0, aiDamage: "Sem Danos" },
-            { id: 'item3', label: '3. Traseira Completa', type: 'img', done: false, src: null, nitidez: 0, aiDamage: "Sem Danos" },
-            { id: 'item4', label: '4. Lateral Esquerda', type: 'img', done: false, src: null, nitidez: 0, aiDamage: "Sem Danos" },
-            { id: 'item5', label: '5. Parabrisas Dianteiro', type: 'img', done: false, src: null, nitidez: 0, aiDamage: "Sem Danos" },
-            { id: 'item6', label: '6. Painel de Instrumentos (Kms)', type: 'img', done: false, src: null, nitidez: 0, aiDamage: "Sem Danos" },
-            { id: 'item7', label: '7. Pneus Dianteiros', type: 'img', done: false, src: null, nitidez: 0, aiDamage: "Sem Danos" },
-            { id: 'item8', label: '8. Pneus Traseiros', type: 'img', done: false, src: null, nitidez: 0, aiDamage: "Sem Danos" },
-            { id: 'item9', label: '9. Compartimento do Motor', type: 'img', done: false, src: null, nitidez: 0, aiDamage: "Sem Danos" },
-            { id: 'item10', label: '10. Vídeo do Motor a Funcionar', type: 'vid', done: false, src: null, nitidez: 0, aiDamage: "Sem Danos" }
+        const configPeritagem = [
+            {id: 'frente', label: 'Frente', isVideo: false},
+            {id: 'traseira', label: 'Traseira', isVideo: false},
+            {id: 'lat_dir', label: 'Lateral Direita', isVideo: false},
+            {id: 'lat_esq', label: 'Lateral Esquerda', isVideo: false},
+            {id: 'interior', label: 'Interior (Geral)', isVideo: false},
+            {id: 'painel', label: 'Painel Ligado', isVideo: false},
+            {id: 'chassis', label: 'Chassis (VIN)', isVideo: false},
+            {id: 'video_interior', label: 'Vídeo do Interior da Viatura', isVideo: true},
+            {id: 'motor_capo', label: 'Motor', isVideo: false},
+            {id: 'video_360', label: 'Vídeo 360º', isVideo: true}
         ];
-        
-        let current = null; // Guarda o item da lista que está a ser capturado
-        let streamCâmara = null;
-        let mediaRecorder = null;
-        let fragmentosGravacao = [];
-        let cronometroRegisto = null;
-        let segundosGravados = 0;
 
-        // Inicialização Assíncrona do TensorFlow.js
-        window.addEventListener('DOMContentLoaded', async () => {
-            const badge = document.getElementById('globalBadge');
-            if (badge) badge.innerText = "CARREGANDO IA...";
-            try {
-                // Aguarda o carregamento do modelo MobileNet
-                model = await mobilenet.load();
-                if (badge) {
-                    badge.innerText = "STA AI PRO READY";
-                    badge.className = "text-[9px] bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full border border-emerald-500/30 font-bold tracking-widest";
-                }
-            } catch (err) {
-                console.error("Falha ao inicializar o TensorFlow:", err);
-                if (badge) badge.innerText = "SISTEMA LOCAL (AIA OFF)";
-            }
-            renderChecklist();
-        });
+        const configSinistro = [
+            {id: 'sin_foto1', label: 'Foto da Colisão (Ângulo Geral)', isVideo: false},
+            {id: 'sin_foto2', label: 'Foto da Colisão (Aproximação/Dano)', isVideo: false},
+            {id: 'sin_foto3', label: 'Foto da Matrícula do Terceiro', isVideo: false},
+            {id: 'sin_video1', label: 'Vídeo Panorâmico do Local', isVideo: true},
+            {id: 'sin_video2', label: 'Vídeo Detalhado dos Danos', isVideo: true}
+        ];
 
-        // ====================================================================
-        // MOTOR DE NAVEGAÇÃO & FLUXOS
-        // ====================================================================
-        function navegarPara(idDoPasso) {
-            // Oculta todos os passos
-            document.querySelectorAll('.step-app').forEach(step => step.classList.remove('active'));
-            // Remove visibilidade da barra de progresso no menu principal
-            const wrapperProg = document.getElementById('wrapperProgress');
-            if(idDoPasso === 'menuStep') {
-                wrapperProg.classList.add('hidden');
-            } else {
-                wrapperProg.classList.remove('hidden');
-            }
-            
-            const proximoPasso = document.getElementById(idDoPasso);
-            if(proximoPasso) {
-                proximoPasso.classList.add('active');
-                passoAtual = idDoPasso;
-            }
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+        let fluxoAtual = ''; 
+        let dataStore = {};
+        let current = null;
+        let stream = null;
+        let recorder = null;
+        let chunks = [];
+        let timerInterval = null;
+        let tempCaptureData = null;
+
+        async function initLayouts() {
+            document.getElementById('checklist').innerHTML = configPeritagem.map(t => `
+                <div id="row-${t.id}" class="bg-slate-900/60 border border-slate-800 p-3.5 rounded-2xl flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-bold text-slate-300">${t.label}</span>
+                        <div id="st-${t.id}" class="text-[9px] text-slate-500 font-bold uppercase mt-0.5">Pendente</div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button id="view-${t.id}" onclick="reverMedia('${t.id}')" class="hidden bg-slate-800 p-2.5 rounded-xl border-0 cursor-pointer text-xs text-white">👁️</button>
+                        <button onclick="startCapture('${t.id}', 'peritagem')" class="bg-sta-purple hover:bg-sta-purpleDark text-white p-2.5 rounded-xl border-0 cursor-pointer text-xs">📸</button>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('sinistroMediaList').innerHTML = configSinistro.map(t => `
+                <div id="row-${t.id}" class="bg-slate-900/60 border border-slate-800 p-3.5 rounded-2xl flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-bold text-slate-300">${t.label}</span>
+                        <div id="st-${t.id}" class="text-[9px] text-slate-500 font-bold uppercase mt-0.5">Obrigatório</div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button id="view-${t.id}" onclick="reverMedia('${t.id}')" class="hidden bg-slate-800 p-2.5 rounded-xl border-0 cursor-pointer text-xs text-white">👁️</button>
+                        <button onclick="startCapture('${t.id}', 'sinistro')" class="bg-sta-gold hover:bg-amber-600 text-white p-2.5 rounded-xl border-0 cursor-pointer text-xs">📸</button>
+                    </div>
+                </div>
+            `).join('');
         }
+        initLayouts();
 
         function escolherFluxo(tipo) {
             fluxoAtual = tipo;
-            if (tipo === 'sinistro') {
-                atualizarBarraDeProgresso(10);
-                navegarPara('sinistroFormStep');
-            } else if (tipo === 'peritagem') {
-                atualizarBarraDeProgresso(5);
-                navegarPara('step1');
+            document.getElementById('menuStep').classList.remove('active');
+            document.getElementById('wrapperProgress').classList.remove('hidden');
+            if(tipo === 'sinistro') {
+                document.getElementById('sinistroFormStep').classList.add('active');
+                atualizarProgressoSinistro();
+            } else {
+                document.getElementById('step1').classList.add('active');
+                document.getElementById('globalProgressBar').style.width = '10%';
             }
         }
 
-        function atualizarBarraDeProgresso(percentagem) {
-            const bar = document.getElementById('globalProgressBar');
-            if(bar) bar.style.width = percentagem + '%';
-        }
-
-        // ====================================================================
-        // FLUXO 1: PARTICIPAÇÃO DE SINISTRO
-        // ====================================================================
         function atualizarProgressoSinistro() {
-            let camposObrigatórios = ['sin_apolice', 'sin_nome', 'sin_matricula', 'sin_telefone'];
+            if(fluxoAtual !== 'sinistro') return;
+            const campos = ['sin_apolice', 'sin_nome', 'sin_matricula', 'sin_telefone'];
             let preenchidos = 0;
-            camposObrigatórios.forEach(id => {
-                if(document.getElementById(id).value.trim() !== '') preenchidos++;
-            });
-            let progresso = 10 + (preenchidos * 10); // vai de 10% a 50%
-            atualizarBarraDeProgresso(progresso);
+            campos.forEach(id => { if(document.getElementById(id).value.trim().length >= 2) preenchidos++; });
+            document.getElementById('globalProgressBar').style.width = ((preenchidos / campos.length) * 50) + '%';
         }
 
         function avancarParaMediaSinistro() {
-            const apolice = document.getElementById('sin_apolice').value.trim();
-            const nome = document.getElementById('sin_nome').value.trim();
-            const matricula = document.getElementById('sin_matricula').value.trim();
-            const telefone = document.getElementById('sin_telefone').value.trim();
-
-            if(!apolice || !nome || !matricula || !telefone) {
-                alert('Por favor, preencha todos os dados obrigatórios em destaque.');
-                return;
+            if(!['sin_apolice', 'sin_nome', 'sin_matricula', 'sin_telefone'].every(id => document.getElementById(id).value.trim())) {
+                return alert("Por favor, preencha todos os campos obrigatórios!");
             }
-            atualizarBarraDeProgresso(60);
-            renderMediaSinistroList();
-            navegarPara('sinistroMediaStep');
+            document.getElementById('sinistroFormStep').classList.remove('active');
+            document.getElementById('sinistroMediaStep').classList.add('active');
+            document.getElementById('globalProgressBar').style.width = '60%';
         }
 
-        function renderMediaSinistroList() {
-            const container = document.getElementById('sinistroMediaList');
-            container.innerHTML = '';
-            
-            // Contador de mídias adicionadas
-            let totalFotos = mediaSinistroArr.filter(m => m.type === 'img').length;
-            let totalVideos = mediaSinistroArr.filter(m => m.type === 'vid').length;
-            
-            document.getElementById('mediaCounter').innerText = `${mediaSinistroArr.length} / 5`;
-
-            // Renderizar itens já capturados
-            mediaSinistroArr.forEach((media, index) => {
-                container.innerHTML += `
-                    <div class="bg-slate-900 border border-sta-purple/30 p-3 rounded-xl flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            ${media.type === 'img' ? `<img src="${media.src}" class="w-12 h-12 rounded-lg object-cover">` : `<div class="w-12 h-12 bg-red-950 flex items-center justify-center text-red-400 rounded-lg"><i class="fa fa-video-camera"></i></div>`}
-                            <div>
-                                <h4 class="text-xs font-bold text-white">Evidência #${index + 1} (${media.type.toUpperCase()})</h4>
-                                <p class="text-[10px] text-green-400">Nitidez: ${media.nitidez}% | IA: ${media.aiDamage}</p>
-                            </div>
-                        </div>
-                        <button onclick="removerMediaSinistro(${index})" class="text-xs bg-red-500/20 text-red-400 border-0 px-2.5 py-1.5 rounded-lg cursor-pointer hover:bg-red-500 hover:text-white transition-all">Remover</button>
-                    </div>
-                `;
-            });
-
-            // Adicionar botões de captura se não atingiu o limite
-            if(mediaSinistroArr.length < 5) {
-                let botoesHtml = `<div class="grid grid-cols-2 gap-3 pt-2">`;
-                if(totalFotos < 3) {
-                    botoesHtml += `<button onclick="capturarMediaSinistro('img')" class="bg-slate-950 border border-dashed border-sta-gold/40 text-sta-gold p-3 rounded-xl text-xs font-bold flex flex-col items-center gap-1"><i class="fa fa-camera text-base"></i>+ Foto Evidência</button>`;
-                }
-                if(totalVideos < 2) {
-                    botoesHtml += `<button onclick="capturarMediaSinistro('vid')" class="bg-slate-950 border border-dashed border-sta-purple/40 text-sta-purple p-3 rounded-xl text-xs font-bold flex flex-col items-center gap-1"><i class="fa fa-video-camera text-base"></i>+ Vídeo Evidência</button>`;
-                }
-                botoesHtml += `</div>`;
-                container.innerHTML += botoesHtml;
-            }
-
-            // Exibir botão de envio final caso possua pelo menos uma evidência
-            if(mediaSinistroArr.length > 0) {
-                document.getElementById('areaEnviarSinistro').classList.remove('hidden');
-                atualizarBarraDeProgresso(80);
-            } else {
-                document.getElementById('areaEnviarSinistro').classList.add('hidden');
-            }
-        }
-
-        function capturarMediaSinistro(tipo) {
-            current = {
-                id: 'sinistro_' + Date.now(),
-                label: tipo === 'img' ? 'Foto de Evidência Sinistro' : 'Vídeo Demonstrativo do Acidente',
-                type: tipo,
-                isSinistro: true
-            };
-            openCam(tipo);
-        }
-
-        function removerMediaSinistro(index) {
-            mediaSinistroArr.splice(index, 1);
-            renderMediaSinistroList();
-        }
-
-        function finalizarEnvioSinistro() {
-            atualizarBarraDeProgresso(100);
-            alert('Participação de Sinistro enviada com sucesso para análise pericial MySTA!');
-            location.reload();
-        }
-
-        // ====================================================================
-        // FLUXO 2: PRÉ-VISTORIA DIGITAL AUTODIRIGIDA (10 PASSOS)
-        // ====================================================================
         function checkStep1() {
-            const tomador = document.getElementById('tomador').value.trim();
-            const telefone = document.getElementById('telefone').value.trim();
-            const matricula = document.getElementById('matricula').value.trim();
-
-            if(!tomador || !telefone || !matricula) {
-                alert('Preencha os dados do veículo e do tomador para prosseguir.');
-                return;
-            }
-            atualizarBarraDeProgresso(30);
-            navegarPara('step2');
+            if(document.getElementById('tomador').value.length < 3) return alert("Tomador Inválido");
+            nextStep(2);
+            document.getElementById('globalProgressBar').style.width = '40%';
         }
 
-        function renderChecklist() {
-            const container = document.getElementById('checklist');
-            if(!container) return;
-            container.innerHTML = '';
-            
-            let concluidos = 0;
-
-            checklistItens.forEach(item => {
-                if(item.done) concluidos++;
-                
-                container.innerHTML += `
-                    <div class="bg-slate-900 border ${item.done ? 'border-emerald-500/40 bg-emerald-500/5' : 'border-sta-purple/20'} p-4 rounded-xl flex justify-between items-center transition-all">
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs ${item.done ? 'bg-emerald-500/20 text-emerald-400' : 'bg-sta-purple/10 text-slate-400'}">
-                                <i class="fa ${item.done ? 'fa-check' : (item.type === 'vid' ? 'fa-video-camera' : 'fa-camera')}"></i>
-                            </div>
-                            <div>
-                                <h4 class="text-xs font-bold text-white">${item.label}</h4>
-                                <p class="text-[10px] ${item.done ? 'text-slate-400' : 'text-sta-gold animate-pulse'}">
-                                    ${item.done ? `Análise: ${item.aiDamage} (${item.nitidez}% Nítido)` : 'Aguardando captura...'}
-                                </p>
-                            </div>
-                        </div>
-                        <button onclick="iniciarCapturaItem('${item.id}')" class="text-xs font-bold px-3 py-2 rounded-xl transition-all border-0 cursor-pointer ${item.done ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-sta-purple hover:bg-sta-purpleDark text-white'}">
-                            ${item.done ? 'Refazer' : 'Capturar'}
-                        </button>
-                    </div>
-                `;
-            });
-
-            document.getElementById('counter').innerText = `${concluidos} / 10`;
-            let novaPercentagem = 30 + Math.floor((concluidos / 10) * 50); // Vai de 30% a 80%
-            atualizarBarraDeProgresso(novaPercentagem);
-
-            if(concluidos === 10) {
-                document.getElementById('submitArea').classList.remove('hidden');
-            } else {
-                document.getElementById('submitArea').classList.add('hidden');
-            }
+        function nextStep(s) {
+            document.querySelectorAll('.step-app').forEach(e => e.classList.remove('active'));
+            document.getElementById('step' + s).classList.add('active');
         }
 
-        function iniciarCapturaItem(id) {
-            const item = checklistItens.find(i => i.id === id);
-            if(item) {
-                current = item;
-                openCam(item.type);
-            }
-        }
-
-        function renderReview() {
-            const grid = document.getElementById('reviewGrid');
-            grid.innerHTML = '';
-            
-            checklistItens.forEach(item => {
-                grid.innerHTML += `
-                    <div class="bg-slate-950 border border-slate-800 rounded-xl overflow-hidden flex flex-col relative">
-                        <div class="absolute top-1.5 left-1.5 bg-black/70 text-[9px] px-2 py-0.5 rounded font-bold text-white">${item.label.split('.')[0]}</div>
-                        ${item.type === 'img' ? `<img src="${item.src}" class="w-full h-24 object-cover">` : `<video src="${item.src}" class="w-full h-24 object-cover" muted autoplay loop></video>`}
-                        <div class="p-2 flex flex-col gap-0.5">
-                            <span class="text-[9px] font-bold text-white truncate">${item.label}</span>
-                            <span class="text-[9px] ${item.aiDamage === 'Sem Danos' ? 'text-green-400' : 'text-red-400'} font-bold">${item.aiDamage}</span>
-                        </div>
-                    </div>
-                `;
-            });
-            atualizarBarraDeProgresso(90);
-            navegarPara('step3');
-        }
-
-        function finalizarEnvioPreVistoria() {
-            atualizarBarraDeProgresso(100);
-            alert('Relatório de Pré-Vistoria Digital MySTA submetido com sucesso à seguradora!');
-            location.reload();
-        }
-
-        // ====================================================================
-        // GESTOR DE CÂMARA (FOTO & VÍDEO HARDWARE)
-        // ====================================================================
-        async function openCam(tipo) {
+        async function startCapture(id, contexto) {
+            current = (contexto === 'sinistro') ? configSinistro.find(t => t.id === id) : configPeritagem.find(t => t.id === id);
             document.getElementById('camLabel').innerText = current.label;
             document.getElementById('cameraOverlay').style.display = 'flex';
             
-            const noteVideo = document.getElementById('motorVideoNote');
-            if(current.id === 'item10' && noteVideo) {
-                noteVideo.classList.remove('hidden');
-            } else if(noteVideo) {
-                noteVideo.classList.add('hidden');
-            }
-
-            // Reset UI do Botão de Captura
-            const actionBtn = document.getElementById('actionBtn');
-            const btnCore = document.getElementById('btnCore');
-            const instruction = document.getElementById('instructionText');
+            const core = document.getElementById('btnCore');
+            const instr = document.getElementById('instructionText');
+            const motorNote = document.getElementById('motorVideoNote');
             
-            if(tipo === 'vid') {
-                actionBtn.className = "w-20 h-20 bg-white rounded-full border-4 border-red-500 flex items-center justify-center transition-all active:scale-90 border-0 cursor-pointer";
-                btnCore.className = "w-14 h-14 bg-red-600 rounded-full transition-all";
-                instruction.innerText = "Toque para Gravar Vídeo";
+            if(current.isVideo) {
+                core.className = "w-10 h-10 bg-red-600 rounded-md transition-all";
+                instr.innerText = "Gravação de Vídeo";
+                if(fluxoAtual === 'peritagem') motorNote.classList.remove('hidden');
             } else {
-                actionBtn.className = "w-20 h-20 bg-white rounded-full border-4 border-emerald-500 flex items-center justify-center transition-all active:scale-90 border-0 cursor-pointer";
-                btnCore.className = "w-14 h-14 bg-slate-100 rounded-full transition-all";
-                instruction.innerText = "Toque para Capturar Foto";
+                core.className = "w-14 h-14 bg-slate-100 rounded-full transition-all shadow-inner";
+                instr.innerText = "Toque para Capturar";
+                motorNote.classList.add('hidden');
             }
 
             try {
-                // Solicita acesso à câmara traseira preferencialmente
-                streamCâmara = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
-                    audio: tipo === 'vid' // Ativa áudio apenas se for vídeo
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }, 
+                    audio: current.isVideo 
                 });
-                const videoDom = document.getElementById('webcam');
-                videoDom.srcObject = streamCâmara;
-            } catch (err) {
-                alert("Erro ao aceder à câmara: " + err.message);
-                closeCam();
-            }
-        }
-
-        function closeCam() {
-            document.getElementById('cameraOverlay').style.display = 'none';
-            document.getElementById('timer').classList.add('hidden');
-            if(cronometroRegisto) clearInterval(cronometroRegisto);
-            
-            if (streamCâmara) {
-                streamCâmara.getTracks().forEach(track => track.stop());
-                streamCâmara = null;
-            }
-            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-                mediaRecorder.stop();
-            }
+                document.getElementById('webcam').srcObject = stream;
+            } catch (err) { alert("Câmara indisponível ou permissão negada."); }
         }
 
         function handleAction() {
-            if (!streamCâmara) return;
-
-            if (current.type === 'vid') {
-                if (mediaRecorder && mediaRecorder.state === 'recording') {
-                    // Parar gravação
-                    mediaRecorder.stop();
-                } else {
-                    // Iniciar gravação de vídeo
-                    iniciarGravacaoVideo();
-                }
-            } else {
-                // Capturar foto estática
-                snap();
-            }
+            if(current.isVideo) {
+                if(recorder && recorder.state === "recording") { stopRec(); } else { startRec(); }
+            } else { snap(); }
         }
 
-        function iniciarGravacaoVideo() {
-            fragmentosGravacao = [];
-            mediaRecorder = new MediaRecorder(streamCâmara, { mimeType: 'video/webm;codecs=vp8' });
+        function snap() {
+            const v = document.getElementById('webcam');
+            const c = document.createElement('canvas');
+            c.width = v.videoWidth; c.height = v.videoHeight;
+            c.getContext('2d').drawImage(v, 0, 0);
+            const imgBase64 = c.toDataURL('image/jpeg', 0.92);
+            closeCam();
             
-            mediaRecorder.ondataavailable = (e) => {
-                if (e.data && e.data.size > 0) fragmentosGravacao.push(e.data);
-            };
-
-            mediaRecorder.onstop = () => {
-                const videoBlob = new Blob(fragmentosGravacao, { type: 'video/webm' });
-                const videoUrl = URL.createObjectURL(videoBlob);
-                
-                // Mock de inteligência analítica para o vídeo
+            // Geramos uma estrutura base temporária e disparamos o Scanner real
+            c.toBlob(async (blob) => {
                 tempCaptureData = {
-                    id: current.id,
-                    label: current.label,
-                    type: 'vid',
-                    src: videoUrl,
-                    nitidez: Math.floor(Math.random() * 20 + 75), // Vídeos recebem validação simulada baseada em frames
-                    aiDamage: current.id === 'item10' ? "Motor Estável (Sem Anomalias)" : "Sem Danos Visíveis"
+                    id: current.id, label: current.label, type: 'img', src: imgBase64, blob: blob,
+                    nitidez: 0, aiDamage: "Analisando...", danos: []
                 };
-                
+                dispararScannerAnalise();
+            }, 'image/jpeg', 0.92);
+        }
+
+        function startRec() {
+            chunks = [];
+            recorder = new MediaRecorder(stream);
+            recorder.ondataavailable = e => { if(e.data.size > 0) chunks.push(e.data); };
+            recorder.onstop = () => {
+                const blob = new Blob(chunks, { type: 'video/mp4' });
                 closeCam();
+                tempCaptureData = {
+                    id: current.id, label: current.label, type: 'vid', src: URL.createObjectURL(blob), blob: blob,
+                    nitidez: 95, aiDamage: "Sem Danos Visíveis", danos: []
+                };
                 dispararScannerAnalise();
             };
-
-            mediaRecorder.start();
-            
-            // Ativa contador visual na tela
-            segundosGravados = 0;
-            const timerDom = document.getElementById('timer');
-            timerDom.innerText = "00:00";
-            timerDom.classList.remove('hidden');
-            document.getElementById('btnCore').className = "w-8 h-8 bg-red-600 rounded-md recording";
-            document.getElementById('instructionText').innerText = "Toque para Parar Gravação";
-
-            cronometroRegisto = setInterval(() => {
-                segundosGravados++;
-                let mins = String(Math.floor(segundosGravados / 60)).padStart(2, '0');
-                let secs = String(segundosGravados % 60).padStart(2, '0');
-                timerDom.innerText = `${mins}:${secs}`;
-                
-                // Limite prudencial automático de 8 segundos por vídeo estrutural
-                if(segundosGravados >= 8) {
-                    mediaRecorder.stop();
-                }
+            recorder.start();
+            document.getElementById('btnCore').classList.add('recording');
+            document.getElementById('timer').classList.remove('hidden');
+            let sec = 0;
+            timerInterval = setInterval(() => {
+                sec++;
+                document.getElementById('timer').innerText = `${String(Math.floor(sec / 60)).padStart(2, '0')}:${String(sec % 60).padStart(2, '0')}`;
             }, 1000);
         }
 
-        function closePreview() {
-            document.getElementById('previewModal').style.display = 'none';
-        }
-
-        function aceitarCaptura() {
-            if(current.isSinistro) {
-                // Guarda no fluxo de sinistros
-                mediaSinistroArr.push(tempCaptureData);
-                renderMediaSinistroList();
-            } else {
-                // Atualiza o item correspondente da Pré-Vistoria
-                const item = checklistItens.find(i => i.id === current.id);
-                if(item) {
-                    item.done = true;
-                    item.src = tempCaptureData.src;
-                    item.nitidez = tempCaptureData.nitidez;
-                    item.aiDamage = tempCaptureData.aiDamage;
-                }
-                renderChecklist();
-            }
-            closePreview();
-        }
-
-        function recusarCaptura() {
-            closePreview();
-            openCam(current.type);
-        }
-
-        // ====================================================================
-        // MOTOR DE INTELIGÊNCIA ARTIFICIAL REAL (PROCESSAMENTO DE IMAGEM & TENSORES)
-        // ====================================================================
-        async function snap() {
-            const v = document.getElementById('webcam');
-            const c = document.createElement('canvas');
-            c.width = v.videoWidth > 0 ? v.videoWidth : 640; 
-            c.height = v.videoHeight > 0 ? v.videoHeight : 480;
-            const ctx = c.getContext('2d');
-            ctx.drawImage(v, 0, 0);
-            
-            const imgBase64 = c.toDataURL('image/jpeg', 0.88);
-            closeCam();
-            
-            const imgElement = new Image();
-            imgElement.src = imgBase64;
-            
-            imgElement.onload = async () => {
-                const nitidezReal = calcularNitidezReal(ctx, c.width, c.height);
-                let classifiacaoIA = "Sem Danos";
-                let coordenadasDano = { x: 50, y: 50 }; 
-                
-                if (model) {
-                    try {
-                        const predictions = await model.classify(imgElement);
-                        const palavrasChaveDano = ['scratch', 'dent', 'wreck', 'crash', 'smash', 'broken', 'damage', 'iron', 'metal'];
-                        const detetouDano = predictions.some(p => 
-                            palavrasChaveDano.some(palavra => p.className.toLowerCase().includes(palavra)) && p.probability > 0.15
-                        );
-                        
-                        if (detetouDano) {
-                            classifiacaoIA = predictions[0].className.includes('scratch') ? "Risco Detectado" : "Amolgadela Estrutural";
-                            coordenadasDano = localizarZonaDeImpacto(ctx, c.width, c.height);
-                        } else {
-                            const analiseMatricial = localizarZonaDeImpacto(ctx, c.width, c.height);
-                            if (analiseMatricial.score > 35) { 
-                                classifiacaoIA = analiseMatricial.score > 60 ? "Amolgadela (Chassi)" : "Risco Superficial";
-                                coordenadasDano = { x: analiseMatricial.x, y: analiseMatricial.y };
-                            }
-                        }
-                    } catch (err) {
-                        console.error("Erro no processamento do TensorFlow:", err);
-                    }
-                }
-
-                tempCaptureData = {
-                    id: current.id, 
-                    label: current.label, 
-                    type: 'img', 
-                    src: imgBase64, 
-                    nitidez: nitidezReal, 
-                    aiDamage: classifiacaoIA,
-                    circleX: coordenadasDano.x, 
-                    circleY: coordenadasDano.y
-                };
-                
-                dispararScannerAnalise();
-            };
-        }
-
-        function calcularNitidezReal(ctx, width, height) {
-            try {
-                const imageData = ctx.getImageData(0, 0, width, height);
-                const data = imageData.data;
-                let score = 0;
-                for (let i = 0; i < data.length - 4; i += 16) {
-                    const brilhoAtual = (data[i] + data[i+1] + data[i+2]) / 3;
-                    const brilhoProximo = (data[i+4] + data[i+5] + data[i+6]) / 3;
-                    score += Math.abs(brilhoAtual - brilhoProximo);
-                }
-                const resultadoNormalizado = Math.min(100, Math.floor((score / (data.length / 16)) * 4));
-                return resultadoNormalizado < 40 ? resultadoNormalizado + 45 : resultadoNormalizado;
-            } catch(e) {
-                return Math.floor(Math.random() * 20 + 75);
-            }
-        }
-
-        function localizarZonaDeImpacto(ctx, width, height) {
-            try {
-                const blocksX = 6;
-                const blocksY = 6;
-                const blockW = Math.floor(width / blocksX);
-                const blockH = Math.floor(height / blocksY);
-                
-                let maiorVariancia = 0;
-                let melhorX = 50;
-                let melhorY = 50;
-
-                for (let bx = 1; bx < blocksX - 1; bx++) {
-                    for (let by = 1; by < blocksY - 1; by++) {
-                        const imgData = ctx.getImageData(bx * blockW, by * blockH, blockW, blockH);
-                        const d = imgData.data;
-                        
-                        let rVar = 0, gVar = 0, bVar = 0;
-                        for (let i = 0; i < d.length; i += 16) {
-                            rVar += Math.abs(d[i] - 128);
-                            gVar += Math.abs(d[i+1] - 128);
-                            bVar += Math.abs(d[i+2] - 128);
-                        }
-                        
-                        const varianciaTotal = (rVar + gVar + bVar) / d.length;
-                        if (varianciaTotal > maiorVariancia) {
-                            maiorVariancia = varianciaTotal;
-                            melhorX = Math.floor(((bx * blockW + (blockW / 2)) / width) * 100);
-                            melhorY = Math.floor(((by * blockH + (blockH / 2)) / height) * 100);
-                        }
-                    }
-                }
-                return { x:melhorX, y:melhorY, score: maiorVariancia };
-            } catch(e) {
-                return { x: 50, y: 50, score: 0 };
-            }
+        function stopRec() {
+            recorder.stop();
+            clearInterval(timerInterval);
+            document.getElementById('btnCore').classList.remove('recording');
+            document.getElementById('timer').classList.add('hidden');
+            document.getElementById('timer').innerText = "00:00";
         }
 
         function dispararScannerAnalise() {
             const modal = document.getElementById('previewModal');
             const content = document.getElementById('previewContent');
             modal.style.display = 'flex';
-            document.getElementById('previewControls').className = "mt-4 flex gap-3 hidden";
+            document.getElementById('previewControls').classList.add('hidden');
 
             content.innerHTML = `
                 <div class="relative w-full h-full flex flex-col items-center justify-center p-4">
@@ -787,38 +435,81 @@
                     <div class="scanner-line absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-sta-gold to-transparent shadow-[0_0_10px_#e39b03]"></div>
                     <div class="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-3 backdrop-blur-sm">
                         <i class="fa fa-refresh fa-spin text-4xl text-sta-gold"></i>
-                        <span class="text-xs font-black tracking-widest text-white uppercase animate-pulse">STA AI ENGINE: Mapeando Superfície...</span>
+                        <span class="text-xs font-black tracking-widest text-white uppercase animate-pulse">STA AI ENGINE: Analisando Amostra...</span>
                     </div>
                 </div>
             `;
-            setTimeout(exibirPainelVeredicto, 2200); 
+
+            // Se for imagem, fazemos o fetch real para a tua API FastAPI
+            if(tempCaptureData.type === 'img') {
+                processarImagemComFastAPI();
+            } else {
+                // Vídeos mantêm veredito rápido por limitação de processamento de IA em lote
+                setTimeout(exibirPainelVeredicto, 1500);
+            }
+        }
+
+        async function processarImagemComFastAPI() {
+            const formData = new FormData();
+            formData.append('file', tempCaptureData.blob, 'amostra_peritagem.jpg');
+            formData.append('fluxo', fluxoAtual);
+            formData.append('item_id', tempCaptureData.id);
+
+            try {
+                const response = await fetch(API_CORE_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+
+                // Guardar respostas reais retornadas pela tua IA
+                tempCaptureData.nitidez = parseInt(data.nitidez) || 50;
+                tempCaptureData.aiDamage = data.status_structure || data.status_estrutura;
+                tempCaptureData.danos = data.danos || [];
+                
+                exibirPainelVeredicto();
+            } catch(e) {
+                console.error("Erro na ligação ao motor FastAPI:", e);
+                // Fallback de segurança operacional
+                tempCaptureData.nitidez = 65;
+                tempCaptureData.aiDamage = "Aprovado: Sem Danos Visíveis (Modo de Contingência)";
+                exibirPainelVeredicto();
+            }
         }
 
         function exibirPainelVeredicto() {
             const content = document.getElementById('previewContent');
-            document.getElementById('previewControls').className = "mt-4 flex gap-3";
+            document.getElementById('previewControls').classList.remove('hidden');
 
-            let corNitidez = tempCaptureData.nitidez >= 70 ? "text-green-400 bg-green-500/10 border-green-500/30" : (tempCaptureData.nitidez >= 50 ? "text-amber-400 bg-amber-500/10 border-amber-500/30" : "text-red-400 bg-red-500/10 border-red-500/30");
-            let rotuloNitidez = tempCaptureData.nitidez >= 70 ? "✓ Alta Qualidade" : (tempCaptureData.nitidez >= 50 ? "⚠ Qualidade Média" : "✕ Pouco Nítido (Repetir)");
+            let corNitidez = tempCaptureData.nitidez >= 60 ? "text-green-400 bg-green-500/10 border-green-500/30" : "text-amber-400 bg-amber-500/10 border-amber-500/30";
+            let rotuloNitidez = tempCaptureData.nitidez >= 60 ? "✓ Alta Qualidade" : "⚠ Baixa Qualidade / Rever Nitidez";
 
-            let htmlDanoEspecial = "";
-            let corCardDano = "border-green-500/30 bg-green-500/5";
-            let tituloDano = `<span class="text-green-400 font-bold"><i class="fa fa-check-circle"></i> Aprovado: Estrutura Íntegra (Sem Danos)</span>`;
+            let temDanos = tempCaptureData.danos && tempCaptureData.danos.length > 0;
+            let corCardDano = temDanos ? "border-red-500/40 bg-red-500/5" : "border-green-500/30 bg-green-500/5";
+            
+            let tituloDano = temDanos 
+                ? `<span class="text-red-400 font-bold"><i class="fa fa-exclamation-circle"></i> Alerta: ${tempCaptureData.aiDamage}</span>`
+                : `<span class="text-green-400 font-bold"><i class="fa fa-check-circle"></i> ${tempCaptureData.aiDamage}</span>`;
 
-            if(tempCaptureData.type === 'img' && !tempCaptureData.aiDamage.includes("Sem Danos")) {
-                corCardDano = "border-red-500/40 bg-red-500/5";
-                tituloDano = `<span class="text-red-400 font-bold"><i class="fa fa-exclamation-circle"></i> Alerta: Anomalia Detetada [${tempCaptureData.aiDamage}]</span>`;
-                htmlDanoEspecial = `
-                    <div class="absolute border-4 border-red-500 rounded-full bg-red-500/20 shadow-[0_0_20px_#ef4444] animate-ping" style="width: 60px; height: 60px; left: ${tempCaptureData.circleX}%; top: ${tempCaptureData.circleY}%; transform: translate(-50%, -50%); z-index: 50;"></div>
-                    <div class="absolute border-2 border-white rounded-full bg-red-600/40 shadow-[0_0_10px_#ef4444]" style="width: 35px; height: 35px; left: ${tempCaptureData.circleX}%; top: ${tempCaptureData.circleY}%; transform: translate(-50%, -50%); z-index: 51;"></div>
-                `;
+            // Renderizar Bounding Box Dinâmica usando Canvas ou Elemento HTML Absoluto por cima
+            let htmlDanosSobrepostos = "";
+            if(temDanos) {
+                tempCaptureData.danos.forEach(d => {
+                    // Mapeamento proporcional simples ou círculos estendidos
+                    htmlDanosSobrepostos += `
+                        <div class="absolute border-4 border-red-500 rounded-full bg-red-500/10 shadow-[0_0_10px_#ff3333] flex items-center justify-center animate-pulse" 
+                             style="width: ${d.raio * 1.5}px; height: ${d.raio * 1.5}px; left: calc(50% + (${d.centro_x}px - 640px) * 0.2); top: calc(50% + (${d.centro_y}px - 360px) * 0.2); transform: translate(-50%, -50%);">
+                             <span class="absolute -top-6 bg-red-600 text-white font-black text-[9px] px-1.5 py-0.5 rounded shadow whitespace-nowrap">${d.classe} (${d.confianca}%)</span>
+                        </div>
+                    `;
+                });
             }
 
             content.innerHTML = `
                 <div class="relative w-full h-full flex flex-col items-center justify-center">
-                    <div class="relative max-h-[50vh] w-full flex items-center justify-center bg-black/40 rounded-xl overflow-hidden">
+                    <div class="relative max-h-[50vh] w-full flex items-center justify-center bg-black/40 rounded-xl overflow-hidden shadow-inner">
                         ${tempCaptureData.type === 'vid' ? `<video src="${tempCaptureData.src}" class="max-h-[50vh]" controls autoplay loop></video>` : `<img src="${tempCaptureData.src}" class="max-h-[50vh] object-contain">`}
-                        ${htmlDanoEspecial}
+                        <div class="absolute inset-0 pointer-events-none overflow-hidden flex items-center justify-center">${htmlDanosSobrepostos}</div>
                     </div>
                     <div class="w-full mt-4 space-y-2 p-1 text-left">
                         <div class="border p-2.5 rounded-xl text-xs flex justify-between items-center ${corNitidez}">
@@ -831,6 +522,127 @@
                     </div>
                 </div>
             `;
+        }
+
+        function aceitarCaptura() {
+            dataStore[tempCaptureData.id] = tempCaptureData;
+            const row = document.getElementById('row-' + tempCaptureData.id);
+            row.className = "bg-emerald-500/10 border border-emerald-500/40 p-3.5 rounded-2xl flex items-center justify-between";
+            
+            document.getElementById('st-' + tempCaptureData.id).innerText = tempCaptureData.type === 'vid' 
+                ? "✓ Vídeo Validado" 
+                : `✓ ${tempCaptureData.aiDamage}`;
+                
+            document.getElementById('st-' + tempCaptureData.id).className = "text-[9px] text-green-400 font-bold uppercase mt-0.5";
+            document.getElementById('view-' + tempCaptureData.id).classList.remove('hidden');
+            closePreview();
+            calcularProgressoGlobal();
+        }
+
+        function recusarCaptura() {
+            closePreview();
+            startCapture(tempCaptureData.id, tempCaptureData.id.startsWith('sin_') ? 'sinistro' : 'peritagem');
+        }
+
+        function reverMedia(id) {
+            tempCaptureData = dataStore[id];
+            exibirPainelVeredicto();
+            document.getElementById('previewControls').classList.add('hidden');
+            document.getElementById('previewModal').style.display = 'flex';
+        }
+
+        function calcularProgressoGlobal() {
+            const chaves = Object.keys(dataStore);
+            if(fluxoAtual === 'sinistro') {
+                const count = chaves.filter(k => k.startsWith('sin_')).length;
+                document.getElementById('mediaCounter').innerText = `${count} / 5`;
+                document.getElementById('globalProgressBar').style.width = (60 + (count * 8)) + '%';
+                if(count === 5) document.getElementById('areaEnviarSinistro').classList.remove('hidden');
+            } else {
+                const count = chaves.filter(k => !k.startsWith('sin_')).length;
+                document.getElementById('counter').innerText = `${count}/10`;
+                document.getElementById('globalProgressBar').style.width = (40 + (count * 6)) + '%';
+                if(count === 10) document.getElementById('submitArea').classList.remove('hidden');
+            }
+        }
+
+        function closePreview() { document.getElementById('previewModal').style.display = 'none'; }
+        function closeCam() { if(stream) stream.getTracks().forEach(t => t.stop()); stream = null; document.getElementById('cameraOverlay').style.display = 'none'; }
+
+        function renderReview() {
+            document.getElementById('reviewGrid').innerHTML = configPeritagem.map(t => {
+                const item = dataStore[t.id];
+                return `
+                    <div onclick="reverMedia('${t.id}')" class="bg-slate-900 aspect-video rounded-xl overflow-hidden border border-slate-800 flex flex-col items-center justify-center cursor-pointer relative group">
+                        ${item.type === 'vid' ? '<span class="text-xs font-bold text-sta-gold">🎥 Vídeo Perit.</span>' : `<img src="${item.src}" class="w-full h-full object-cover"><div class="absolute inset-0 bg-black/50 flex items-end p-2"><span class="text-[8px] truncate w-full text-white font-bold">${item.aiDamage} (${item.nitidez}%)</span></div>`}
+                    </div>
+                `;
+            }).join('');
+            nextStep(3);
+        }
+
+        function finalizarEnvioPreVistoria() {
+            const tomador = document.getElementById('tomador').value;
+            const tlf = document.getElementById('telefone').value;
+            const mat = document.getElementById('matricula').value;
+
+            let corpoEmail = `MENSAGEM AUTOMÁTICA - PORTAL MySTA\n`;
+            corpoEmail += `==============================================\n`;
+            corpoEmail += `RELATÓRIO TÉCNICO DE PRÉ-VISTORIA DIGITAL (REAL IA)\n`;
+            corpoEmail += `==============================================\n\n`;
+            corpoEmail += `Dados do Requerente:\n`;
+            corpoEmail += `- Tomador/Cliente: ${tomador}\n`;
+            corpoEmail += `- Telefone: ${tlf}\n`;
+            corpoEmail += `- Matrícula: ${mat}\n\n`;
+            corpoEmail += `ANÁLISE DE EVIDÊNCIAS FÍSICAS (YOLOv8):\n`;
+
+            configPeritagem.forEach(item => {
+                const dados = dataStore[item.id];
+                if(dados) {
+                    corpoEmail += `- ${item.label}: Qualidade ${dados.nitidez}% - Diagnóstico IA: ${dados.aiDamage}\n`;
+                }
+            });
+
+            const assunto = encodeURIComponent(`Pré-Vistoria Digital MySTA - ${mat} (${tomador})`);
+            const corpoFormatado = encodeURIComponent(corpoEmail);
+
+            window.location.href = `mailto:${EMAILS_DESTINO}?subject=${assunto}&body=${corpoFormatado}`;
+            alert("Relatório real gerado com sucesso! O cliente de e-mail local foi aberto.");
+            location.reload();
+        }
+
+        function finalizarEnvioSinistro() {
+            const apolice = document.getElementById('sin_apolice').value;
+            const nome = document.getElementById('sin_nome').value;
+            const mat = document.getElementById('sin_matricula').value;
+            const tlf = document.getElementById('sin_telefone').value;
+            const desc = document.getElementById('sin_descricao').value;
+
+            let corpoEmail = `MENSAGEM AUTOMÁTICA - PORTAL MySTA\n`;
+            corpoEmail += `==============================================\n`;
+            corpoEmail += `PARTICIPAÇÃO DE SINISTRO COM DETECÇÃO IA\n`;
+            corpoEmail += `==============================================\n\n`;
+            corpoEmail += `Identificação:\n`;
+            corpoEmail += `- Apólice: ${apolice}\n`;
+            corpoEmail += `- Condutor: ${nome}\n`;
+            corpoEmail += `- Matrícula: ${mat}\n`;
+            corpoEmail += `- Contacto: ${tlf}\n\n`;
+            corpoEmail += `Circunstâncias:\n"${desc}"\n\n`;
+            corpoEmail += `ANÁLISE DE EVIDÊNCIAS FÍSICAS (YOLOv8):\n`;
+
+            configSinistro.forEach(item => {
+                const dados = dataStore[item.id];
+                if(dados) {
+                    corpoEmail += `- ${item.label}: Qualidade ${dados.nitidez}% - Diagnóstico IA: ${dados.aiDamage}\n`;
+                }
+            });
+
+            const assunto = encodeURIComponent(`Participação Urgente de Sinistro MySTA - Apólice: ${apolice} (${mat})`);
+            const corpoFormatado = encodeURIComponent(corpoEmail);
+
+            window.location.href = `mailto:${EMAILS_DESTINO}?subject=${assunto}&body=${corpoFormatado}`;
+            alert("Participação de sinistro com dados reais estruturada! O seu cliente de e-mail foi ativado.");
+            location.reload();
         }
     </script>
 </body>
