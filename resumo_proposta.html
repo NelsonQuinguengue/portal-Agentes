@@ -1,41 +1,21 @@
-
-        
-          <style>
+<!DOCTYPE html>
+<html lang="pt-ao">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STA Seguros - Simulador Vida Risco</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
         [x-cloak] { display: none !important; }
-    .text-sta-purple { color: #51358C; }
-    .bg-sta-purple { background-color: #51358C; }
-    .border-sta-gold { border-color: #e39b03; }
-    .text-sta-gold { color: #e39b03; }
-
-    /* AJUSTE TELEFONE: Garante que o código do país não sobreponha o número */
-    .iti { display: block !important; width: 100% !important; }
-    .iti--separate-dial-code input { padding-left: 95px !important; } 
-
-    /* AJUSTE COBERTURAS: Alinhamento perfeito entre checkbox e texto */
-    .cobertura-item {
-        display: flex;
-        align-items: center;
-        padding: 10px 12px;
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        transition: all 0.2s;
-        cursor: pointer;
-        margin-bottom: 4px;
-    }
-    .cobertura-item:hover { background: #f1f5f9; border-color: #51358C; }
-    .cobertura-item input[type="checkbox"] {
-        width: 18px;
-        height: 18px;
-        margin-right: 12px; /* Espaçamento fixo entre o check e o nome */
-        cursor: pointer;
-        accent-color: #51358C;
-    }
-    .cobertura-nome {
-        font-size: 13px;
-        font-weight: 600;
-        color: #334155;
-    }
+        .text-sta-purple { color: #51358C; }
+        .bg-sta-purple { background-color: #51358C; }
+        .border-sta-gold { border-color: #e39b03; }
+        .text-sta-gold { color: #e39b03; }
 
         /* Estilo específico para garantir o alinhamento no PDF */
         .pdf-footer {
@@ -49,42 +29,44 @@
         }
         /* Ajuste para combinar com o teu design Gray-50/Rounded-LG */
             /* Impede a sobreposição e garante que o input ocupe a largura correta */
- 
-    </style>  
-    
-         
-               <!-- partial -->
-      <div class="main-panel" x-data="simuladorSTA()">
-        <div class="content-wrapper">
-         
-         
-          
-         
-           
-     
+        .iti {
+            display: block !important;
+            width: 100% !important;
+        }
 
+        .iti__country-list {
+            max-width: 300px; /* Evita que a lista de países seja larga demais */
+            z-index: 50;      /* Garante que a lista apareça sobre outros campos */
+        }
 
- <div class="row">
-             
-         
-                       
-          </div>
-  <div>
-   
-  <div class="max-w-6xl mx-auto py-4 md:py-8 px-2 md:px-4">
-    <div class="bg-white rounded-t-2xl p-4 md:p-6 border-b-4 border-sta-gold flex flex-col md:flex-row justify-between items-center shadow-sm gap-4">
-        <div class="text-center md:text-left">
-            <h1 class="text-xl md:text-2xl font-bold text-sta-purple">Simulador Vida Risco PU</h1>
-            <p class="text-xs md:text-sm text-gray-500">Data da Simulação: <span x-text="dataHoje"></span></p>
+        /* Ajuste do padding interno para não esmagar o texto no ícone */
+        .iti--separate-dial-code .iti__selected-dial-code {
+            font-weight: bold;
+            color: #51358C; /* Cor Roxa da STA */
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans text-slate-800" x-data="simuladorSTA()">
+
+<div class="max-w-6xl mx-auto py-8 px-4">
+    <div class="bg-white rounded-t-2xl p-6 border-b-4 border-sta-gold flex justify-between items-center shadow-sm">
+        <div>
+            <h1 class="text-2xl font-bold text-sta-purple">Simulador Vida Risco PU</h1>
+            <p class="text-sm text-gray-500">Data da Simulação: <span x-text="dataHoje"></span></p>
         </div>
-        <div class="flex items-center">
-            <img src="images/faces/Arte7@2x.png" alt="STA Seguros" class="w-12 h-12 md:w-16 md:h-16 mx-auto">
+        <div class="flex items-center space-x-2">
+            <div class="text-right">
+               
+                <img src="LogoSTAatual.png" alt="STA Seguros" class="w-16 h-16 mx-auto">
+            </div>
+            
         </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-0 shadow-2xl rounded-b-2xl overflow-hidden">
         
-        <div class="lg:col-span-5 bg-white p-4 md:p-8 border-r border-gray-100">
+        <div class="lg:col-span-5 bg-white p-8 border-r border-gray-100">
             <h3 class="text-sm font-bold uppercase tracking-wider text-sta-purple mb-6 border-b pb-2 border-gray-100">Dados do Segurado</h3>
             
             <div class="space-y-4">
@@ -93,7 +75,7 @@
                     <input type="text" x-model="form.nome" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-sta-purple outline-none transition">
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Gênero</label>
                         <select x-model="form.genero" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 outline-none">
@@ -107,10 +89,10 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Data de Nascimento</label>
-                        <input type="date" x-model="form.nascimento" @change="calcularIdade()" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-sta-purple">
+                          <input type="date" x-model="form.nascimento"  @change="calcularIdade()"class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-sta-purple">
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Idade (Actuarial)</label>
@@ -118,26 +100,38 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-2 gap-4">
                     <div class="w-full">
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Telefone</label>
-                        <div x-data="{ 
-                            initIti() {
-                                const iti = window.intlTelInput(this.$refs.telInput, {
-                                    initialCountry: 'ao',
-                                    separateDialCode: true,
-                                    preferredCountries: ['ao', 'pt', 'br'],
-                                    utilsScript: 'https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js'
-                                });
-                                const updateValue = () => { this.form.telefone = iti.getNumber(); };
-                                this.$refs.telInput.addEventListener('blur', updateValue);
-                                this.$refs.telInput.addEventListener('countrychange', updateValue);
-                                this.$refs.telInput.addEventListener('keyup', updateValue);
-                            }
-                        }" x-init="initIti()" class="relative">
-                            <input type="tel" x-ref="telInput" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-sta-purple transition-all">
-                        </div>
-                    </div>
+        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Telefone</label>
+        
+        <div x-data="{ 
+            initIti() {
+                const iti = window.intlTelInput(this.$refs.telInput, {
+                    initialCountry: 'ao',
+                    separateDialCode: true,
+                    preferredCountries: ['ao', 'pt', 'br'],
+                    utilsScript: 'https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js'
+                });
+
+                // Atualiza o formulário sempre que o número mudar ou o país for trocado
+                const updateValue = () => {
+                    this.form.telefone = iti.getNumber();
+                };
+
+                this.$refs.telInput.addEventListener('blur', updateValue);
+                this.$refs.telInput.addEventListener('countrychange', updateValue);
+                this.$refs.telInput.addEventListener('keyup', updateValue);
+            }
+        }" x-init="initIti()">
+            
+            <input type="tel" 
+                   x-ref="telInput"
+                   class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-sta-purple transition-all"
+                   autocomplete="off">
+        </div>
+            </div>
+                    
+
                     <div>
                         <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">E-mail</label>
                         <input type="email" x-model="form.email" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 outline-none">
@@ -146,8 +140,8 @@
 
                 <div class="pt-4 border-t border-gray-50">
                     <h3 class="text-sm font-bold uppercase tracking-wider text-sta-purple mb-4">Condições da Apólice</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div class="space-y-1">
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                       <div class="space-y-1">
                             <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Capital Seguro (AKZ)</label>
                             <input type="text" 
                                 :value="formatar(form.capital)" 
@@ -162,27 +156,20 @@
                     </div>
 
                     <label class="block text-[10px] font-bold text-gray-400 uppercase mb-2">Coberturas Adicionais</label>
-                   <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full">
-                    <template x-for="(label, key) in coberturasDisponiveis">
-                        <label class="flex items-start p-2 bg-gray-50 rounded border border-gray-100 cursor-pointer hover:bg-purple-50 transition min-w-0">
-                            <div class="flex-shrink-0 mt-0.5">
-                                <input type="checkbox" 
-                                       x-model="form.coberturas[key]" 
-                                       @change="recalcular()" 
-                                       class="text-sta-purple rounded w-4 h-4">
-                            </div>
-                            
-                            <span class="ml-2 text-[11px] font-semibold text-gray-600 leading-tight break-words overflow-hidden" 
-                                  x-text="label"></span>
-                        </label>
-                    </template>
+                    <div class="grid grid-cols-2 gap-2">
+                        <template x-for="(label, key) in coberturasDisponiveis">
+                            <label class="flex items-center p-2 bg-gray-50 rounded border border-gray-100 cursor-pointer hover:bg-purple-50 transition">
+                                <input type="checkbox" x-model="form.coberturas[key]" @change="recalcular()" class="text-sta-purple rounded">
+                                <span class="ml-2 text-xs font-semibold text-gray-600" x-text="label"></span>
+                            </label>
+                        </template>
+                    </div>
                 </div>
-              </div>
             </div>
         </div>
 
-        <div class="lg:col-span-7 bg-slate-50 p-4 md:p-8">
-            <div class="flex flex-col sm:flex-row justify-between items-start mb-8 gap-2">
+        <div class="lg:col-span-7 bg-slate-50 p-8">
+            <div class="flex justify-between items-start mb-8">
                 <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400">Resumo da Cotação</h3>
                 <div class="bg-sta-gold text-white px-3 py-1 rounded text-[10px] font-black uppercase shadow-sm">Válido por 30 dias</div>
             </div>
@@ -190,23 +177,25 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
                     <p class="text-xs text-slate-400 font-bold uppercase">Prémio Comercial</p>
-                    <p class="text-xl md:text-2xl font-black text-sta-purple mt-1" x-text="formatar(res.premioComercial)"></p>
+                    <p class="text-2xl font-black text-sta-purple mt-1" x-text="formatar(res.premioComercial)"></p>
                 </div>
                 <div class="bg-sta-purple p-6 rounded-2xl shadow-lg text-white">
                     <p class="text-xs text-purple-200 font-bold uppercase">Total a Pagar (PU)</p>
-                    <p class="text-xl md:text-2xl font-black mt-1 text-sta-gold" x-text="formatar(res.premioTotal)"></p>
+                    <p class="text-2xl font-black mt-1 text-sta-gold" x-text="formatar(res.premioTotal)"></p>
                 </div>
             </div>
 
             <div class="bg-white rounded-2xl border border-slate-100 p-6 space-y-4 shadow-sm">
-                <div class="flex justify-between text-sm">
+                
+                 <div class="flex justify-between text-sm">
                     <span class="text-slate-500 italic">Encargos (20%)</span>
                     <span class="font-bold text-slate-700" x-text="formatar(res.encargosVal)"></span>
                 </div>
                 <div class="flex justify-between text-sm">
-                    <span class="text-slate-500 italic">ARSEG (0,2%)</span>
+                    <span class="text-slate-500 italic"> ARSEG (0,2%)</span>
                     <span class="font-bold text-slate-700" x-text="formatar(res.arsegVal)"></span>
                 </div>
+                
                 
                 <div class="pt-4 border-t border-dashed">
                     <h4 class="text-[10px] font-bold text-slate-400 uppercase mb-3">Coberturas Ativadas</h4>
@@ -220,26 +209,35 @@
             </div>
 
             <button @click="baixarPDF()" class="w-full mt-8 bg-sta-purple hover:bg-black text-white font-bold py-4 rounded-xl transition-all shadow-lg flex items-center justify-center group">
-                <i class="fa-solid fa-file-pdf mr-3 text-sta-gold group-hover:scale-110"></i> Gerar Proposta PDF
+                <i class="fa-solid fa-file-pdf mr-3 text-sta-gold group-hover:scale-110"></i> Gerar Proposta  PDF
             </button>
-
-            <div class="flex flex-col md:flex-row justify-between items-center md:items-end mt-12 px-2 border-t border-gray-200 pt-6 gap-6">
-                <div class="text-[10px] text-slate-600 leading-relaxed max-w-md text-center md:text-left">
-                    <p class="font-bold text-sta-purple mb-1">STAS – Sociedade Transnacional Angolana de Seguros, S.A.</p>
-                    <p>Belas Business Park, Talatona - Angola</p>
-                    <p>NIF 5417280216 | Tel. (+244) 925 044 450</p>
-                    <p>
-                        <a href="https://www.stas.co.ao" class="text-sta-purple hover:underline">www.stas.co.ao</a>
-                    </p>
-                </div>
-
-                <div class="relative group">
-                    <img src="images/faces/PU.png" alt="QR Code" class="w-16 h-16 md:w-24 md:h-24 object-contain rounded-lg" onerror="this.src='https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=STA-SIMULACAO-OFICIAL'">
-                </div>
+         <div class="flex justify-between items-end mt-12 px-4 border-t border-gray-200 pt-6 print:mt-6">
+    
+            <div class="text-[10px] text-slate-600 leading-relaxed max-w-md">
+                <p class="font-bold text-sta-purple mb-1">STAS – Sociedade Transnacional Angolana de Seguros, S.A.</p>
+                <p>Belas Business Park, Edifício Cuando Cubango 1º Andar Porta 103 – 106 Talatona - Angola</p>
+                <p>NIF 5417280216 | Capital Social 3.500.000.000 AOA | Matrícula Comercial 3497-14</p>
+                <p>Tel. (+244) 925 044 450</p>
+                <p>
+                    <a href="https://www.stas.co.ao" class="text-sta-purple hover:underline">www.stas.co.ao</a> | 
+                    <a href="mailto:geral@stas.co.ao" class="text-slate-400 hover:underline">geral@stas.co.ao</a>
+                </p>
             </div>
+
+            <div class="relative group">
+                <div class="bg-white p-1 rounded-xl border border-gray-200 shadow-sm">
+                    <img src="PU.png" 
+                        alt="QR Code" 
+                        class="w-20 h-20 md:w-24 md:h-24 object-contain rounded-lg"
+                        onerror="this.src='https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=STA-SIMULACAO-OFICIAL'">
+                </div>
+                <p class="text-[8px] text-center text-gray-400 font-bold mt-1 uppercase"></p>
+            </div>
+        </div>
         </div>
     </div>
 </div>
+
 <div id="pdf-template" class="hidden">
     <div style="padding: 40px; font-family: sans-serif; color: #333;">
         <div style="display: flex; justify-content: space-between; border-bottom: 4px solid #e39b03; padding-bottom: 20px;">
@@ -248,7 +246,7 @@
                 <p style="color: #666; margin: 5px 0;">Ramo: Vida Risco (Prémio Único)</p>
             </div>
             <div style="text-align: right;">
-                <img src="../../images/faces/LogoSTAatual.png" alt="STA Seguros" style="width: 80px; height: 80px;">
+                <img src="LogoSTAatual.png" alt="STA Seguros" style="width: 80px; height: 80px;">
             </div>
         </div>
 
@@ -347,233 +345,198 @@
             <p style="font-size: 9px; margin: 2px 0 0 0;">O(A) Tomador(a) do seguro</p>
         </div>
     </div>
-  
+
 </div>
 
 
 
-       
+        <div class="flex justify-between items-end mt-12 px-4 border-t border-gray-200 pt-6 print:mt-6"style="margin-top:-20px;">
+    
+            <div class="text-[10px] text-slate-600 leading-relaxed max-w-md">
+                <p class="font-bold text-sta-purple mb-1">STAS – Sociedade Transnacional Angolana de Seguros, S.A.</p>
+                <p>Belas Business Park, Edifício Cuando Cubango 1º Andar Porta 103 – 106 Talatona - Angola</p>
+                <p>NIF 5417280216 | Capital Social 3.500.000.000 AOA | Matrícula Comercial 3497-14</p>
+                <p>Tel. (+244) 925 044 450</p>
+                <p>
+                    <a href="https://www.stas.co.ao" class="text-sta-purple hover:underline">www.stas.co.ao</a> | 
+                    <a href="mailto:geral@stas.co.ao" class="text-slate-400 hover:underline">geral@stas.co.ao</a>
+                </p>
+                 <p >Simulação gerada em <span x-text="dataHoje"></span> | Válida por 30 dias úteis.</p>
+            </div>
+
+            <div class="relative group">
+                <div class="bg-white p-1 rounded-xl border border-gray-200 shadow-sm">
+                    <img src="PU.png" 
+                        alt="QR Code" 
+                        class="w-20 h-20 md:w-24 md:h-24 object-contain rounded-lg"
+                        onerror="this.src='https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=STA-SIMULACAO-OFICIAL'">
+                </div>
+                <p class="text-[8px] text-center text-gray-400 font-bold mt-1 uppercase"></p>
+            </div>
+        </div>
 
       
     </div>
 </div>
 
+<script>
+    function simuladorSTA() {
+    return {
+        dataHoje: new Date().toLocaleDateString('pt-AO'),
+        displayCapital: '1.000.000,00 Kz', // Valor inicial formatado
+        form: {
+            nome: '',
+            genero: 'Masculino',
+            documento: '',
+            nascimento: '',
+            idade: 30,
+            telefone: '',
+            email: '',
+            capital: 1000000, // Valor numérico para cálculos
+            periodo: 12,
+            coberturas: { vidaMais: false, despedimento: false, doenca: false }
+        },
+        coberturasDisponiveis: {
+           // itp: 'Invalidez (ITP)',
+            vidaMais: 'Vida +',
+            despedimento: 'Despedimento',
+            doenca: 'Doença Grave'
+        },
+        res: { taxaAplicada: 0, premioComercial: 0, encargos: 0, imposto: 0, premioTotal: 0 },
 
+        init() {
+            this.recalcular();
+        },
 
-</div><br><br>
-  
+        // ESSA FUNÇÃO CORRIGE A DIGITAÇÃO DESORDENADA
+        atualizarCapital(valorRaw) {
+            // Remove tudo o que não é número
+            let apenasNumeros = valorRaw.replace(/\D/g, '');
+            
+            // Converte para centavos (ex: 1000 vira 10.00)
+            let valorNumerico = parseFloat(apenasNumeros) / 100;
+            
+            if (isNaN(valorNumerico)) valorNumerico = 0;
 
-  
- </div>     <!-- IFRAME escondido -->
-       <!-- FIM  DOCUMENTAÇÁO DE APÓLICE -->
-             <div id="popup7" class="overlay">
-              <div class="popup">
-                <img src="images/faces/Arte7@2x.png" alt=""style="width:70px;margin: 10px;">
-                <h4 style="color:#e39b03;"class="text-center">PRODUTOS</h4>
-                <div class="content">
-                  <br>
-                    <h4 class="text-center"style="color:#e39b03;" >Escolha o produto que pretende consultar </h4>
-                </div>
-                <a class="close" href="#">&times;</a>
-                <div class="content">
-                  <form class="pt-3">
-                    <div class="form-group">
-                     <a href="{{ route('documentacaoAUTO') }}">
-                        <button type="button" class="btn btn-primary btn-rounded btn-icon"
-                        
-                        title="STAS Auto">
-                          <i class="fa fa-car menu-icon"placeholder="Automovél"></i>
-                        </button>
-                      </a>
-                      
-                     <a href="{{ route('documentacaoAT') }}">
-                        <button type="button" class="btn btn-primary btn-rounded btn-icon"title="STAS Acidente de Trabalho">
-                          <i class="fa fa-wheelchair menu-icon"></i>
-                        </button>
-                        </a>
-                     <a href="#">   
-                      <button type="button" class="btn btn-primary btn-rounded btn-icon"
-                      title="STAS Viagem">
-                        <i class="fa fa-plane menu-icon"></i>
-                      </button>
-                        </a>
-                      <a href="{{ route('documentacaoMRH') }}">
-                      <button type="button" class="btn btn-primary btn-rounded btn-icon"
-                      title="STAS Habitação">
-                        <i class="fa fa-home menu-icon"></i>
-                      </button>
-                      </a>
+            // Atualiza o valor real para o cálculo
+            this.form.capital = valorNumerico;
+            
+            // Atualiza o que o usuário vê com a formatação correta
+            this.displayCapital = this.formatar(valorNumerico);
+            
+            this.recalcular();
+        },
 
-                      <a href="#">
-                        <button type="button" class="btn btn-primary btn-rounded btn-icon"
-                        title="STAS Saúde">
-                          <i class="fa fa-heart menu-icon"></i>
-                        </button>
-                        </a>
+     calcularIdade() {
+            if (!this.form.nascimento) return;
 
-                        <a href="#">
-                          <button type="button" class="btn btn-primary btn-rounded btn-icon"
-                          title="STAS Mercadorias Perigosas">
-                            <i class="fa fa-truck menu-icon"></i
-                             >
-                          </button>
-                          </a>
+            const dataNasc = new Date(this.form.nascimento);
+            const dataActual = new Date();
 
-                           
-                                           
-                      
-                    </div>
-                    
-                   
-                    
-                  </form>
-                </div>
-              </div>
+            // Diferença em milissegundos
+            const diferencaMilissegundos = dataActual - dataNasc;
+
+            // Converte milissegundos para dias
+            const diferencaDias = diferencaMilissegundos / (1000 * 60 * 60 * 24);
+
+            // Aplica a fórmula: Arredondar((dataActual - dataNasc) / 365,25; 0)
+            // Math.round realiza o arredondamento para o inteiro mais próximo
+            let idade = Math.round(diferencaDias / 365.25);
+
+            // Garante que a idade não seja negativa caso a data seja futura
+            this.form.idade = idade < 0 ? 0 : idade;
+
+            this.recalcular();
+        },
+
+       recalcular() {
     
-              
-            </div>
+        // Garantir que C é um número válido antes de iniciar
+            const C = parseFloat(this.form.capital) || 0;
+            const t = parseInt(this.form.periodo) || 0;
+            const x = parseInt(this.form.idade) || 0;
 
-                
-        <!-- DOCUMENTAÇÁO FINACEIRA  -->
-      
-      
-            <!-- CONTACTOS TELEFONICOS  -->
-           <div id="popup8" class="overlay">
-            <div class="popup">
-              <h4>CONTACTOS</h4>
-              <div class="content">
-                  <span class="text-muted text-center" > </span>
-              </div>
-              <a class="close" href="#">&times;</a>
-              <div class="content">
-                <form class="pt-3">
-                  <div class="form-group">
-                    <h4>Geral</h4>
-                   <p>Tel: +244 222 724 188</p>
-                   <p style="color: #51358C;">Email: geral@stas.co.ao</p>
-                  <hr>
-                   <h4>Comercial</h4>
-                   <p>Tel: +244 946 123 425</p>
-                   <p style="color: #51358C;">Email: comercial@stas.co.ao</p>
+            // 1. Obter f(x) conforme a tabela oficial [cite: 16-29, 36]
+            let fx = 0;
+            if (x >= 18 && x <= 25) fx = 2.7270;
+            else if (x >= 26 && x <= 29) fx = 2.9700;
+            else if (x >= 30 && x <= 35) fx = 3.9825;
+            else if (x >= 36 && x <= 39) fx = 4.6980;
+            else if (x >= 40 && x <= 45) fx = 7.6545;
+            else if (x >= 46 && x <= 49) fx = 10.6650;
+            else if (x >= 50 && x <= 55) fx = 11.8530;
+            else if (x >= 56 && x <= 59) fx = 12.0900;
+            else if (x >= 60 && x <= 64) fx = 15.1190;
+            else if (x >= 65 && x <= 69) fx = 18.8987;
+            else if (x >= 70 && x <= 75) fx = 21.7336;
 
-                   <hr>
-                   <h4 >Sinistros</h4>
-                   <p>Tel: +244 946 123 424</p>
-                   <p style="color: #51358C;">Email: sinistros@stas.co.ao</p>
-                    
-                  </div>
-                  
-                 
-                </form>
-              </div>
-            </div>
-          </div>
-  
-               <!-- FIM  DOCUMENTAÇÁO DE APÓLICE -->
-                
-                  
-                       <!-- POPUP DE SIMULAÇÕES -->
-             <div id="popup1" class="overlay">
-              <div class="popup">
-                <img src="images/faces/Arte7@2x.png" alt=""style="width:70px;margin: 10px;">
-                <h4 style="color:#e39b03;"class="text-center">PRODUTOS</h4>
-                <div class="content">
-                  <br>
-                    <h4 class="text-center"style="color:#e39b03;" >Escolha o produto que pretende Simular </h4>
-                </div>
-                <a class="close" href="#">&times;</a>
-                <div class="content">
-                  <form class="pt-3">
-                    <div class="form-group">
+            this.res.taxaAplicada = fx;
 
-                     
-                      <div class="d-flex justify-content-center">
-                      <a href="{{ route('simulacaoAUTO') }}">
-                        <button type="button" class="btn btn-primary btn-rounded ">
-                          <i class="fa fa-car menu-icon"placeholder="Automovél"> Automóvel</i>
-                        </button>
-                      </a>
-                    </div><br>
-    
-                    <div class="d-flex justify-content-center">
-                        <a href="{{ route('simulacaoVIAGEM') }}">
-                        <button type="button" class="btn btn-primary btn-rounded ">
-                          <i class="fa fa-plane menu-icon"> Viagem</i>
-                        </button>
-                      </a>
-                  </div><br>
-    
-                     <div class="d-flex justify-content-center">
-                            <a href="{{ route('simuladorPU') }}">
-                                <button type="button" class="btn btn-primary btn-rounded ">
-                                  <i class="fa fa-shield  menu-icon"> Vida Risco </i>
-                                </button>
-                            </a>
-    
-                      </div>
-                    </div>
-                     
-                    
-                    
-                  </form>
-                </div>
-              </div>
-    
-              
-            </div>
-  <!-- POPUP DE SIMULAÇÕES FIM -->
-      <iframe
-        id="chatbaseFrame"
-        src="https://www.chatbase.co/chatbot-iframe/am9B0VkeXuVOfrPm0FBVl"
-      ></iframe>
-      
-      <!-- Botão + texto -->
-      <div id="chatButtonContainer">
-        <div id="chatButtonLabel">Fale connosco</div>
-        <div id="customChatbaseButton" onclick="toggleChatbaseIframe()">
-          <!-- SVG oculto, mas pode manter se quiser -->
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M12 2C6.48 2 2 5.94 2 10.5c0 2.38 1.41 4.5 3.5 5.87V22l4.4-2.4c.66.13 1.34.2 2.1.2 5.52 0 10-3.94 10-8.5S17.52 2 12 2z"/>
-          </svg>
-        </div>
-      </div>
-      
-      <!-- Script para mostrar/ocultar o chat -->
-      <script>
-        function toggleChatbaseIframe() {
-          const iframe = document.getElementById('chatbaseFrame');
-          iframe.style.display = (iframe.style.display === 'block') ? 'none' : 'block';
+            // 2. Cálculo do Prémio Base: (C * f(x) * (1-15%)) / 12000 * t 
+            let premioBase = (C * fx * 0.85) / 12000 * t;
+            this.res.premioBase = premioBase;
+
+            // 3. Coberturas Adicionais
+            let pVidaMais = this.form.coberturas.vidaMais ? premioBase : 0; // P_VIDA+ = P_Base [cite: 31]
+            let pDoenca = this.form.coberturas.doenca ? (C * 0.04) : 0;     // P_DOENCA = C * 4% [cite: 33]
+            let pDespedimento = this.form.coberturas.despedimento ? (C * 0.02) : 0; // P_DESPEDIMENTO = C * 2% [cite: 35]
+
+            // 4. Prémio Comercial (P) [cite: 38]
+            let P = premioBase + pVidaMais + pDoenca + pDespedimento;
+            this.res.premioComercial = P;
+
+            // 5. Prémio Total com Encargos (20%) e ARSEG (0,2%) [cite: 40, 41]
+            const impostos = 1 + 0.20 + 0.002; 
+            this.res.premioTotal = P * impostos;
+            
+            // Valores parciais para o PDF
+            this.res.encargosVal = P * 0.20;
+            this.res.arsegVal = P * 0.002;
+            
+            this.res.encargosVal = P * ENCARGOS;
+            this.res.arsegVal = P * ARSEG;
+            this.res.premioTotal = P * (1 + ENCARGOS + ARSEG);
+        },
+
+        formatar(valor) {
+            return new Intl.NumberFormat('pt-AO', { 
+                style: 'currency', 
+                currency: 'AKZ',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(valor);
+        },
+
+        formatarData(data) {
+            if(!data) return '---';
+            const [ano, mes, dia] = data.split('-');
+            return `${dia}/${mes}/${ano}`;
+        },
+
+        baixarPDF() {
+            const element = document.getElementById('pdf-template');
+            element.classList.remove('hidden');
+            
+            const opt = {
+                margin: 0,
+                filename: `STA_Simulacao_${this.form.nome || 'Cliente'}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 3, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                element.classList.add('hidden');
+            });
         }
-      </script>
+    }
+}
+</script>
 
-      
+</body>
+</html>
 
 
-        <!-- partial:partials/_footer.html -->
-          <footer class="footer">
-          <div class="d-sm-flex justify-content-center justify-content-sm-between">
-            <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © STA Seguros 2025</span>
-            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"><a href="https://www.stas.co.ao/" target="_blank">Olhamos pelo seu Futuro</a> </span>
-          
-          </div>
-          <h6 class="text-muted d-block text-center text-sm-left d-sm-inline-block mt-2">Website: <img class=" social-icon" src="images/faces/Arte9@2x.png" style="width:20px;">  <a href="https://stas.co.ao/" target="_blank">STA SEGUROS</a></h6><br> 
-        <div style="text-align:center">
-            <h6 class="text-muted d-block text-center text-sm-left d-sm-inline-block mt-2">Encontre-nós nas redes sociais:</h6> 
-          <br>
-          <a href="https://www.facebook.com/staseguros/" target="_blank"><i class="fa fa-facebook-square fa-2x social-icon"></i></a>
-          <a href="https://www.instagram.com/staseguros/" target="_blank"><i class="fa fa-instagram fa-2x social-icon delay-1"></i></a>
-          <a href="https://www.linkedin.com/company/sta-seguros/" target="_blank"><i class="fa fa-linkedin-square fa-2x social-icon delay-2"></i></a>
-          <a href="https://api.whatsapp.com/send?phone=244946123425&text" target="_blank"><i class="fa fa-whatsapp fa-2x social-icon delay-3"></i></a>
-        </div>
-         
-         
-        </footer>
-        <!-- partial -->
-      </div>
-      <!-- main-panel ends -->
-    </div>
-    <!-- page-body-wrapper ends -->
 
- 
-  <!-- base:js -->
-<script src="https://cdn.tailwindcss.com"></script>
+
+
