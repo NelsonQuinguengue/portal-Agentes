@@ -1,584 +1,443 @@
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-  <!-- Required meta tags --> 
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>MY STAS- Documentos</title>
-  <!-- base:css -->
-  <link rel="stylesheet" href="vendors/mdi/css/materialdesignicons.min.css">
-  <link rel="stylesheet" href="vendors/feather/feather.css">
-  <link rel="stylesheet" href="vendors/base/vendor.bundle.base.css">
-  <!-- endinject -->
-  <!-- plugin css for this page -->
-  <link rel="stylesheet" href="vendors/flag-icon-css/css/flag-icon.min.css"/>
-  <link rel="stylesheet" href="vendors/font-awesome/css/font-awesome.min.css">
-  <link rel="stylesheet" href="vendors/jquery-bar-rating/fontawesome-stars-o.css">
-  <link rel="stylesheet" href="vendors/jquery-bar-rating/fontawesome-stars.css">
-  <!-- End plugin css for this page -->
-  <!-- inject:css -->
-  <link rel="stylesheet" href="css/style.css">
-  
-  <!-- endinject -->
-  <link rel="shortcut icon" href="images/favicon.ico" />
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-  <a href="https://wa.link/bslkgw" style="position:fixed;width:60px;height:60px;bottom:40px;right:40px;background-color:#25d366;color:#FFF;border-radius:50px;text-align:center;font-size:30px;box-shadow: 1px 1px 2px #888;
-    z-index:1000;" target="_blank">
-  <i style="margin-top:16px" class="fa fa-whatsapp"></i>
-  </a>
-</head>
-<body>
-  <div class="container-scroller">
-    <!-- partial:partials/_navbar.html -->
-    <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
-      <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
         
-        <a class="navbar-brand brand-logo-mini" href="index.html"><img src="images/favicon.ico" alt="logo"/></a>
-      </div>
-      <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
-        <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
-          <span class="icon-menu"></span>
-        </button>
+          <style>
+        [x-cloak] { display: none !important; }
+    .text-sta-purple { color: #51358C; }
+    .bg-sta-purple { background-color: #51358C; }
+    .border-sta-gold { border-color: #e39b03; }
+    .text-sta-gold { color: #e39b03; }
+
+    /* AJUSTE TELEFONE: Garante que o código do país não sobreponha o número */
+    .iti { display: block !important; width: 100% !important; }
+    .iti--separate-dial-code input { padding-left: 95px !important; } 
+
+    /* AJUSTE COBERTURAS: Alinhamento perfeito entre checkbox e texto */
+    .cobertura-item {
+        display: flex;
+        align-items: center;
+        padding: 10px 12px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        transition: all 0.2s;
+        cursor: pointer;
+        margin-bottom: 4px;
+    }
+    .cobertura-item:hover { background: #f1f5f9; border-color: #51358C; }
+    .cobertura-item input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        margin-right: 12px; /* Espaçamento fixo entre o check e o nome */
+        cursor: pointer;
+        accent-color: #51358C;
+    }
+    .cobertura-nome {
+        font-size: 13px;
+        font-weight: 600;
+        color: #334155;
+    }
+
+        /* Estilo específico para garantir o alinhamento no PDF */
+        .pdf-footer {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 50px;
+            padding-top: 15px;
+            border-top: 1px solid #e39b03;
+        }
+        /* Ajuste para combinar com o teu design Gray-50/Rounded-LG */
+            /* Impede a sobreposição e garante que o input ocupe a largura correta */
+ 
+    </style>  
     
-        <ul class="navbar-nav navbar-nav-right">
-            
-          
-          <li class="nav-item dropdown d-flex mr-4 ">
-            <a class="nav-link count-indicator dropdown-toggle d-flex align-items-center justify-content-center" id="notificationDropdown" href="#" data-toggle="dropdown">
-              <i class="icon-cog"></i>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
-              <p class="mb-0 font-weight-normal float-left dropdown-header">Difinições</p>
-              <a class="dropdown-item preview-item">               
-                  <i class="icon-head"></i> Perfil
-              </a>
-              <a class="dropdown-item preview-item">
-                  <i class="icon-inbox"></i> Logout
-              </a>
-            </div>
-          </li>
-          
-        </ul>
-        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
-          <span class="icon-menu"></span>
-        </button>
-      </div>
-    </nav>
-    <!-- partial -->
-    <div class="container-fluid page-body-wrapper">
-      <!-- partial:partials/_sidebar.html -->
-      <nav class="sidebar sidebar-offcanvas" id="sidebar">
-        <div class="user-profile">
-          <div class="user-image">
-            <img src="images/faces/face28.png">
-          </div>
-          <div class="user-name">
-              Osvaldo Spencer
-          </div>
-          <div class="user-designation">
-              Agente
-          </div>
-        </div>
-        <ul class="nav">
-
-          
-        <ul class="nav">
-          <li class="nav-item">
-            <a class="nav-link" href="index.html">
-              <i class="icon-box menu-icon"></i>
-              <span class="menu-title">Inicio</span>
-            </a>
-          </li> 
-        <!-- partial:partials/_sidebar.html
-          <li class="nav-item"style="">
-            <a class="nav-link" href="meus_seguros.html">
-              <i class="icon-pie-graph menu-icon"style=""></i>
-              <span class="menu-title"style="">A minha Carteira</span>
-            </a>
-          </li> -->
-
-          <li class="nav-item"style="">
-            <a class="nav-link" href="#popup4">
-              <i class="icon-paper menu-icon"style=""></i>
-              <span class="menu-title"style="">Documentação da Apólice</span>
-            </a>
-          </li>
-
-          <!-- TIPOS DE RC FIM 
          
-
-          <li class="nav-item"style="">
-            <a class="nav-link" href="#popup5">
-              <i class="icon-clipboard menu-icon"style=""></i>
-              <span class="menu-title"style="">Documentação Financeira</span>
-            </a>
-          </li>
-     
-          <li class="nav-item"style="">
-            <a class="nav-link" href="#popup7">
-              <i class="icon-paper menu-icon"></i>
-              <span class="menu-title">Documentação Generica</span>
-            </a>
-          </li>-->
-          
-
-          <li class="nav-item">
-            <a class="nav-link" href="#popup1">
-              <i class="icon-box menu-icon"></i>
-              <span class="menu-title">Simulações</span>
-            </a>
-          </li>
-
-          <li class="nav-item"style="">
-            <a class="nav-link" href="#popup1">
-              <i class="icon-box menu-icon"style=""></i>
-              <span class="menu-title"style="">Concursos</span>
-            </a>
-          </li>
-
-          <li class="nav-item"style="">
-            <a class="nav-link" href="participaçáo.html">
-              <i class="fa fa-car menu-icon"style=""></i>
-              <span class="menu-title"style="">Participar Sinistro Auto</span>
-            </a>
-          </li>
-
-          <li class="nav-item"style="">
-            <a class="nav-link" href="participaçáo.html">
-              <i class="fa fa-male menu-icon"style=""></i>
-              <span class="menu-title"style="">Participar Sinistro .A.T</span>
-            </a>
-          </li>
-          
-          <li class="nav-item"style="">
-            <a class="nav-link" href="participaçáo.html">
-              <i class="fa fa-home menu-icon"style=""></i>
-              <span class="menu-title"style="">Participar Sinistro .M.R.H</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link" href="#popup8">
-              <i class="fa fa-phone menu-icon"></i>
-              <span class="menu-title">Contactos</span>
-            </a>
-          </li>
-
-          <li class="nav-item"style="">
-            <a class="nav-link" href="pages/icons/feather-icons.html">
-              <i class="fa fa-envelope-o menu-icon"style=""></i>
-              <span class="menu-title"style="">Caixa de Mensaguens</span>
-            </a>
-          </li>
-
-          
-
-       
-      
-        </ul>
-      </nav>
-      <!-- partial -->
-      <div class="main-panel">
+               <!-- partial -->
+      <div class="main-panel" x-data="simuladorSTA()">
         <div class="content-wrapper">
-          <div class="row">
-            <div class="col-sm-12 mb-4 mb-xl-0">
-              <!-- <h4 class="font-weight-bold text-muted"><i class="fa fa-chevron-left menu-icon"></i> Voltar ao Inicio</h4> -->
-              
-            </div>
-          </div>
          
-          <br>
-
-          <img src="images/faces/Arte7@2x.png" alt=""style="width: 90px;">
-        
-        <h1 class="text-center mb-4 "> Resumo da Proposta </h1>
-        <hr>
-       
-         <br>
-        
-          <form class="form-control ">
-            <div class="form-row ">
-              <div class="form-group col-lg-4">
-                <h4 style="color:#e39b03;">ORIGEM</h4>
-                  <h4>ANGOLA</h4>
-                
-
-                            
-              </div>
-              <div class="form-group col-lg-4">
-                <h4 style="color:#e39b03;">DESTINO</h4>
-                <h4>DUBAI</h4>
-              
-              </div>
-
-              <div class="form-group col-lg-4">
-                <h4 style="color:#e39b03;">CHECK-IN</h4>
-                <h4>2024-02-20</h4>
-              </div>
-
-              <div class="form-group col-lg-4">
-                <h4 style="color:#e39b03;">CHECK-OUT</h4>
-                <h4>2024-03-10</h4>
-              </div>
-
-              <div class="form-group col-lg-4">
-                <h4 style="color:#e39b03;">ADULTOS</h4>
-                <h4>1</h4>
-              </div>
-
-              <div class="form-group col-lg-4">
-                <h4 style="color:#e39b03;">CRIANÇAS</h4>
-                <h4>0</h4>
-
-              </div>
-              
-            </div>
-
-            <h1 class="text-center mb-4 "> Tomador de Seguro </h1>
-            <hr>
-      <div class="form-row ">
-        
-        
-        <div class="form-group col-lg-4">
-          <h4 style="color:#e39b03;">NOME</h4>
-          <h4>PEDRO GOMES</h4>                
-
-        </div>
-
-        <div class="form-group col-lg-4">
-          <h4 style="color:#e39b03;">PASSAPORTE</h4>
-          <h4>0071212258LA041</h4>      
-
-        </div>
-
-        
-        <div class="form-group col-lg-4">
-          <h4 style="color:#e39b03;">DATA NASCIMENTO</h4>
-          <h4>1985-02-25</h4>      
-
-        </div>
-
-        <div class="form-group col-lg-4">
-          <h4 style="color:#e39b03;">TELEFONE</h4>
-          <h4>921456523</h4>      
-
-        </div>
-
-        <div class="form-group col-lg-4">
-          <h4 style="color:#e39b03;">GENERO</h4>
-          <h4>MASCULINO</h4>      
-
-        </div>
-
-        <div class="form-group col-lg-4">
-          <h4 style="color:#e39b03;">MORADA</h4>
-          <h4>LUANDA</h4>      
-
-        </div>
-
-        <div class="form-group col-lg-4">
-          <h4 style="color:#e39b03;">EMAIL</h4>
-          <h4>P.GOMES@STAS.CO.AO</h4>      
-
-        </div>
-
-        <div class="form-group col-lg-4">
-          <h4 style="color:#e39b03;">NIF</h4>
-          <h4>0071212252LA054</h4>      
-
-        </div>
-        <div class="form-group col-lg-4">
-          <h4 style="color:#e39b03;">BI</h4>
-          <h4>0071212252LA054</h4>      
-
-        </div>
-        
-      </div>
-      <br>
-                <h1 class="text-center mb-4 "> Dados dos Passageiros </h1>
-                <h4 class="text-center mb-4" style="color:#e39b03;"> Passageiro 1ª</h4>
-                <br>
-                  <hr>
-            <div class="form-row ">
-              
-              
-              <div class="form-group col-lg-4">
-                <h4 style="color:#e39b03;">NOME</h4>
-                <h4>SANDRA CARDOSO</h4>                
-
-              </div>
-
-              <div class="form-group col-lg-4">
-                <h4 style="color:#e39b03;">PASSAPORTE</h4>
-                <h4>0081217758LA041</h4>      
-
-              </div>
-
-              
-              <div class="form-group col-lg-4">
-                <h4 style="color:#e39b03;">DATA NASCIMENTO</h4>
-                <h4>1995-12-18</h4>      
-
-              </div>
-
-              <div class="form-group col-lg-4">
-                <h4 style="color:#e39b03;">TELEFONE</h4>
-                <h4>93022564</h4>      
-
-              </div>
-
-              <div class="form-group col-lg-4">
-                <h4 style="color:#e39b03;">GENERO</h4>
-                <h4>FEMENINO</h4>      
-
-              </div>
-
-              <div class="form-group col-lg-4">
-                <h4 style="color:#e39b03;">MORADA</h4>
-                <h4>ANGOLA</h4>      
-
-              </div>
-
-              <div class="form-group col-lg-4">
-                <h4 style="color:#e39b03;">EMAIL</h4>
-                <h4>S.CARDOSO@STAS.CO.AO</h4>      
-
-              </div>
-
-              <div class="form-group col-lg-4">
-                <h4 style="color:#e39b03;">NIF</h4>
-                <h4>0071213352LA054</h4>      
-
-              </div>
-              <div class="form-group col-lg-4">
-                <h4 style="color:#e39b03;">BI</h4>
-                <h4>0071213352LA054</h4>      
-
-              </div>
-              
-            </div>
-              <br><br>
-            <h6 style="color:#51358C;font-weight: bold;">TERMOS E CONDIÇÕES?</h6>
-            <p style="width: 30%;">Ao avançar com o pagamento esta a  aceitar os termos e condições ira receber as condições particulares 
-              ,do seguro recibo e pagamento por email.
-            </p>
-            <input type="checkbox"class=""style="color:#e39b03;">
-
-            <div class="d-flex justify-content-center">
-              
-              <a href="dados_pagamentoViagem.html"
-                type="submit" class="btn btn-primary ">Avançar para pagamento <i class="fa fa-chevron-right"></i>
-              </a>
-              
-            </div>
-            <br>
-          </form>
-                           
          
           
+         
+           
+     
 
+
+ <div class="row">
+             
+         
+                       
+          </div>
+  <div>
+   
+  <div class="max-w-6xl mx-auto py-4 md:py-8 px-2 md:px-4">
+    <div class="bg-white rounded-t-2xl p-4 md:p-6 border-b-4 border-sta-gold flex flex-col md:flex-row justify-between items-center shadow-sm gap-4">
+        <div class="text-center md:text-left">
+            <h1 class="text-xl md:text-2xl font-bold text-sta-purple">Simulador Vida Risco PU</h1>
+            <p class="text-xs md:text-sm text-gray-500">Data da Simulação: <span x-text="dataHoje"></span></p>
+        </div>
+        <div class="flex items-center">
+            <img src="images/faces/Arte7@2x.png" alt="STA Seguros" class="w-12 h-12 md:w-16 md:h-16 mx-auto">
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-0 shadow-2xl rounded-b-2xl overflow-hidden">
+        
+        <div class="lg:col-span-5 bg-white p-4 md:p-8 border-r border-gray-100">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-sta-purple mb-6 border-b pb-2 border-gray-100">Dados do Segurado</h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Nome Completo</label>
+                    <input type="text" x-model="form.nome" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-sta-purple outline-none transition">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Gênero</label>
+                        <select x-model="form.genero" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 outline-none">
+                            <option value="Masculino">Masculino</option>
+                            <option value="Feminino">Feminino</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Nº Identificação</label>
+                        <input type="text" x-model="form.documento" placeholder="BI / Passaporte" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Data de Nascimento</label>
+                        <input type="date" x-model="form.nascimento" @change="calcularIdade()" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-sta-purple">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Idade (Actuarial)</label>
+                        <input type="number" x-model="form.idade" readonly class="w-full bg-gray-100 border border-gray-200 rounded-lg px-4 py-2 font-bold text-sta-purple cursor-not-allowed">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="w-full">
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Telefone</label>
+                        <div x-data="{ 
+                            initIti() {
+                                const iti = window.intlTelInput(this.$refs.telInput, {
+                                    initialCountry: 'ao',
+                                    separateDialCode: true,
+                                    preferredCountries: ['ao', 'pt', 'br'],
+                                    utilsScript: 'https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js'
+                                });
+                                const updateValue = () => { this.form.telefone = iti.getNumber(); };
+                                this.$refs.telInput.addEventListener('blur', updateValue);
+                                this.$refs.telInput.addEventListener('countrychange', updateValue);
+                                this.$refs.telInput.addEventListener('keyup', updateValue);
+                            }
+                        }" x-init="initIti()" class="relative">
+                            <input type="tel" x-ref="telInput" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-sta-purple transition-all">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">E-mail</label>
+                        <input type="email" x-model="form.email" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 outline-none">
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-gray-50">
+                    <h3 class="text-sm font-bold uppercase tracking-wider text-sta-purple mb-4">Condições da Apólice</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div class="space-y-1">
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Capital Seguro (AKZ)</label>
+                            <input type="text" 
+                                :value="formatar(form.capital)" 
+                                @input="let val = $event.target.value.replace(/\D/g, ''); form.capital = val ? parseFloat(val) / 100 : 0; recalcular()"
+                                class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 font-black text-sta-purple outline-none focus:ring-2 focus:ring-sta-purple transition-all"
+                                placeholder="0,00 Kz">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Período (Meses)</label>
+                            <input type="number" x-model.number="form.periodo" @input="recalcular()" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 outline-none">
+                        </div>
+                    </div>
+
+                    <label class="block text-[10px] font-bold text-gray-400 uppercase mb-2">Coberturas Adicionais</label>
+                   <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full">
+                    <template x-for="(label, key) in coberturasDisponiveis">
+                        <label class="flex items-start p-2 bg-gray-50 rounded border border-gray-100 cursor-pointer hover:bg-purple-50 transition min-w-0">
+                            <div class="flex-shrink-0 mt-0.5">
+                                <input type="checkbox" 
+                                       x-model="form.coberturas[key]" 
+                                       @change="recalcular()" 
+                                       class="text-sta-purple rounded w-4 h-4">
+                            </div>
+                            
+                            <span class="ml-2 text-[11px] font-semibold text-gray-600 leading-tight break-words overflow-hidden" 
+                                  x-text="label"></span>
+                        </label>
+                    </template>
+                </div>
+              </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-7 bg-slate-50 p-4 md:p-8">
+            <div class="flex flex-col sm:flex-row justify-between items-start mb-8 gap-2">
+                <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400">Resumo da Cotação</h3>
+                <div class="bg-sta-gold text-white px-3 py-1 rounded text-[10px] font-black uppercase shadow-sm">Válido por 30 dias</div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                    <p class="text-xs text-slate-400 font-bold uppercase">Prémio Comercial</p>
+                    <p class="text-xl md:text-2xl font-black text-sta-purple mt-1" x-text="formatar(res.premioComercial)"></p>
+                </div>
+                <div class="bg-sta-purple p-6 rounded-2xl shadow-lg text-white">
+                    <p class="text-xs text-purple-200 font-bold uppercase">Total a Pagar (PU)</p>
+                    <p class="text-xl md:text-2xl font-black mt-1 text-sta-gold" x-text="formatar(res.premioTotal)"></p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-slate-100 p-6 space-y-4 shadow-sm">
+                <div class="flex justify-between text-sm">
+                    <span class="text-slate-500 italic">Encargos (20%)</span>
+                    <span class="font-bold text-slate-700" x-text="formatar(res.encargosVal)"></span>
+                </div>
+                <div class="flex justify-between text-sm">
+                    <span class="text-slate-500 italic">ARSEG (0,2%)</span>
+                    <span class="font-bold text-slate-700" x-text="formatar(res.arsegVal)"></span>
+                </div>
+                
+                <div class="pt-4 border-t border-dashed">
+                    <h4 class="text-[10px] font-bold text-slate-400 uppercase mb-3">Coberturas Ativadas</h4>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-[10px] font-bold">✓ MORTE Invalidez (ITP) (BASE)</span>
+                        <template x-for="(label, key) in coberturasDisponiveis">
+                            <span x-show="form.coberturas[key]" class="bg-sta-purple text-white px-2 py-1 rounded text-[10px] font-bold" x-text="'✓ ' + label.toUpperCase()"></span>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <button @click="baixarPDF()" class="w-full mt-8 bg-sta-purple hover:bg-black text-white font-bold py-4 rounded-xl transition-all shadow-lg flex items-center justify-center group">
+                <i class="fa-solid fa-file-pdf mr-3 text-sta-gold group-hover:scale-110"></i> Gerar Proposta PDF
+            </button>
+
+            <div class="flex flex-col md:flex-row justify-between items-center md:items-end mt-12 px-2 border-t border-gray-200 pt-6 gap-6">
+                <div class="text-[10px] text-slate-600 leading-relaxed max-w-md text-center md:text-left">
+                    <p class="font-bold text-sta-purple mb-1">STAS – Sociedade Transnacional Angolana de Seguros, S.A.</p>
+                    <p>Belas Business Park, Talatona - Angola</p>
+                    <p>NIF 5417280216 | Tel. (+244) 925 044 450</p>
+                    <p>
+                        <a href="https://www.stas.co.ao" class="text-sta-purple hover:underline">www.stas.co.ao</a>
+                    </p>
+                </div>
+
+                <div class="relative group">
+                    <img src="images/faces/PU.png" alt="QR Code" class="w-16 h-16 md:w-24 md:h-24 object-contain rounded-lg" onerror="this.src='https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=STA-SIMULACAO-OFICIAL'">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="pdf-template" class="hidden">
+    <div style="padding: 40px; font-family: sans-serif; color: #333;">
+        <div style="display: flex; justify-content: space-between; border-bottom: 4px solid #e39b03; padding-bottom: 20px;">
+            <div>
+                <h1 style="color: #51358C; margin: 0; font-size: 28px;">PROPOSTA DE SEGURO</h1>
+                <p style="color: #666; margin: 5px 0;">Ramo: Vida Risco (Prémio Único)</p>
+            </div>
+            <div style="text-align: right;">
+                <img src="../../images/faces/LogoSTAatual.png" alt="STA Seguros" style="width: 80px; height: 80px;">
+            </div>
+        </div>
+
+        <div style="margin-top: 30px; background: #f9f9f9; padding: 20px; border-radius: 10px;">
+            <h3 style="color: #51358C; border-bottom: 1px solid #ddd; padding-bottom: 5px;">DADOS DO SEGURADO</h3>
+            <table style="width: 100%; font-size: 13px; margin-top: 10px;">
+                <tr>
+                    <td style="padding: 5px; font-weight: bold;">Nome:</td>
+                    <td style="padding: 5px;" x-text="form.nome || '---'"></td>
+                    <td style="padding: 5px; font-weight: bold;">Gênero:</td>
+                    <td style="padding: 5px;" x-text="form.genero"></td>
+                </tr>
+                <tr>
+                    <td style="padding: 5px; font-weight: bold;">Identificação:</td>
+                    <td style="padding: 5px;" x-text="form.documento || '---'"></td>
+                    <td style="padding: 5px; font-weight: bold;">Data Nasc.:</td>
+                    <td style="padding: 5px;" x-text="formatarData(form.nascimento)"></td>
+                </tr>
+                <tr>
+                    <td style="padding: 5px; font-weight: bold;">Telefone:</td>
+                    <td style="padding: 5px;" x-text="form.telefone || '---'"></td>
+                    <td style="padding: 5px; font-weight: bold;">Idade:</td>
+                    <td style="padding: 5px;" x-text="form.idade + ' anos'"></td>
+                </tr>
+            </table>
+        </div>
+
+        <div style="margin-top: 30px;">
+            <h3 style="color: #51358C; border-bottom: 1px solid #ddd; padding-bottom: 5px;">DETALHES DA SIMULAÇÃO</h3>
+            <table style="width: 100%; font-size: 13px; margin-top: 10px; border-collapse: collapse;">
+                <tr style="background: #f4f4f4;">
+                    <td style="padding: 10px; font-weight: bold;">Capital Seguro</td>
+                    <td style="padding: 10px; text-align: right;" x-text="formatar(form.capital)"></td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; font-weight: bold;">Período de Cobertura</td>
+                    <td style="padding: 10px; text-align: right;" x-text="form.periodo + ' meses'"></td>
+                </tr>
+                <tr style="background: #f4f4f4;">
+                    <td style="padding: 10px; font-weight: bold;">Prémio Comercial</td>
+                    <td style="padding: 10px; text-align: right;" x-text="formatar(res.premioComercial)"></td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; font-weight: bold;">Encargos (20%)</td>
+                    <td style="padding: 10px; text-align: right;" x-text="formatar(res.encargosVal)"></td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; font-weight: bold;">ARSEG (0,2%)</td>
+                    <td style="padding: 10px; text-align: right;" x-text="formatar(res.arsegVal)"></td>
+                </tr>
+                <tr style="background: #51358C; color: white;">
+                    <td style="padding: 15px; font-weight: bold; font-size: 16px;">TOTAL A PAGAR (AKZ)</td>
+                    <td style="padding: 15px; text-align: right; font-size: 18px; font-weight: black; color: #e39b03;" x-text="formatar(res.premioTotal)"></td>
+                </tr>
+            </table>
+        </div>
+
+
+        <div style="margin-top: 30px; font-family: 'Times New Roman', Times, serif;">
+    
+    <table style="width: 100%; font-size: 11px; border-collapse: collapse; margin-bottom: 5px;">
+        <tbody>
+            <tr>
+                <td style="width: 25%; font-weight: bold; padding: 6px; border: 1px solid #ddd; vertical-align: top;">COBERTURAS</td>
+                <td style="padding: 6px; border: 1px solid #ddd; vertical-align: top;">
+                    <ul style="list-style-type: '§ '; margin: 0; padding-left: 10px;">
+                        <li>Morte (Base)</li>
+                        <li x-show="form.coberturas.vidaMais">Invalidez Total & Permanente (IAD)</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold; padding: 6px; border: 1px solid #ddd;">CREDOR HIPOTECÁRIO</td>
+                <td style="padding: 6px; border: 1px solid #ddd; font-weight: bold;">
+                    <div style="border-bottom: 1px solid #000; display: inline-block; width: 100%; height: 20px;"></div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+   
+
+   
+
+    <div style="font-size: 9.5px; margin-bottom: 30px; border: 1px solid #333; padding: 10px; line-height: 1.4;">
+        <span style="font-weight: bold; text-decoration: underline; margin-bottom: 5px; display: block;">Exclusões</span>
+        A. Cláusula de exclusão e limitação referente a embargos e sanções (LMA3100)<br>
+        B.&C. Cláusula de exclusão de guerra e terrorismo (NMA 2918)<br>
+        D. Cláusula de exclusão de riscos nucleares e/ou energia nuclear (NMA 2917)<br>
+        E. Cláusula de exclusão de contaminação radioactiva (CL370)
+    </div>
+
+    <div style="margin-top: 40px; margin-bottom: 20px; text-align: left; font-size: 11px;">
+        <div style="width: 300px; border-top: 1px solid #000; padding-top: 5px;">
+            <p style="font-weight: bold; margin: 0;">Assinatura do Segurado:</p>
+            <p style="font-size: 9px; margin: 2px 0 0 0;">O(A) Tomador(a) do seguro</p>
+        </div>
+    </div>
+  
 </div>
 
-            <!-- content-wrapper ends -->
 
-             <!-- SIMULAÇÃO VIAGEM -->
-         <div id="popupVsimular" class="overlay">
-          <div class="popupvs">
-            <img src="images/faces/Arte7@2x.png" alt=""style="width:70px;margin: 10px;">
-            <h4 class="text-center">PREÇO DA SIMULAÇÃO</h4>
-            <div class="content">
-                <span class="text-muted text-center" > </span>
-            </div>
-            <a class="close" href="#">&times;</a>
-            <div class="content">
-              <form class="pt-3">
-                <div class="form-group">
-                 <h4 class="text-center">AOA 14 647,51 </h4>
-                 <p class="text-center">( Inclui todos os passageiros )</p>
-                 <p class="text-center">Tipo de tomador de seguro?</p>
 
-                 
-                 
-                </div>
+       
 
-                <div class="d-flex justify-content-center">
-                  <select name="" id="inputAddress3" class="form-control"style="border-radius:20px">
+      
+    </div>
+</div>
+
+
+
+</div><br><br>
   
-                              
-                    <option>selecionar</option>
-                    <option> Particular </option>
-                    <option> Empresa</option>
-                                   
-                    
-                </select>
-                </div>
-                <br><br>
-                <div class="d-flex justify-content-center">
-                  <a href="formulario_VTomador.html"
-                    type="submit" class="btn btn-primary "style="border-radius:20px">Avançar para proposta <i class="fa fa-plane"></i>
-                  </a>
-                  
-                </div>
-                    <br>
 
-                    <h4 class="text-center">COBERTURAS </h4>
-
-                              
-                    
-              </form>
-
-              <form class="form-control ">
-                <div class="form-row ">
-                  <div class="form-group col-lg-4">
-                  
-    
-                    <img src="images/IconesSTA/Icones/patient.png" alt=""style="width: 40px;margin: 10px;"class="text-center  ">
-                    
-                    <p>Serviços de Assistência</p>                   
-                  </div>
-
-
-                  <div class="form-group col-lg-4">
-                                    
-                    <img src="images/IconesSTA/STAViagem.png" alt=""style="width: 40px;margin: 10px;">
-                    
-                    <p>Cobertura Mapfre</p> 
-                    
-                  </div>
-    
-                  <div class="form-group col-lg-4">
-                    <img src="images/IconesSTA/STAViagem.png" alt=""style="width: 40px;margin: 10px;">
-                    
-                    <p>Cancelamento de Viagem</p> 
-                  </div>
-                </div>
-                <div class="form-row ">
-                  <div class="form-group col-lg-4">
-                    <img src="images/IconesSTA/STAViagem.png" alt=""style="width: 40px;margin: 10px;">
-                    
-                    <p>Responsabilidade Civil Pessoal</p> 
-                  </div>
-    
-                  <div class="form-group col-lg-4">
-                    
-                    <img src="images/IconesSTA/STAViagem.png" alt=""style="width: 40px;margin: 10px;">
-                    
-                    <p>Acidentes Pessoais em Meios de Transporte Públicos </p> 
-                  </div>
-
-                  <div class="form-group col-lg-4">
-                    
-                    <img src="images/IconesSTA/STAViagem.png" alt=""style="width: 40px;margin: 10px;">
-                    
-                    <p>Perdas e Demoras</p> 
-                  </div>
-    
-                  <div class="form-group col-lg-4">
-                    
-                    <img src="images/IconesSTA/STAViagem.png" alt=""style="width: 40px;margin: 10px;">
-                    
-                    <p>Coberturas Geográfica</p> 
-                  </div>
-
-                  <div class="form-group col-lg-4">
-                    <img src="images/IconesSTA/STAViagem.png" alt=""style="width: 40px;margin: 10px;">
-                    
-                    <p>Assistência Médica & Emergencia</p> 
-                  </div>
-
-                </div>
-                
-              </form>
-            </div>
-          </div>
-        </div>
-
-            <!-- SIMULAÇÃO VIAGEM -->
-
-         <!-- DOCUMENTAÇÁO DE APÓLICE  -->
-         <div id="popup4" class="overlay">
-          <div class="popup">
-            <h4>APÓLICE</h4>
-            <div class="content">
-                <span class="text-muted text-center" > </span>
-            </div>
-            <a class="close" href="#">&times;</a>
-            <div class="content">
-              <form class="pt-3">
-                <div class="form-group">
-                  <label for="">Nª da Apólice</label>
-                  <input type="text" class="form-control form-control-lg"  placeholder="">
-                </div>
-                
-                <div class="mt-3">
-                  <a class="btn btn-primary" href="documentos.html">CONSULTAR</a>
-                </div>
-                
-              </form>
-            </div>
-          </div>
-        </div>
-
-             <!-- FIM  DOCUMENTAÇÁO DE APÓLICE -->
-
-             
-        <!-- DOCUMENTAÇÁO FINACEIRA  -->
-        <div id="popup5" class="overlay">
-          <div class="popup">
-            <h4>APÓLICE</h4>
-            <div class="content">
-                <span class="text-muted text-center" > </span>
-            </div>
-            <a class="close" href="#">&times;</a>
-            <div class="content">
-              <form class="pt-3">
-                <div class="form-group">
-                  <label for="">Nª da Apólice</label>
-                  <input type="text" class="form-control form-control-lg"  placeholder="">
+  
+ </div>     <!-- IFRAME escondido -->
+       <!-- FIM  DOCUMENTAÇÁO DE APÓLICE -->
+             <div id="popup7" class="overlay">
+              <div class="popup">
+                <img src="images/faces/Arte7@2x.png" alt=""style="width:70px;margin: 10px;">
+                <h4 style="color:#e39b03;"class="text-center">PRODUTOS</h4>
+                <div class="content">
                   <br>
-                  <label for="">Nª do Documento</label>
-                  <input type="text" class="form-control form-control-lg"  placeholder="">
+                    <h4 class="text-center"style="color:#e39b03;" >Escolha o produto que pretende consultar </h4>
                 </div>
-                
-                <div class="mt-3">
-                  <a class="btn btn-primary" href="recibos_Pagamentos.html">CONSULTAR</a>
-                </div>
-                
-              </form>
-            </div>
-          </div>
-        </div>
+                <a class="close" href="#">&times;</a>
+                <div class="content">
+                  <form class="pt-3">
+                    <div class="form-group">
+                     <a href="{{ route('documentacaoAUTO') }}">
+                        <button type="button" class="btn btn-primary btn-rounded btn-icon"
+                        
+                        title="STAS Auto">
+                          <i class="fa fa-car menu-icon"placeholder="Automovél"></i>
+                        </button>
+                      </a>
+                      
+                     <a href="{{ route('documentacaoAT') }}">
+                        <button type="button" class="btn btn-primary btn-rounded btn-icon"title="STAS Acidente de Trabalho">
+                          <i class="fa fa-wheelchair menu-icon"></i>
+                        </button>
+                        </a>
+                     <a href="#">   
+                      <button type="button" class="btn btn-primary btn-rounded btn-icon"
+                      title="STAS Viagem">
+                        <i class="fa fa-plane menu-icon"></i>
+                      </button>
+                        </a>
+                      <a href="{{ route('documentacaoMRH') }}">
+                      <button type="button" class="btn btn-primary btn-rounded btn-icon"
+                      title="STAS Habitação">
+                        <i class="fa fa-home menu-icon"></i>
+                      </button>
+                      </a>
 
-             <!-- FIM  DOCUMENTAÇÁO DE APÓLICE -->
+                      <a href="#">
+                        <button type="button" class="btn btn-primary btn-rounded btn-icon"
+                        title="STAS Saúde">
+                          <i class="fa fa-heart menu-icon"></i>
+                        </button>
+                        </a>
+
+                        <a href="#">
+                          <button type="button" class="btn btn-primary btn-rounded btn-icon"
+                          title="STAS Mercadorias Perigosas">
+                            <i class="fa fa-truck menu-icon"></i
+                             >
+                          </button>
+                          </a>
+
+                           
+                                           
+                      
+                    </div>
+                    
+                   
+                    
+                  </form>
+                </div>
+              </div>
+    
+              
+            </div>
 
                 
         <!-- DOCUMENTAÇÁO FINACEIRA  -->
-        <div id="popup7" class="overlay">
-          <div class="popup">
-            <h4>APÓLICE</h4>
-            <div class="content">
-                <span class="text-muted text-center" > </span>
-            </div>
-            <a class="close" href="#">&times;</a>
-            <div class="content">
-              <form class="pt-3">
-                <div class="form-group">
-                  <label for="">Nª da Apólice</label>
-                  <input type="text" class="form-control form-control-lg"  placeholder="">
-                  
-                </div>
-                
-                <div class="mt-3">
-                  <a class="btn btn-primary" href="documentos.html">CONSULTAR</a>
-                </div>
-                
-              </form>
-            </div>
-          </div>
-        </div>
-
-           <!-- DOCUMENTAÇÁO FINACEIRA  -->
+      
+      
+            <!-- CONTACTOS TELEFONICOS  -->
            <div id="popup8" class="overlay">
             <div class="popup">
               <h4>CONTACTOS</h4>
@@ -611,153 +470,110 @@
           </div>
   
                <!-- FIM  DOCUMENTAÇÁO DE APÓLICE -->
-
-             <!-- FIM  DOCUMENTAÇÁO DE APÓLICE -->
-             
-             
-        <!-- DOCUMENTAÇÁO DE GENERICA  -->
-        <div id="popup6" class="overlay">
-          <div class="popup">
-            <h4>APÓLICE</h4>
-            <div class="content">
-                <span class="text-muted text-center" > </span>
-            </div>
-            <a class="close" href="#">&times;</a>
-            <div class="content">
-              <form class="pt-3">
-                <div class="form-group">
-                  <label for="">Nª da Apólice</label>
-                  <input type="text" class="form-control form-control-lg"  placeholder="">
-                </div>
                 
-                <div class="mt-3">
-                  <a class="btn btn-primary" href="documentos.html">CONSULTAR</a>
-                </div>
-                
-              </form>
-            </div>
-          </div>
-        </div>
-
-             <!-- FIM  DOCUMENTAÇÁO DE APÓLICE -->
-      
-        
-        <div id="popup1" class="overlay">
-          <div class="popup">
-            <h4 style="color:#e39b03;">PRODUTOS</h4>
-            <div class="content">
-                <span class="text-muted text-center" >Escolha o seguro que pretende Simular </span>
-            </div>
-            <a class="close" href="#">&times;</a>
-            <div class="content">
-              <form class="pt-3">
-                <div class="form-group">
-                  <a href="#popup2">
-                    <button type="button" class="btn btn-primary btn-rounded btn-icon">
-                      <i class="fa fa-car menu-icon"placeholder="Automovél"></i>
-                    </button>
-                  </a>
                   
-                  <button type="button" class="btn btn-primary btn-rounded btn-icon">
-                    <i class="fa fa-plane menu-icon"></i>
-                  </button>
-                  <button type="button" class="btn btn-primary btn-rounded btn-icon">
-                    <i class="fa fa-home menu-icon"></i>
-                  </button>
-                 
+                       <!-- POPUP DE SIMULAÇÕES -->
+             <div id="popup1" class="overlay">
+              <div class="popup">
+                <img src="images/faces/Arte7@2x.png" alt=""style="width:70px;margin: 10px;">
+                <h4 style="color:#e39b03;"class="text-center">PRODUTOS</h4>
+                <div class="content">
+                  <br>
+                    <h4 class="text-center"style="color:#e39b03;" >Escolha o produto que pretende Simular </h4>
                 </div>
-                
-                
-                
-              </form>
-            </div>
-          </div>
+                <a class="close" href="#">&times;</a>
+                <div class="content">
+                  <form class="pt-3">
+                    <div class="form-group">
 
-          
-        </div>
-
-
-
-        </div>
-
-
-      
- <!-- partial:partials/_footer.html -->
-        <div id="popup2" class="overlay">
-          <div class="popupAuto">
-            <h4>AUTOMOVÉL INDIVIDUAL</h4>
-            
-            <a class="close" href="#">&times;</a>
-            <div class="content">
-              <form class="pt-3">
-                <div class="form-group">
-
-                  <h4 style="text-align: center;">Dados da Viatura</h4>
-                  <label for="">Marca  </label>
-                  <input type="text" class="form-control form-control-lg"  placeholder="">
-                  <label for="">Modelo</label>
-                  <input type="text" class="form-control form-control-lg"  placeholder="">
-                  <label for="">Matricula </label>
-                  <input type="text" class="form-control form-control-lg"  placeholder="">
-                  <label for="">Chassi</label>
-                  <input type="text" class="form-control form-control-lg"  placeholder="">
-                  <hr>
-                  <h4 style="text-align: center;">Dados do Tomador</h4>
-                  </hr>
-                  
-                  <label for="">Nome do tomador</label>
-                  <input type="text" class="form-control form-control-lg"  placeholder="">
-                  <label for="">Nª Telefone</label>
-                  <input type="text" class="form-control form-control-lg"  placeholder="">
-                  <label for="">Nª de Bilhete </label>
-                  <input type="text" class="form-control form-control-lg"  placeholder="">
+                     
+                      <div class="d-flex justify-content-center">
+                      <a href="{{ route('simulacaoAUTO') }}">
+                        <button type="button" class="btn btn-primary btn-rounded ">
+                          <i class="fa fa-car menu-icon"placeholder="Automovél"> Automóvel</i>
+                        </button>
+                      </a>
+                    </div><br>
+    
+                    <div class="d-flex justify-content-center">
+                        <a href="{{ route('simulacaoVIAGEM') }}">
+                        <button type="button" class="btn btn-primary btn-rounded ">
+                          <i class="fa fa-plane menu-icon"> Viagem</i>
+                        </button>
+                      </a>
+                  </div><br>
+    
+                     <div class="d-flex justify-content-center">
+                            <a href="{{ route('simuladorPU') }}">
+                                <button type="button" class="btn btn-primary btn-rounded ">
+                                  <i class="fa fa-shield  menu-icon"> Vida Risco </i>
+                                </button>
+                            </a>
+    
+                      </div>
+                    </div>
+                     
                     
                     
-                  
+                  </form>
                 </div>
-                
-                <div class="mt-3">
-                  <a class="btn btn-primary btn-rounded btn-fw" href="#">Submeter a Solicitação</a>
-                </div>
-                
-              </form>
+              </div>
+    
+              
             </div>
-          </div>
-       
-        <!-- partial -->
-          <!-- partial:partials/_footer.html -->
+  <!-- POPUP DE SIMULAÇÕES FIM -->
+      <iframe
+        id="chatbaseFrame"
+        src="https://www.chatbase.co/chatbot-iframe/am9B0VkeXuVOfrPm0FBVl"
+      ></iframe>
+      
+      <!-- Botão + texto -->
+      <div id="chatButtonContainer">
+        <div id="chatButtonLabel">Fale connosco</div>
+        <div id="customChatbaseButton" onclick="toggleChatbaseIframe()">
+          <!-- SVG oculto, mas pode manter se quiser -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 5.94 2 10.5c0 2.38 1.41 4.5 3.5 5.87V22l4.4-2.4c.66.13 1.34.2 2.1.2 5.52 0 10-3.94 10-8.5S17.52 2 12 2z"/>
+          </svg>
+        </div>
+      </div>
+      
+      <!-- Script para mostrar/ocultar o chat -->
+      <script>
+        function toggleChatbaseIframe() {
+          const iframe = document.getElementById('chatbaseFrame');
+          iframe.style.display = (iframe.style.display === 'block') ? 'none' : 'block';
+        }
+      </script>
+
+      
+
+
+        <!-- partial:partials/_footer.html -->
           <footer class="footer">
-            <div class="d-sm-flex justify-content-center justify-content-sm-between">
-              <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © bootstrapdash.com 2020</span>
-              <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"> Free <a href="https://www.bootstrapdash.com/" target="_blank">Bootstrap dashboard templates</a> from Bootstrapdash.com</span>
-            </div>
-          </footer>
+          <div class="d-sm-flex justify-content-center justify-content-sm-between">
+            <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © STA Seguros 2025</span>
+            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"><a href="https://www.stas.co.ao/" target="_blank">Olhamos pelo seu Futuro</a> </span>
+          
+          </div>
+          <h6 class="text-muted d-block text-center text-sm-left d-sm-inline-block mt-2">Website: <img class=" social-icon" src="images/faces/Arte9@2x.png" style="width:20px;">  <a href="https://stas.co.ao/" target="_blank">STA SEGUROS</a></h6><br> 
+        <div style="text-align:center">
+            <h6 class="text-muted d-block text-center text-sm-left d-sm-inline-block mt-2">Encontre-nós nas redes sociais:</h6> 
+          <br>
+          <a href="https://www.facebook.com/staseguros/" target="_blank"><i class="fa fa-facebook-square fa-2x social-icon"></i></a>
+          <a href="https://www.instagram.com/staseguros/" target="_blank"><i class="fa fa-instagram fa-2x social-icon delay-1"></i></a>
+          <a href="https://www.linkedin.com/company/sta-seguros/" target="_blank"><i class="fa fa-linkedin-square fa-2x social-icon delay-2"></i></a>
+          <a href="https://api.whatsapp.com/send?phone=244946123425&text" target="_blank"><i class="fa fa-whatsapp fa-2x social-icon delay-3"></i></a>
+        </div>
+         
+         
+        </footer>
         <!-- partial -->
       </div>
       <!-- main-panel ends -->
     </div>
     <!-- page-body-wrapper ends -->
-  </div>
-  <!-- container-scroller -->
 
+ 
   <!-- base:js -->
-  <script src="vendors/base/vendor.bundle.base.js"></script>
-  <!-- endinject -->
-  <!-- Plugin js for this page-->
-  <!-- End plugin js for this page-->
-  <!-- inject:js -->
-  <script src="js/off-canvas.js"></script>
-  <script src="js/hoverable-collapse.js"></script>
-  <script src="js/template.js"></script>
-  <!-- endinject -->
-  <!-- plugin js for this page -->
-  <script src="vendors/chart.js/Chart.min.js"></script>
-  <script src="vendors/jquery-bar-rating/jquery.barrating.min.js"></script>
-  <!-- End plugin js for this page -->
-  <!-- Custom js for this page-->
-  <script src="js/dashboard.js"></script>
-  <!-- End custom js for this page-->
-</body>
-
-</html>
-
+<script src="https://cdn.tailwindcss.com"></script>
